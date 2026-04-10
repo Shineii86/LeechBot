@@ -173,7 +173,7 @@ print("""
 ║  Updates   : https://telegram.me/MaximXBots          ║
 ║  Support   : https://telegram.me/MaximXGroup         ║ 
 ║                                                      ║
-║       © 2026 Shinei Nouzen All Rights Reserved       ║                 ║
+║       © 2026 Shinei Nouzen All Rights Reserved       ║ 
 ╚══════════════════════════════════════════════╝
 """)
 
