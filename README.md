@@ -173,7 +173,7 @@ When sending links, you can append:
 
 ## 🆚 **Changelog – Old vs New**
 
-| Aspect                 | Original Telegram Leecher (XronTrix10) | **LeechBot (Shineii86)**                           |
+| **Aspect**                 | **Telegram Leecher**| **LeechBot**                           |
 | ---------------------- | -------------------------------------- | -------------------------------------------------- |
 | **UI / UX**            | Plain text messages                    | Unicode small‑caps styled messages, colored inline buttons |
 | **Code Structure**     | Monolithic, less documented            | Modular, fully typed, clean docstrings             |
