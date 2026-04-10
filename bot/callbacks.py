@@ -1,10 +1,10 @@
 # =============================================================================
 # LeechBot Pro - Callback Query Handlers
 # =============================================================================
-# Project   : LeechBot Pro v3.0
+# Project   : Telegram Leech Bot
 # Developer : Shinei Nouzen
 # GitHub    : https://github.com/Shineii86
-# Telegram  : https://t.me/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 import os
@@ -98,7 +98,7 @@ async def handle_mode_selection(callback_query, mode):
     
     MSG.status_msg = await colab_bot.send_message(
         chat_id=OWNER,
-        text="<b>🚀 STARTING TASK</b>\n\n<i>Initializing download process...</i>",
+        text="<b>🚀 Sᴛᴀʀᴛɪɴɢ Tᴀsᴋ</b>\n\n<i>Initializing Download Process...</i>",
         reply_markup=create_cancel_keyboard(),
     )
     
@@ -123,18 +123,18 @@ async def show_video_settings(callback_query):
     keyboard = InlineKeyboardMarkup([
         [
             InlineKeyboardButton(
-                f"✂️ Split: {BOT.Setting.split_video}", 
+                f"✂️ Sᴘʟɪᴛ: {BOT.Setting.split_video}", 
                 callback_data=f"split-{'false' if BOT.Options.is_split else 'true'}"
             ),
         ],
         [
             InlineKeyboardButton(
-                f"🔄 Convert: {BOT.Setting.convert_video}",
+                f"🔄 Cᴏɴᴠᴇʀᴛ: {BOT.Setting.convert_video}",
                 callback_data=f"convert-{'false' if BOT.Options.convert_video else 'true'}"
             ),
         ],
         [
-            InlineKeyboardButton(f"📹 Format: {BOT.Options.video_out.upper()}", callback_data="format"),
+            InlineKeyboardButton(f"📹 Fᴏʀᴍᴀᴛ: {BOT.Options.video_out.upper()}", callback_data="format"),
         ],
         [
             InlineKeyboardButton("🎬 MP4", callback_data="mp4"),
@@ -142,20 +142,20 @@ async def show_video_settings(callback_query):
         ],
         [
             InlineKeyboardButton(
-                f"🔥 Quality: {BOT.Setting.convert_quality}",
-                callback_data=f"q-{'Low' if BOT.Setting.convert_quality == 'High' else 'High'}"
+                f"🔥 Qᴜᴀʟɪᴛʏ: {BOT.Setting.convert_quality}",
+                callback_data=f"q-{'Lᴏᴡ' if BOT.Setting.convert_quality == 'Hɪɢʜ' else 'High'}"
             ),
         ],
-        [InlineKeyboardButton("⬅️ Back", callback_data="back")],
+        [InlineKeyboardButton("❰ Bᴀᴄᴋ", callback_data="back")],
     ])
     
-    text = f"""<b>🎥 VIDEO SETTINGS</b>
+    text = f"""<b>🎥 Vɪᴅᴇᴏ Sᴇᴛᴛɪɴɢs</b>
 
 <b>Current Configuration:</b>
-• ✂️ <b>Split Videos:</b> <code>{BOT.Setting.split_video}</code>
-• 🔄 <b>Convert:</b> <code>{BOT.Setting.convert_video}</code>
-• 📹 <b>Format:</b> <code>{BOT.Options.video_out.upper()}</code>
-• 🔥 <b>Quality:</b> <code>{BOT.Setting.convert_quality}</code>
+• ✂️ <b>Sᴘʟɪᴛ Vɪᴅᴇᴏ:</b> <code>{BOT.Setting.split_video}</code>
+• 🔄 <b>Cᴏɴᴠᴇʀᴛ:</b> <code>{BOT.Setting.convert_video}</code>
+• 📹 <b>Fᴏʀᴍᴀᴛ:</b> <code>{BOT.Options.video_out.upper()}</code>
+• 🔥 <b>Ҩᴜᴀʟɪᴛʏ:</b> <code>{BOT.Setting.convert_quality}</code>
 
 <i>Tap options to change settings</i>"""
     
@@ -166,24 +166,24 @@ async def show_caption_settings(callback_query):
     """Show caption style settings."""
     keyboard = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("📟 Monospace", callback_data="code-Monospace"),
-            InlineKeyboardButton("🔲 Regular", callback_data="p-Regular"),
+            InlineKeyboardButton("Mᴏɴᴏsᴘᴀᴄᴇ", callback_data="code-Monospace"),
+            InlineKeyboardButton("Rᴇɢᴜʟᴀʀ", callback_data="p-Regular"),
         ],
         [
-            InlineKeyboardButton("🔵 Bold", callback_data="b-Bold"),
-            InlineKeyboardButton("🟣 Italic", callback_data="i-Italic"),
+            InlineKeyboardButton("Bᴏʟᴅ", callback_data="b-Bold"),
+            InlineKeyboardButton("Italic", callback_data="i-Italic"),
         ],
         [
-            InlineKeyboardButton("🟡 Underlined", callback_data="u-Underlined"),
+            InlineKeyboardButton("Uɴᴅᴇʀʟɪɴᴇᴅ", callback_data="u-Underlined"),
         ],
-        [InlineKeyboardButton("⬅️ Back", callback_data="back")],
+        [InlineKeyboardButton("❰ Bᴀᴄᴋ", callback_data="back")],
     ])
     
-    text = f"""<b>📝 CAPTION STYLE</b>
+    text = f"""<b>📝 Cᴀᴘᴛɪᴏɴ Sᴛʏʟᴇ</b>
 
-<b>Current:</b> <code>{BOT.Setting.caption_style}</code>
+<b>Cᴜʀʀᴇɴᴛ:</b> <code>{BOT.Setting.caption_style}</code>
 
-<b>Preview:</b>
+<b>Pʀᴇᴠɪᴇᴡ:</b>
 • <code>Monospace</code>
 • Regular
 • <b>Bold</b>
@@ -199,18 +199,18 @@ async def show_thumbnail_settings(callback_query):
     """Show thumbnail settings."""
     keyboard = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("🗑️ Delete Thumbnail", callback_data="del-thumb"),
+            InlineKeyboardButton("🗑️ Dᴇʟᴇᴛᴇ Tʜᴜᴍʙɴᴀɪʟ", callback_data="del-thumb"),
         ],
         [
-            InlineKeyboardButton("⬅️ Back", callback_data="back"),
+            InlineKeyboardButton("❰ Bᴀᴄᴋ", callback_data="back"),
         ],
     ])
     
-    thumb_status = "✅ Set" if BOT.Setting.thumbnail else "❌ None"
+    thumb_status = "✅ Sᴇᴛ" if BOT.Setting.thumbnail else "❌ None"
     
-    text = f"""<b>🖼️ THUMBNAIL SETTINGS</b>
+    text = f"""<b>🖼️ Tʜᴜᴍʙɴᴀɪʟ Sᴇᴛᴛɪɴɢs</b>
 
-<b>Status:</b> <code>{thumb_status}</code>
+<b>Sᴛᴀᴛᴜs:</b> <code>{thumb_status}</code>
 
 <b>How to set:</b>
 Send any image to the bot and it will be used as thumbnail for video uploads.
