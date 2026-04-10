@@ -1,7 +1,7 @@
 # =============================================================================
 # LeechBot Pro - Google Colab Deployment Script
 # =============================================================================
-# Project   : Telegraph Leech Bot
+# Project   : Telegram Leech Bot
 # Developer : Shinei Nouzen
 # GitHub    : https://github.com/Shineii86
 # Telegram  : https://telegram.me/Shineii86
