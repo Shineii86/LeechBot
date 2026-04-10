@@ -1,0 +1,45 @@
+# =============================================================================
+# LeechBot Pro - Python Dependencies
+# =============================================================================
+# Project   : LeechBot Pro v3.0
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://t.me/Shineii86
+# =============================================================================
+
+# Core Framework
+pyrogram>=2.0.106
+tgcrypto>=1.2.5
+
+# Async Support
+asyncio>=3.4.3
+uvloop>=0.19.0
+aiohttp>=3.9.1
+
+# Google Drive API
+google-api-python-client>=2.115.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.2.0
+
+# Download Engines
+yt-dlp>=2024.1.1
+pymegatools>=1.0.0
+
+# Media Processing
+moviepy>=1.0.3
+opencv-python>=4.9.0.80
+Pillow>=10.2.0
+
+# System Utilities
+psutil>=5.9.8
+GPUtil>=1.4.0
+natsort>=8.4.0
+
+# Time & Date
+pytz>=2024.1
+
+# HTTP Requests
+requests>=2.31.0
+
+# Logging
+rich>=13.7.0
