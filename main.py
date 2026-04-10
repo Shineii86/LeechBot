@@ -1,10 +1,10 @@
 # =============================================================================
 # LeechBot Pro - Google Colab Deployment Script
 # =============================================================================
-# Project   : LeechBot Pro v3.0
+# Project   : Telegraph Leech Bot
 # Developer : Shinei Nouzen
 # GitHub    : https://github.com/Shineii86
-# Telegram  : https://t.me/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 # @title <font color="#00ff00">🚀 LeechBot Pro - Colab Launcher</font>
@@ -163,15 +163,18 @@ Working = False
 clear_output()
 
 print("""
-╔══════════════════════════════════════════════════════════════╗
-║                                                              ║
-║                    🚀 LeechBot Pro v3.0                      ║
-║                                                              ║
-║  Developer : Shinei Nouzen                                   ║
-║  GitHub    : https://github.com/Shineii86                    ║
-║  Telegram  : https://t.me/Shineii86                          ║
-║                                                              ║
-╚══════════════════════════════════════════════════════════════╝
+╔══════════════════════════════════════════════╗
+║                                                      ║
+║                    🚀 LeechBot Pro                   ║
+║                                                      ║
+║  Developer : Shinei Nouzen                           ║
+║  GitHub    : https://github.com/Shineii86            ║
+║  Telegram  : https://telegram.me/Shineii86           ║
+║  Updates   : https://telegram.me/MaximXBots          ║
+║  Support   : https://telegram.me/MaximXGroup         ║ 
+║                                                      ║
+║       © 2026 Shinei Nouzen All Rights Reserved       ║                 ║
+╚══════════════════════════════════════════════╝
 """)
 
 print("✅ Setup complete!")
