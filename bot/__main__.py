@@ -1,10 +1,10 @@
 # =============================================================================
 # LeechBot Pro - Entry Point
 # =============================================================================
-# Project   : LeechBot Pro v3.0
+# Project   : Telegram Leech Bot
 # Developer : Shinei Nouzen
 # GitHub    : https://github.com/Shineii86
-# Telegram  : https://t.me/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 import logging
@@ -18,10 +18,10 @@ from . import callbacks
 def main():
     """Main entry point for the bot."""
     logger.info("=" * 60)
-    logger.info("LeechBot Pro v3.0")
+    logger.info("LeechBot")
     logger.info("Developer: Shinei Nouzen")
     logger.info("GitHub: https://github.com/Shineii86")
-    logger.info("Telegram: https://t.me/Shineii86")
+    logger.info("Telegram: https://telegram.me/Shineii86")
     logger.info("=" * 60)
     logger.info("Starting bot...")
     
