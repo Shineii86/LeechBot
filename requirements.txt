@@ -1,10 +1,10 @@
 # =============================================================================
-# LeechBot Pro - Python Dependencies
+# LeechBot - Python Dependencies
 # =============================================================================
-# Project   : LeechBot Pro v3.0
+# Project   : Telegraph Leech Bot
 # Developer : Shinei Nouzen
 # GitHub    : https://github.com/Shineii86
-# Telegram  : https://t.me/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 # Core Framework
