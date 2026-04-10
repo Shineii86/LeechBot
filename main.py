@@ -7,8 +7,8 @@
 # Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
-# @title <font color="#00ff00">🚀 LeechBot Pro - Colab Launcher</font>
-# @markdown <div align="center"><h1>🚀 LeechBot Pro v3.0</h1></div>
+# @title <font color="#00ff00">🚀 LeechBot - Colab Launcher</font>
+# @markdown <div align="center"><h1>🚀 LeechBot Pro</h1></div>
 # @markdown <div align="center"><b>Advanced Telegram Leeching Bot</b></div>
 # @markdown <br>
 # @markdown <div align="center">Developed by <a href="https://github.com/Shineii86">Shinei Nouzen</a></div>
