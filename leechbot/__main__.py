@@ -536,8 +536,12 @@ async def handle_callback(client, callback_query):
                     InlineKeyboardButton("__Italic__", callback_data="i-Italic"),
                     InlineKeyboardButton("__Underline__", callback_data="u-Underlined"),
                 ],
-                [InlineKeyboardButton("Regular", callback_data="p-Regular")],
-                [InlineKeyboardButton(style_button("❰ Back"), callback_data="back")],
+                [
+                    InlineKeyboardButton("Regular", callback_data="p-Regular")
+                ],
+                [
+                    InlineKeyboardButton(style_button("❰ Back"), callback_data="back")
+                ],
             ]
         )
         
@@ -555,8 +559,12 @@ async def handle_callback(client, callback_query):
     elif data == "thumb":
         keyboard = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton(style_button("🗑️ Delete Thumbnail"), callback_data="del-thumb")],
-                [InlineKeyboardButton(style_button("❰ Back"), callback_data="back")],
+                [
+                    InlineKeyboardButton(style_button("🗑️ Delete Thumbnail"), callback_data="del-thumb")
+                ],
+                [
+                    InlineKeyboardButton(style_button("❰ Back"), callback_data="back")
+                ],
             ]
         )
         
@@ -646,7 +654,11 @@ async def handle_callback(client, callback_query):
             chat_id=OWNER,
             text=style_text("**🚀 Initializing Task...**\n\nPlease Wait While I Prepare Your Download"),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(style_button("Cancel"), callback_data="cancel")]]
+                [
+                    [
+                        InlineKeyboardButton(style_button("Cancel"), callback_data="cancel")
+                    ]
+                ]
             )
         )
         
