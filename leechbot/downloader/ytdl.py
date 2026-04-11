@@ -21,7 +21,6 @@ from os import makedirs, path as ospath
 from leechbot.utility.handler import cancelTask
 from leechbot.utility.variables import YTDL, MSG, Messages, Paths, BOT
 from leechbot.utility.helper import getTime, keyboard, sizeUnit, status_bar, sysINFO
-from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +39,7 @@ async def YTDL_Status(link: str, num: int):
     global Messages, YTDL
     
     name = await get_YT_Name(link)
-    Messages.status_head = style_text(f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n") + f"`{name}`\n"
+    Messages.status_head = f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n`{name}`\n"
     
     # Start YT-DLP in separate thread
     ytdl_thread = Thread(target=YouTubeDL, name="YT-DLP", args=(link,))
@@ -86,7 +85,7 @@ class MyLogger:
         global YTDL
         if "item" in str(msg):
             msgs = msg.split(" ")
-            YTDL.header = style_text(f"\n⏳ `Getting Info {msgs[-3]} of {msgs[-1]}`")
+            YTDL.header = f"\n⏳ `Getting Info {msgs[-3]} of {msgs[-1]}`"
     
     @staticmethod
     def warning(msg):
@@ -157,7 +156,7 @@ def YouTubeDL(url: str):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
             info = ydl.extract_info(url, download=False)
-            YTDL.header = style_text("⏳ `Preparing...`")
+            YTDL.header = "⏳ `Preparing...`"
             
             if info.get("_type") == "playlist":
                 # Playlist download
@@ -202,5 +201,5 @@ async def get_YT_Name(link: str) -> str:
             info = ydl.extract_info(link, download=False)
             return info.get("title", "Unknown")
         except Exception as e:
-            await cancelTask(style_text(f"Cannot Download: {e}"))
+            await cancelTask(f"Cannot Download: {e}")
             return "Unknown"
