@@ -24,7 +24,6 @@ from leechbot.utility.helper import isYtdlComplete, keyboard, sysINFO
 from leechbot.downloader.telegram import TelegramDownload, media_Identifier
 from leechbot.utility.variables import BOT, Transfer, MSG, Messages, BotTimes
 from leechbot.downloader.gdrive import build_service, g_DownLoad, get_Gfolder_size, getFileMetadata, getIDFromURL
-from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +39,7 @@ async def downloadManager(sources: list, is_ytdl: bool):
         sources: list of URLs to download
         is_ytdl: whether to use YT-DLP
     """
-    message = style_text("\n**⏳ Please Wait...**\n`Merging YT-DLP Video...`")
+    message = "\n**⏳ Please Wait...**\n`Merging YT-DLP Video...`"
     BotTimes.task_start = datetime.now()
     
     if is_ytdl:
@@ -85,7 +84,7 @@ async def downloadManager(sources: list, is_ytdl: bool):
                     await terabox_download(link, i + 1)
                 else:
                     # General HTTP/torrent
-                    aria_msg = style_text(f"**⏳ Getting Info...**\n\n`{link}`")
+                    aria_msg = f"**⏳ Getting Info...**\n\n`{link}`"
                     try:
                         await MSG.status_msg.edit_text(
                             text=aria_msg + sysINFO(),
@@ -98,7 +97,7 @@ async def downloadManager(sources: list, is_ytdl: bool):
                     await aria2_Download(link, i + 1)
             
             except Exception as error:
-                await cancelTask(style_text(f"Download Error: {error}"))
+                await cancelTask(f"Download Error: {error}")
                 logger.error(f"Download error: {error}")
                 return
 
@@ -127,7 +126,7 @@ async def calDownSize(sources: list):
                 else:
                     err_msg = f"GDrive error: {e}"
                 logger.error(err_msg)
-                await cancelTask(style_text(err_msg))
+                await cancelTask(err_msg)
             else:
                 if meta.get("mimeType") == "application/vnd.google-apps.folder":
                     Transfer.total_down_size += get_Gfolder_size(file_id)
