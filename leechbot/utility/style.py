@@ -27,17 +27,11 @@ def to_small_caps(text: str) -> str:
     return ''.join(SMALL_CAPS_MAP.get(c, c) for c in text)
 
 def style_text(text: str) -> str:
-    """
-    Convert lowercase letters to small caps while preserving original case.
-    Uppercase letters remain normal ASCII uppercase.
-    """
+    """Convert lowercase letters to small caps while preserving original case."""
     return to_small_caps(text)
 
 def style_title(text: str) -> str:
-    """
-    Convert text to Title Case with small caps for lowercase letters.
-    First letter of each word is normal uppercase, rest small caps.
-    """
+    """Convert text to Title Case with small caps for lowercase letters."""
     words = text.split(' ')
     styled_words = []
     for w in words:
@@ -48,17 +42,6 @@ def style_title(text: str) -> str:
         styled_words.append(styled)
     return ' '.join(styled_words)
 
-def style_button(text: str, button_type: str = "default") -> str:
-    """
-    Style button text with Unicode small caps and emoji prefix.
-    button_type: 'primary', 'success', 'danger', 'default'
-    """
-    emoji_map = {
-        "primary": "🔵",   # Blue circle
-        "success": "🟢",   # Green circle
-        "danger": "🔴",    # Red circle
-        "default": "⚪"    # White circle
-    }
-    emoji = emoji_map.get(button_type, "")
-    styled = style_title(text)
-    return f"{emoji} {styled}" if emoji else styled
+def style_button(text: str) -> str:
+    """Style button text using Title Case with small caps."""
+    return style_title(text)
