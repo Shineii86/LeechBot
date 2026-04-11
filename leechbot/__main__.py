@@ -71,7 +71,7 @@ async def start_command(client, message):
                 InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup", style="success"),
             ],
             [
-                InlineKeyboardButton(style_button("⚙️ Settings"), callback_data="settings_menu", style="primary"),
+                InlineKeyboardButton(style_button("🤖 Bot Settings ⚙️"), callback_data="settings_menu", style="primary"),
             ]
         ]
     )
@@ -232,6 +232,9 @@ Send Any Image To Set It As Thumbnail""")
             [
                 InlineKeyboardButton(style_button("🔔 Updates"), url="https://t.me/MaximXBots", style="success"),
                 InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup", style="success"),
+            ],
+            [
+                InlineKeyboardButton(style_button("🧑‍💻 Developer ✨"), url="https://t.me/Shineii86/", style="primary")
             ]
         ]
     )
@@ -336,7 +339,7 @@ async def cancel_command(client, message):
     """
     if BOT.State.task_going:
         await cancelTask("User cancelled the task")
-        msg = await message.reply_text(style_text("**❌ Task Cancelled**"), quote=True)
+        msg = await message.reply_text(style_text("**🚫 Task Cancelled**"), quote=True)
     else:
         msg = await message.reply_text(style_text("**⚠️ No Active Task To Cancel**"), quote=True)
     
@@ -408,12 +411,16 @@ async def handle_url(client, message):
         
         keyboard = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton(style_button("📄 Regular"), callback_data="normal", style="primary")],
+                [
+                    InlineKeyboardButton(style_button("📄 Regular ✨"), callback_data="normal", style="primary")
+                ],
                 [
                     InlineKeyboardButton(style_button("🗜️ Compress"), callback_data="zip", style="success"),
-                    InlineKeyboardButton(style_button("📂 Extract"), callback_data="unzip", style="success"),
+                    InlineKeyboardButton(style_button("Extract 📂"), callback_data="unzip", style="success"),
                 ],
-                [InlineKeyboardButton(style_button("🔄 Unzip+Zip"), callback_data="undzip", style="primary")],
+                [
+                    InlineKeyboardButton(style_button("🔄 Unzip+Zip ✨"), callback_data="undzip", style="primary")
+                ],
             ]
         )
         
@@ -462,7 +469,7 @@ async def handle_callback(client, callback_query):
             chat_id=OWNER,
             text=style_text("**🚀 Initializing Task...**\n\nPlease Wait While I Prepare Your Download"),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(style_button("❌ Cancel"), callback_data="cancel", style="danger")]]
+                [[InlineKeyboardButton(style_button("Cancel"), callback_data="cancel", style="danger")]]
             )
         )
         
@@ -488,21 +495,23 @@ async def handle_callback(client, callback_query):
             [
                 [
                     InlineKeyboardButton(style_button("✂️ Split"), callback_data="split-true", style="primary"),
-                    InlineKeyboardButton(style_button("🗜️ Zip"), callback_data="split-false", style="primary"),
+                    InlineKeyboardButton(style_button("Zip 🗜️"), callback_data="split-false", style="primary"),
                 ],
                 [
                     InlineKeyboardButton(style_button("🔄 Convert"), callback_data="convert-true", style="success"),
-                    InlineKeyboardButton(style_button("⏭️ Skip"), callback_data="convert-false", style="success"),
+                    InlineKeyboardButton(style_button("Skip ⏭️"), callback_data="convert-false", style="success"),
                 ],
                 [
                     InlineKeyboardButton("🎬 Mp4", callback_data="mp4", style="primary"),
-                    InlineKeyboardButton("📼 Mkv", callback_data="mkv", style="primary"),
+                    InlineKeyboardButton("Mkv 📼", callback_data="mkv", style="primary"),
                 ],
                 [
-                    InlineKeyboardButton(style_button("🔴 High Quality"), callback_data="q-High", style="success"),
-                    InlineKeyboardButton(style_button("🔵 Low Quality"), callback_data="q-Low", style="success"),
+                    InlineKeyboardButton(style_button("👍 High Quality"), callback_data="q-High", style="success"),
+                    InlineKeyboardButton(style_button("Low Quality 👎"), callback_data="q-Low", style="success"),
                 ],
-                [InlineKeyboardButton(style_button("❰ Back"), callback_data="back", style="danger")],
+                [
+                    InlineKeyboardButton(style_button("❰ Back"), callback_data="back", style="danger")
+                ],
             ]
         )
         
@@ -547,11 +556,11 @@ async def handle_callback(client, callback_query):
         keyboard = InlineKeyboardMarkup(
             [
                 [InlineKeyboardButton(style_button("🗑️ Delete Thumbnail"), callback_data="del-thumb", style="danger")],
-                [InlineKeyboardButton(style_button("⏎ Back"), callback_data="back", style="primary")],
+                [InlineKeyboardButton(style_button("❰ Back"), callback_data="back", style="primary")],
             ]
         )
         
-        thmb_status = style_text("✅ Set") if BOT.Setting.thumbnail else style_text("❌ None")
+        thmb_status = style_text("✅ Set") if BOT.Setting.thumbnail else style_text("❎ None")
         
         await callback_query.message.edit_text(
             style_text(f"**🖼️ Thumbnail Settings**\n\n"
@@ -637,7 +646,7 @@ async def handle_callback(client, callback_query):
             chat_id=OWNER,
             text=style_text("**🚀 Initializing Task...**\n\nPlease Wait While I Prepare Your Download"),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(style_button("❌ Cancel"), callback_data="cancel", style="danger")]]
+                [[InlineKeyboardButton(style_button("Cancel"), callback_data="cancel", style="danger")]]
             )
         )
         
@@ -674,7 +683,7 @@ async def handle_photo(client, message):
         await msg.edit_text(style_text("**✅ Thumbnail Set Successfully**"))
         await message.delete()
     else:
-        await msg.edit_text(style_text("**❌ Failed To Set Thumbnail**"))
+        await msg.edit_text(style_text("**❎ Failed To Set Thumbnail**"))
     
     await sleep(15)
     await message_deleter(message, msg)
@@ -685,7 +694,7 @@ async def handle_photo(client, message):
 # =============================================================================
 logger.info("=" * 60)
 logger.info("LeechBot started successfully")
-logger.info("Developer: Shinei Nouzen (@Shineii86)")
+logger.info("Developer: Shinei Nouzen")
 logger.info("GitHub: https://github.com/Shineii86/LeechBot")
 logger.info("=" * 60)
 
