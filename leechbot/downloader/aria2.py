@@ -1,16 +1,17 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Aria2c Downloader
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ᴀʀɪᴀ2ᴄ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ᴍᴏᴅᴜʟᴇ
+Aria2c downloader module.
 
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ʜᴀɴᴅʟᴇs ᴅᴏᴡɴʟᴏᴀᴅs ᴜsɪɴɢ ᴀʀɪᴀ2ᴄ, ɪɴᴄʟᴜᴅɪɴɢ ʜᴛᴛᴘ/ʜᴛᴛᴘs ʟɪɴᴋs,
-ᴛᴏʀʀᴇɴᴛs, ᴀɴᴅ ᴍᴀɢɴᴇᴛ ʟɪɴᴋs. ɪᴛ ᴘʀᴏᴠɪᴅᴇs ʀᴇᴀʟ-ᴛɪᴍᴇ ᴘʀᴏɢʀᴇss ᴜᴘᴅᴀᴛᴇs.
+Handles downloads using aria2c, including HTTP/HTTPS links, torrents, and magnet links.
+Provides real-time progress updates.
 """
 
 import re
@@ -21,12 +22,13 @@ import sys
 from datetime import datetime
 from leechbot.utility.helper import sizeUnit, status_bar
 from leechbot.utility.variables import BOT, Aria2c, Paths, Messages, BotTimes
+from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-#  ᴛʀᴀᴄᴋᴇʀ ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴ
+# Tracker Configuration
 # =============================================================================
 ARIA2_DIR = os.path.expanduser("~/.aria2")
 TRACKER_FILES = [
@@ -36,7 +38,7 @@ TRACKER_FILES = [
     ("nohttp_aria2.txt", "https://cf.trackerslist.com/nohttp_aria2.txt"),
 ]
 
-# ɪɴɪᴛɪᴀʟɪᴢᴇ ᴛʀᴀᴄᴋᴇʀs
+# Initialize trackers
 os.makedirs(ARIA2_DIR, exist_ok=True)
 trackers = []
 
@@ -54,33 +56,33 @@ TRACKER_STRING = ",".join(trackers)
 
 
 # =============================================================================
-#  ʟɪɴᴋ ᴠᴀʟɪᴅᴀᴛɪᴏɴ
+# Link Validation
 # =============================================================================
 def is_torrent_or_magnet(link: str) -> bool:
     """
-    ᴄʜᴇᴄᴋ ɪғ ʟɪɴᴋ ɪs ᴀ ᴛᴏʀʀᴇɴᴛ ᴏʀ ᴍᴀɢɴᴇᴛ ʟɪɴᴋ.
+    Check if link is a torrent or magnet link.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ᴜʀʟ ᴛᴏ ᴄʜᴇᴄᴋ
+    Args:
+        link: URL to check
     
-    ʀᴇᴛᴜʀɴs:
-        ʙᴏᴏʟ: ᴛʀᴜᴇ ɪғ ᴛᴏʀʀᴇɴᴛ/ᴍᴀɢɴᴇᴛ
+    Returns:
+        bool: True if torrent/magnet
     """
     return link.endswith(".torrent") or link.startswith("magnet:")
 
 
 # =============================================================================
-#  ʟɪɴᴋ ᴏᴘᴛɪᴏɴ ᴘᴀʀsɪɴɢ
+# Link Option Parsing
 # =============================================================================
 def parse_link_options(link: str):
     """
-    ᴘᴀʀsᴇ ʟɪɴᴋ ғᴏʀ ᴄᴜsᴛᴏᴍ ᴀʀɪᴀ2ᴄ ᴏᴘᴛɪᴏɴs.
+    Parse link for custom aria2c options.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ᴜʀʟ ᴡɪᴛʜ ᴏᴘᴛɪᴏɴᴀʟ ᴀʀɢᴜᴍᴇɴᴛs
+    Args:
+        link: URL with optional arguments
     
-    ʀᴇᴛᴜʀɴs:
-        ᴛᴜᴘʟᴇ: (ᴜʀʟ, ʜᴇᴀᴅᴇʀs, ᴏᴜᴛᴘᴜᴛ_ɴᴀᴍᴇ)
+    Returns:
+        tuple: (url, headers, output_name)
     """
     import shlex
     
@@ -109,29 +111,29 @@ def parse_link_options(link: str):
 
 
 # =============================================================================
-#  ᴍᴀɪɴ ᴅᴏᴡɴʟᴏᴀᴅ ғᴜɴᴄᴛɪᴏɴ
+# Main Download Function
 # =============================================================================
 async def aria2_Download(link: str, num: int):
     """
-    ᴅᴏᴡɴʟᴏᴀᴅ ғɪʟᴇ ᴜsɪɴɢ ᴀʀɪᴀ2ᴄ.
+    Download file using aria2c.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ᴜʀʟ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ
-        ɴᴜᴍ: ʟɪɴᴋ ɴᴜᴍʙᴇʀ ғᴏʀ ᴅɪsᴘʟᴀʏ
+    Args:
+        link: URL to download
+        num: link number for display
     """
     global BotTimes, Messages
     
-    # ᴘᴀʀsᴇ ʟɪɴᴋ ᴏᴘᴛɪᴏɴs
+    # Parse link options
     url, headers, out = parse_link_options(link)
     if url is None:
-        logger.error("ɴᴏ ᴠᴀʟɪᴅ ᴜʀʟ ғᴏᴜɴᴅ ɪɴ ʟɪɴᴋ")
+        logger.error("No valid URL found in link")
         return
     
     name_d = get_Aria2c_Name(url if out is None else out)
     BotTimes.task_start = datetime.now()
-    Messages.status_head = f"**📥 ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ** `ʟɪɴᴋ {str(num).zfill(2)}`\n\n**🏷️ ɴᴀᴍᴇ:** `{name_d}`\n"
+    Messages.status_head = style_text(f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n**🏷️ Name:** ") + f"`{name_d}`\n"
     
-    # ʙᴜɪʟᴅ ᴀʀɪᴀ2ᴄ ᴄᴏᴍᴍᴀɴᴅ
+    # Build aria2c command
     if is_torrent_or_magnet(url):
         command = [
             "aria2c",
@@ -165,19 +167,19 @@ async def aria2_Download(link: str, num: int):
             "-d", Paths.down_path,
         ]
     
-    # ᴀᴅᴅ ʜᴇᴀᴅᴇʀs
+    # Add headers
     for h in headers:
         command += ["--header", h]
     
-    # ᴀᴅᴅ ᴄᴜsᴛᴏᴍ ᴏᴜᴛᴘᴜᴛ ɴᴀᴍᴇ
+    # Add custom output name
     if out:
         command += ["-o", out]
     
     command.append(url)
     
-    logger.info(f"ᴀʀɪᴀ2ᴄ ᴄᴏᴍᴍᴀɴᴅ: {' '.join(command)}")
+    logger.info(f"Aria2c command: {' '.join(command)}")
     
-    # ᴇxᴇᴄᴜᴛᴇ ᴅᴏᴡɴʟᴏᴀᴅ
+    # Execute download
     proc = subprocess.Popen(
         command,
         bufsize=0,
@@ -185,43 +187,43 @@ async def aria2_Download(link: str, num: int):
         stderr=subprocess.PIPE
     )
     
-    # ʀᴇᴀᴅ ᴏᴜᴛᴘᴜᴛ ɪɴ ʀᴇᴀʟ-ᴛɪᴍᴇ
+    # Read output in real-time
     while True:
         output = proc.stdout.readline()
         if output == b"" and proc.poll() is not None:
             break
         if output:
-            logger.info(f"ᴀʀɪᴀ2ᴄ: {output.decode('utf-8').strip()}")
+            logger.info(f"Aria2c: {output.decode('utf-8').strip()}")
             await on_output(output.decode("utf-8"))
     
-    # ᴄʜᴇᴄᴋ ᴇxɪᴛ ᴄᴏᴅᴇ
+    # Check exit code
     exit_code = proc.wait()
     error_output = proc.stderr.read()
     
     if exit_code != 0:
-        logger.error(f"ᴀʀɪᴀ2ᴄ sᴛᴅᴇʀʀ: {error_output.decode('utf-8').strip()}")
+        logger.error(f"Aria2c stderr: {error_output.decode('utf-8').strip()}")
         if exit_code == 3:
-            logger.error(f"ʀᴇsᴏᴜʀᴄᴇ ɴᴏᴛ ғᴏᴜɴᴅ: {link}")
+            logger.error(f"Resource not found: {link}")
         elif exit_code == 9:
-            logger.error("ɪɴsᴜғғɪᴄɪᴇɴᴛ ᴅɪsᴋ sᴘᴀᴄᴇ")
+            logger.error("Insufficient disk space")
         elif exit_code == 24:
-            logger.error("ʜᴛᴛᴘ ᴀᴜᴛʜᴏʀɪᴢᴀᴛɪᴏɴ ғᴀɪʟᴇᴅ")
+            logger.error("HTTP authorization failed")
         else:
-            logger.error(f"ᴀʀɪᴀ2ᴄ ғᴀɪʟᴇᴅ ᴡɪᴛʜ ᴄᴏᴅᴇ {exit_code}")
+            logger.error(f"Aria2c failed with code {exit_code}")
 
 
 # =============================================================================
-#  ɢᴇᴛ ғɪʟᴇɴᴀᴍᴇ
+# Get Filename
 # =============================================================================
 def get_Aria2c_Name(link: str) -> str:
     """
-    ɢᴇᴛ ғɪʟᴇɴᴀᴍᴇ ғʀᴏᴍ ʟɪɴᴋ ᴜsɪɴɢ ᴀʀɪᴀ2ᴄ.
+    Get filename from link using aria2c dry-run.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ᴜʀʟ ᴛᴏ ᴄʜᴇᴄᴋ
+    Args:
+        link: URL to check
     
-    ʀᴇᴛᴜʀɴs:
-        sᴛʀ: ғɪʟᴇɴᴀᴍᴇ
+    Returns:
+        str: filename
     """
     if BOT.Options.custom_name:
         return BOT.Options.custom_name
@@ -234,20 +236,20 @@ def get_Aria2c_Name(link: str) -> str:
         filename = stdout_str.split("complete: ")[-1].split("\n")[0]
         name = filename.split("/")[-1]
     except Exception:
-        name = "ᴜɴᴋɴᴏᴡɴ"
+        name = "Unknown"
     
-    return name if name else "ᴜɴᴋɴᴏᴡɴ"
+    return name if name else "Unknown"
 
 
 # =============================================================================
-#  ᴘʀᴏɢʀᴇss ᴘᴀʀsɪɴɢ
+# Progress Parsing
 # =============================================================================
 async def on_output(output: str):
     """
-    ᴘᴀʀsᴇ ᴀʀɪᴀ2ᴄ ᴏᴜᴛᴘᴜᴛ ᴀɴᴅ ᴜᴘᴅᴀᴛᴇ sᴛᴀᴛᴜs ʙᴀʀ.
+    Parse aria2c output and update status bar.
     
-    ᴀʀɢs:
-        ᴏᴜᴛᴘᴜᴛ: ᴀʀɪᴀ2ᴄ ᴏᴜᴛᴘᴜᴛ ʟɪɴᴇ
+    Args:
+        output: aria2c output line
     """
     if not hasattr(Aria2c, "link_info"):
         Aria2c.link_info = False
@@ -265,9 +267,9 @@ async def on_output(output: str):
             downloaded_bytes = parts[1].split("/")[0]
             eta = parts[4].split(":")[1][:-1]
     except Exception as e:
-        logger.error(f"ᴘᴀʀsɪɴɢ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Parsing error: {e}")
     
-    # ᴇxᴛʀᴀᴄᴛ ɴᴜᴍᴇʀɪᴄ ᴠᴀʟᴜᴇs
+    # Extract numeric values
     try:
         percentage = float(re.findall(r"\d+\.\d+|\d+", progress_percentage)[0])
     except Exception:
@@ -279,17 +281,17 @@ async def on_output(output: str):
     except Exception:
         down, down_unit = 0, "B"
     
-    # ᴄᴀʟᴄᴜʟᴀᴛᴇ sᴘᴇᴇᴅ ᴍᴜʟᴛɪᴘʟɪᴇʀ
+    # Calculate speed multiplier
     spd_map = {"G": 3, "M": 2, "K": 1}
     spd = spd_map.get(down_unit[0], 0) if down_unit else 0
     
     elapsed = (datetime.now() - BotTimes.task_start).seconds
     
-    # ᴄʜᴇᴄᴋ ғᴏʀ ᴅᴇᴀᴅ ʟɪɴᴋ
+    # Check for dead link
     if elapsed >= 270 and not Aria2c.link_info:
-        logger.error("ғᴀɪʟᴇᴅ ᴛᴏ ɢᴇᴛ ᴅᴏᴡɴʟᴏᴀᴅ ɪɴғᴏ - ᴘᴏssɪʙʟᴇ ᴅᴇᴀᴅ ʟɪɴᴋ")
+        logger.error("Failed to get download info - possible dead link")
     
-    # ᴜᴘᴅᴀᴛᴇ sᴛᴀᴛᴜs ɪғ ᴡᴇ ʜᴀᴠᴇ ɪɴғᴏ
+    # Update status if we have info
     if total_size != "0B":
         Aria2c.link_info = True
         current_speed = (down * (1024 ** spd)) / max(elapsed, 1)
@@ -302,5 +304,5 @@ async def on_output(output: str):
             eta,
             downloaded_bytes,
             total_size,
-            "ᴀʀɪᴀ2ᴄ ⚡"
+            "Aria2c ⚡"
         )
