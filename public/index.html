@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeechBot - Advanced Telegram File Transloader</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.fontsource.org/fonts/inter/main.css" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+      },
+      colors: {
+        primary: '#6366f1',
+        secondary: '#8b5cf6',
+        accent: '#ec4899',
+        surface: 'rgba(17, 24, 39, 0.8)',
+        'surface-light': 'rgba(31, 41, 55, 0.9)',
+      },
+      animation: {
+        'gradient': 'gradient 8s linear infinite',
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'shimmer': 'shimmer 2s linear infinite',
+        'slide-up': 'slideUp 0.5s ease-out',
+        'fade-in': 'fadeIn 0.5s ease-out',
+        'progress': 'progress 2s ease-in-out infinite',
+      },
+      keyframes: {
+        gradient: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        progress: {
+          '0%': { width: '0%' },
+          '50%': { width: '70%' },
+          '80%': { width: '85%' },
+          '100%': { width: '95%' },
+        }
+      }
+    }
+  }
+}
+</script>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #0a0a0f;
+    color: #e5e7eb;
+    overflow-x: hidden;
+  }
+
+  .bg-animated {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: 
+      radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 40%),
+      radial-gradient(circle at 40% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 45%),
+      #0a0a0f;
+  }
+
+  .particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(99, 102, 241, 0.6);
+    border-radius: 50%;
+    animation: float-particle linear infinite;
+  }
+
+  @keyframes float-particle {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+  }
+
+  .glass-card {
+    background: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .input-field {
+    background: rgba(31, 41, 55, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), 0 0 20px rgba(99, 102, 241, 0.1);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .progress-bar {
+    background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899, #6366f1);
+    background-size: 300% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .status-dot.active {
+    background: #10b981;
+    box-shadow: 0 0 10px #10b981;
+    animation: pulse 2s infinite;
+  }
+
+  .status-dot.inactive {
+    background: #ef4444;
+  }
+
+  .status-dot.processing {
+    background: #f59e0b;
+    box-shadow: 0 0 10px #f59e0b;
+    animation: pulse 1.5s infinite;
+  }
+
+  .code-block {
+    background: #0d1117;
+    border: 1px solid #21262d;
+  }
+
+  .tooltip {
+    position: relative;
+  }
+
+  .tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+  }
+
+  .glow-text {
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+  }
+
+  .step-connector {
+    position: absolute;
+    top: 50%;
+    right: -20px;
+    width: 20px;
+    height: 2px;
+    background: rgba(99, 102, 241, 0.3);
+  }
+
+  .tab-active {
+    border-bottom: 2px solid #6366f1;
+    color: #6366f1;
+  }
+
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  .loading-dots::after {
+    content: '';
+    animation: dots 1.5s steps(4, end) infinite;
+  }
+
+  @keyframes dots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: #6b7280;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #111827;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+  }
+
+  .copy-btn {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .code-block:hover .copy-btn {
+    opacity: 1;
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .spin-slow {
+    animation: spin-slow 3s linear infinite;
+  }
+
+  .credential-item {
+    transition: all 0.2s ease;
+  }
+
+  .credential-item:hover {
+    background: rgba(99, 102, 241, 0.1);
+  }
+
+  .toggle-switch {
+    position: relative;
+    width: 48px;
+    height: 24px;
+    background: #374151;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .toggle-switch.active {
+    background: #6366f1;
+  }
+
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s;
+  }
+
+  .toggle-switch.active::after {
+    left: 26px;
+  }
+</style>
+</head>
+<body>
+<div class="bg-animated"></div>
+<div class="particles" id="particles"></div>
+
+<div id="app" class="min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="glass-card sticky top-0 z-50 border-b border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="relative">
+            <div class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+            </div>
+            <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-gray-900"></div>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold glow-text">LeechBot</h1>
+            <p class="text-xs text-gray-400">Advanced Telegram File Transloader</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <div class="hidden md:flex items-center space-x-2 text-sm">
+            <span class="status-dot active"></span>
+            <span class="text-gray-300">v2.0</span>
+          </div>
+          <a href="https://github.com/Shineii86/LeechBot" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </a>
+          <a href="https://t.me/Shineii86" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Status Banner -->
+    <div id="statusBanner" class="mb-6 p-4 rounded-xl glass-card flex items-center justify-between animate-slide-up">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+          <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-medium text-white">Ready to Configure</h3>
+          <p class="text-sm text-gray-400">Enter your credentials below to deploy LeeBot</p>
+        </div>
+      </div>
+      <button onclick="showDocumentation()" class="text-sm text-primary hover:text-secondary transition-colors flex items-center space-x-1">
+        <span>View Docs</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="mb-6 border-b border-gray-800 animate-fade-in">
+      <div class="flex space-x-8">
+        <button onclick="switchTab('config')" id="tab-config" class="pb-3 text-sm font-medium tab-active transition-colors">
+          Configuration
+        </button>
+        <button onclick="switchTab('deploy')" id="tab-deploy" class="pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors">
+          Deploy
+        </button>
+        <button onclick="switchTab('logs')" id="tab-logs" class="pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors">
+          Logs
+        </button>
+        <button onclick="switchTab('settings')" id="tab-settings" class="pb-3 text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors">
+          Settings
+        </button>
+      </div>
+    </div>
+
+    <!-- Configuration Tab -->
+    <div id="content-config" class="space-y-6 animate-slide-up">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- API Configuration -->
+        <div class="glass-card rounded-xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                </svg>
+              </div>
+              <h2 class="text-lg font-semibold">API Configuration</h2>
+            </div>
+            <span class="text-xs text-gray-500">Step 1/2</span>
+          </div>
+
+          <div class="space-y-4">
+            <div class="group">
+              <label class="flex items-center justify-between text-sm font-medium text-gray-300 mb-2">
+                API ID
+                <span class="tooltip cursor-help" data-tooltip="Get from my.telegram.org">
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </span>
+              </label>
+              <input type="number" id="apiId" class="input-field w-full px-4 py-3 rounded-lg text-white font-mono" placeholder="12345678">
+            </div>
+
+            <div class="group">
+              <label class="flex items-center justify-between text-sm font-medium text-gray-300 mb-2">
+                API Hash
+                <span class="tooltip cursor-help" data-tooltip="Get from my.telegram.org">
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </span>
+              </label>
+              <div class="relative">
+                <input type="password" id="apiHash" class="input-field w-full px-4 py-3 rounded-lg text-white font-mono pr-12" placeholder="abcdefghijklmnopqrstuvwxyz123456">
+                <button onclick="toggleVisibility('apiHash')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+            <div class="flex items-start space-x-2">
+              <svg class="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+              <p class="text-xs text-yellow-200">Keep your API credentials secure. Never share them publicly.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bot Configuration -->
+        <div class="glass-card rounded-xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-secondary/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <h2 class="text-lg font-semibold">Bot Configuration</h2>
+            </div>
+            <span class="text-xs text-gray-500">Step 2/2</span>
+          </div>
+
+          <div class="space-y-4">
+            <div class="group">
+              <label class="flex items-center justify-between text-sm font-medium text-gray-300 mb-2">
+                Bot Token
+                <span class="tooltip cursor-help" data-tooltip="Get from @BotFather">
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </span>
+              </label>
+              <div class="relative">
+                <input type="password" id="botToken" class="input-field w-full px-4 py-3 rounded-lg text-white font-mono pr-12" placeholder="123456789:ABCdefGHIjklMNOpqrSTUvwxYZ">
+                <button onclick="toggleVisibility('botToken')" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="flex items-center justify-between text-sm font-medium text-gray-300 mb-2">
+                  User ID
+                  <span class="tooltip cursor-help" data-tooltip="Your Telegram user ID">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </span>
+                </label>
+                <input type="number" id="userId" class="input-field w-full px-4 py-3 rounded-lg text-white font-mono" placeholder="987654321">
+              </div>
+              <div>
+                <label class="flex items-center justify-between text-sm font-medium text-gray-300 mb-2">
+                  Dump ID
+                  <span class="tooltip cursor-help" data-tooltip="Channel/Group ID for logs">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </span>
+                </label>
+                <input type="text" id="dumpId" class="input-field w-full px-4 py-3 rounded-lg text-white font-mono" placeholder="-1001234567890">
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+            <div class="flex items-start space-x-2">
+              <svg class="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <div class="text-xs text-blue-200">
+                <p>Dump ID format: <code class="bg-blue-500/20 px-1 py-0.5 rounded">-100</code> + channel ID</p>
+                <p class="mt-1">Auto-formats 10-digit IDs with -100 prefix</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="glass-card rounded-xl p-6">
+        <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button onclick="validateAndGenerate()" class="btn-primary px-4 py-3 rounded-lg text-white font-medium flex items-center justify-center space-x-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span>Generate Script</span>
+          </button>
+          
+          <button onclick="exportCredentials()" class="px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white font-medium flex items-center justify-center space-x-2 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <span>Export JSON</span>
+          </button>
+
+          <button onclick="importCredentials()" class="px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white font-medium flex items-center justify-center space-x-2 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
+            <span>Import Config</span>
+          </button>
+
+          <button onclick="clearForm()" class="px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white font-medium flex items-center justify-center space-x-2 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            <span>Clear All</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deploy Tab -->
+    <div id="content-deploy" class="hidden space-y-6">
+      <div class="glass-card rounded-xl p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-semibold">Generated Python Script</h2>
+          <div class="flex space-x-2">
+            <button onclick="copyToClipboard('generatedCode')" class="px-3 py-2 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 transition-colors flex items-center space-x-1">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+              <span>Copy</span>
+            </button>
+          </div>
+        </div>
+        <div class="relative">
+          <pre id="generatedCode" class="code-block rounded-lg p-4 overflow-x-auto text-sm font-mono text-gray-300 max-h-96 overflow-y-auto">
+# Generate the script by clicking "Generate Script" in the Configuration tab</pre>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-xl p-6">
+        <h3 class="text-lg font-semibold mb-4">Deployment Status</h3>
+        <div id="deploymentStatus" class="space-y-3">
+          <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+            <div class="flex items-center space-x-3">
+              <div class="w-2 h-2 rounded-full bg-gray-600" id="status-clone"></div>
+              <span class="text-sm">Clone Repository</span>
+            </div>
+            <span class="text-xs text-gray-500" id="time-clone">--</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+            <div class="flex items-center space-x-3">
+              <div class="w-2 h-2 rounded-full bg-gray-600" id="status-deps"></div>
+              <span class="text-sm">Install Dependencies</span>
+            </div>
+            <span class="text-xs text-gray-500" id="time-deps">--</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+            <div class="flex items-center space-x-3">
+              <div class="w-2 h-2 rounded-full bg-gray-600" id="status-config"></div>
+              <span class="text-sm">Save Configuration</span>
+            </div>
+            <span class="text-xs text-gray-500" id="time-config">--</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+            <div class="flex items-center space-x-3">
+              <div class="w-2 h-2 rounded-full bg-gray-600" id="status-run"></div>
+              <span class="text-sm">Start Bot</span>
+            </div>
+            <span class="text-xs text-gray-500" id="time-run">--</span>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <div class="flex items-center justify-between text-sm text-gray-400 mb-2">
+            <span>Progress</span>
+            <span id="progressText">0%</span>
+          </div>
+          <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+            <div id="progressBar" class="progress-bar h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <button onclick="simulateDeployment()" class="btn-primary mt-4 w-full py-3 rounded-lg text-white font-medium">
+          Start Deployment
+        </button>
+      </div>
+    </div>
+
+    <!-- Logs Tab -->
+    <div id="content-logs" class="hidden space-y-6">
+      <div class="glass-card rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold">System Logs</h2>
+          <div class="flex space-x-2">
+            <button onclick="clearLogs()" class="px-3 py-1 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 transition-colors">
+              Clear Logs
+            </button>
+            <button onclick="toggleAutoScroll()" class="px-3 py-1 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 transition-colors flex items-center space-x-1">
+              <span>Auto-scroll</span>
+              <div id="autoScrollToggle" class="toggle-switch active"></div>
+            </button>
+          </div>
+        </div>
+        <div id="logContainer" class="code-block rounded-lg p-4 h-96 overflow-y-auto font-mono text-sm space-y-1">
+          <div class="text-gray-500">Waiting for deployment to start...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="content-settings" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card rounded-xl p-6">
+          <h3 class="text-lg font-semibold mb-4">Application Settings</h3>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="font-medium">Auto Keep-Alive</p>
+                <p class="text-sm text-gray-400">Prevent Colab from disconnecting</p>
+              </div>
+              <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="font-medium">Auto-Format Dump ID</p>
+                <p class="text-sm text-gray-400">Add -100 prefix automatically</p>
+              </div>
+              <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="font-medium">Verbose Logging</p>
+                <p class="text-sm text-gray-400">Show detailed deployment logs</p>
+              </div>
+              <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="font-medium">Auto-Clean Session</p>
+                <p class="text-sm text-gray-400">Remove old session files before run</p>
+              </div>
+              <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-xl p-6">
+          <h3 class="text-lg font-semibold mb-4">Developer Information</h3>
+          <div class="space-y-3">
+            <div class="credential-item flex items-center justify-between p-3 rounded-lg">
+              <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-medium">GitHub</p>
+                  <p class="text-xs text-gray-400">Source Code</p>
+                </div>
+              </div>
+              <a href="https://github.com/Shineii86/LeechBot" target="_blank" class="text-primary hover:underline text-sm">View Repo</a>
+            </div>
+
+            <div class="credential-item flex items-center justify-between p-3 rounded-lg">
+              <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-medium">Telegram</p>
+                  <p class="text-xs text-gray-400">@Shineii86</p>
+                </div>
+              </div>
+              <a href="https://t.me/Shineii86" target="_blank" class="text-primary hover:underline text-sm">Contact</a>
+            </div>
+
+            <div class="credential-item flex items-center justify-between p-3 rounded-lg">
+              <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-medium">Version</p>
+                  <p class="text-xs text-gray-400">2.0.0</p>
+                </div>
+              </div>
+              <span class="text-xs text-gray-500">Latest</span>
+            </div>
+
+            <div class="credential-item flex items-center justify-between p-3 rounded-lg">
+              <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-medium">License</p>
+                  <p class="text-xs text-gray-400">MIT</p>
+                </div>
+              </div>
+              <span class="text-xs text-green-400">Open Source</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-800 mt-8 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between">
+        <p class="text-sm text-gray-500">
+          Copyright © 2026 Shinei Nouzen. All Rights Reserved.
+        </p>
+        <div class="flex items-center space-x-4 mt-4 md:mt-0">
+          <span class="text-sm text-gray-500">Built with ❤️ for the community</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- Notification Container -->
+<div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+<!-- Modal -->
+<div id="modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="glass-card rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto animate-slide-up">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold">Documentation</h3>
+      <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="space-y-4 text-sm text-gray-300">
+      <div class="p-4 bg-gray-800/50 rounded-lg">
+        <h4 class="font-semibold text-white mb-2">Getting Started</h4>
+        <p class="text-gray-400">LeechBot is an advanced Telegram file transloader that allows you to download and upload files via Telegram. This interface helps you configure and deploy the bot on Google Colab.</p>
+      </div>
+      <div class="space-y-2">
+        <h4 class="font-semibold text-white">Required Credentials:</h4>
+        <ul class="list-disc list-inside space-y-1 text-gray-400">
+          <li><span class="text-primary">API ID & API Hash:</span> Obtain from <a href="https://my.telegram.org" target="_blank" class="text-primary hover:underline">my.telegram.org</a></li>
+          <li><span class="text-primary">Bot Token:</span> Create via <a href="https://t.me/BotFather" target="_blank" class="text-primary hover:underline">@BotFather</a> on Telegram</li>
+          <li><span class="text-primary">User ID:</span> Your personal Telegram user ID</li>
+          <li><span class="text-primary">Dump ID:</span> Channel or group ID for logging (format: -100XXXXXXXXXX)</li>
+        </ul>
+      </div>
+      <div class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+        <h4 class="font-semibold text-yellow-200 mb-2">⚠️ Important</h4>
+        <ul class="list-disc list-inside space-y-1 text-yellow-200/80">
+          <li>Never share your API credentials or bot token publicly</li>
+          <li>Google Colab runtime will disconnect after inactivity</li>
+          <li>Keep the keep-alive mechanism active during deployment</li>
+          <li>Ensure your bot has appropriate permissions in the dump channel</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Initialize particles
+  function createParticles() {
+    const container = document.getElementById('particles');
+    const count = 30;
+    for (let i = 0; i < count; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+      particle.style.animationDelay = (Math.random() * 10) + 's';
+      particle.style.opacity = Math.random() * 0.5 + 0.2;
+      container.appendChild(particle);
+    }
+  }
+  createParticles();
+
+  // Tab switching
+  function switchTab(tabName) {
+    const tabs = ['config', 'deploy', 'logs', 'settings'];
+    tabs.forEach(t => {
+      document.getElementById(`tab-${t}`).classList.remove('tab-active', 'text-primary');
+      document.getElementById(`tab-${t}`).classList.add('text-gray-400');
+      document.getElementById(`content-${t}`).classList.add('hidden');
+    });
+    
+    document.getElementById(`tab-${tabName}`).classList.add('tab-active');
+    document.getElementById(`tab-${tabName}`).classList.remove('text-gray-400');
+    document.getElementById(`content-${tabName}`).classList.remove('hidden');
+    document.getElementById(`content-${tabName}`).classList.add('animate-slide-up');
+  }
+
+  // Toggle password visibility
+  function toggleVisibility(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  // Toggle setting
+  function toggleSetting(el) {
+    el.classList.toggle('active');
+  }
+
+  // Auto-scroll toggle
+  let autoScroll = true;
+  function toggleAutoScroll() {
+    autoScroll = !autoScroll;
+    const toggle = document.getElementById('autoScrollToggle');
+    toggle.classList.toggle('active');
+  }
+
+  // Show notification
+  function showNotification(message, type = 'success') {
+    const container = document.getElementById('notificationContainer');
+    const notification = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-green-500/90' : type === 'error' ? 'bg-red-500/90' : 'bg-blue-500/90';
+    const icon = type === 'success' 
+      ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+      : type === 'error'
+      ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+      : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+    
+    notification.className = `${bgColor} text-white px-4 py-3 rounded-lg shadow-lg backdrop-blur-sm flex items-center space-x-2 text-sm`;
+    notification.innerHTML = `
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">${icon}</svg>
+      <span>${message}</span>
+    `;
+    
+    container.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  }
+
+  // Validate and generate script
+  function validateAndGenerate() {
+    const apiId = document.getElementById('apiId').value;
+    const apiHash = document.getElementById('apiHash').value;
+    const botToken = document.getElementById('botToken').value;
+    const userId = document.getElementById('userId').value;
+    const dumpId = document.getElementById('dumpId').value;
+
+    if (!apiId || !apiHash || !botToken || !userId || !dumpId) {
+      showNotification('Please fill in all required fields', 'error');
+      return;
+    }
+
+    // Auto-format dump ID
+    let formattedDumpId = dumpId;
+    if (dumpId.length === 10 && !dumpId.startsWith('-100')) {
+      formattedDumpId = '-100' + dumpId;
+    }
+
+    const script = generatePythonScript(apiId, apiHash, botToken, userId, formattedDumpId);
+    document.getElementById('generatedCode').textContent = script;
+    switchTab('deploy');
+    showNotification('Script generated successfully!', 'success');
+  }
+
+  // Generate Python script
+  function generatePythonScript(apiId, apiHash, botToken, userId, dumpId) {
+    return `# =============================================================================
+#  Telegram Leech Bot - Advanced Telegram File Transloader
+# =============================================================================
+#  Copyright © 2024-2026 Shineii Nouzen
+#  GitHub: https://github.com/Shineii86
+#  Telegram: https://t.me/Shineii86
+# =============================================================================
+
+"""
+Google Colab setup script for LeechBot
+
+This script sets up and runs LeechBot in Google Colab.
+Fill in your credentials below and run the cell.
+"""
+
+# @title **🚀 LeechBot - Google Colab Setup**
+# @markdown **Developer:** [Shineii Nouzen](https://github.com/Shineii86)
+# @markdown **Repository:** [LeechBot](https://github.com/Shineii86/LeechBot)
+
+# @markdown ---
+# @markdown **🔐 Enter your credentials:**
+
+API_ID = ${apiId}  # @param {type: "integer"}
+API_HASH = "${apiHash}"  # @param {type: "string"}
+BOT_TOKEN = "${botToken}"  # @param {type: "string"}
+USER_ID = ${userId}  # @param {type: "integer"}
+DUMP_ID = ${dumpId}  # @param {type: "integer"}
+
+# @markdown ---
+# @markdown **💡 Notes:**
+# @markdown - Get **API_ID** and **API_HASH** from [my.telegram.org](https://my.telegram.org)
+# @markdown - Get **BOT_TOKEN** from [@BotFather](https://t.me/BotFather)
+# @markdown - **USER_ID** is your Telegram user ID
+# @markdown - **DUMP_ID** is the channel/group ID for logs
+
+import subprocess
+import time
+import json
+import shutil
+import os
+from IPython.display import clear_output, display, HTML
+from threading import Thread
+
+Working = True
+
+def keep_alive(url):
+    """Keep Colab alive with silent audio"""
+    display(HTML(f'<audio src="{url}" controls autoplay style="display:none"></audio>'))
+
+def Loading():
+    """Loading animation"""
+    white = 37
+    black = 0
+    while Working:
+        print("\\r" + "░" * white + "▒▒" + "▓" * black + "▒▒" + "░" * white, end="")
+        black = (black + 2) % 75
+        white = (white - 1) if white != 0 else 37
+        time.sleep(2)
+    clear_output()
+
+# Start keep-alive audio
+audio_url = "https://raw.githubusercontent.com/KoboldAI/KoboldAI-Client/main/colab/silence.m4a"
+audio_thread = Thread(target=keep_alive, args=(audio_url,))
+audio_thread.start()
+
+# Start loading animation
+loading_thread = Thread(target=Loading, name="loading", args=())
+loading_thread.start()
+
+# Fix dump ID format
+if len(str(DUMP_ID)) == 10 and "-100" not in str(DUMP_ID):
+    DUMP_ID = int("-100" + str(DUMP_ID))
+
+# Clean existing installation
+if os.path.exists("/content/sample_data"):
+    shutil.rmtree("/content/sample_data")
+
+if os.path.exists("/content/tgdl"):
+    shutil.rmtree("/content/tgdl")
+
+# Clone repository
+print("\\n📥 Cloning repository...")
+subprocess.run("git clone https://github.com/Shineii86/LeechBot.git /content/tgdl", shell=True)
+
+# Install system dependencies
+print("🔧 Installing system dependencies...")
+subprocess.run("apt-get update -qq && apt-get install -y -qq ffmpeg aria2 megatools p7zip-full unzip", shell=True)
+
+# Install Python dependencies
+print("🐍 Installing Python dependencies...")
+subprocess.run("pip3 install -q -r /content/tgdl/requirements.txt", shell=True)
+
+# Save credentials
+credentials = {
+    "API_ID": API_ID,
+    "API_HASH": API_HASH,
+    "BOT_TOKEN": BOT_TOKEN,
+    "USER_ID": USER_ID,
+    "DUMP_ID": DUMP_ID,
+}
+
+with open("/content/tgdl/credentials.json", "w") as f:
+    json.dump(credentials, f, indent=4)
+
+# Stop loading animation
+Working = False
+loading_thread.join()
+clear_output()
+
+# Remove old session
+if os.path.exists("/content/tgdl/my_bot.session"):
+    os.remove("/content/tgdl/my_bot.session")
+    os.remove("/content/tgdl/my_bot.session-journal")
+
+print("""
+╔══════════════════════════════════════════╗
+║              🚀 LeechBot Starting...            ║
+╠══════════════════════════════════════════╣
+║  Developer: Shineii Nouzen                      ║
+║  GitHub: https://github.com/Shineii86           ║
+║  Telegram: https://telegram.me/Shineii86        ║
+╚══════════════════════════════════════════╝
+""")
+
+# Run the bot
+!cd /content/tgdl && python3 -m leechbot`;
+  }
+
+  // Copy to clipboard
+  function copyToClipboard(elementId) {
+    const text = document.getElementById(elementId).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      showNotification('Copied to clipboard!', 'success');
+    }).catch(() => {
+      showNotification('Failed to copy', 'error');
+    });
+  }
+
+  // Export credentials as JSON
+  function exportCredentials() {
+    const credentials = {
+      API_ID: document.getElementById('apiId').value,
+      API_HASH: document.getElementById('apiHash').value,
+      BOT_TOKEN: document.getElementById('botToken').value,
+      USER_ID: document.getElementById('userId').value,
+      DUMP_ID: document.getElementById('dumpId').value
+    };
+
+    if (!credentials.API_ID || !credentials.API_HASH || !credentials.BOT_TOKEN || !credentials.USER_ID || !credentials.DUMP_ID) {
+      showNotification('Please fill in all credentials first', 'error');
+      return;
+    }
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(credentials, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "leechbot_credentials.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+    showNotification('Credentials exported!', 'success');
+  }
+
+  // Import credentials
+  function importCredentials() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = event => {
+        try {
+          const credentials = JSON.parse(event.target.result);
+          if (credentials.API_ID) document.getElementById('apiId').value = credentials.API_ID;
+          if (credentials.API_HASH) document.getElementById('apiHash').value = credentials.API_HASH;
+          if (credentials.BOT_TOKEN) document.getElementById('botToken').value = credentials.BOT_TOKEN;
+          if (credentials.USER_ID) document.getElementById('userId').value = credentials.USER_ID;
+          if (credentials.DUMP_ID) document.getElementById('dumpId').value = credentials.DUMP_ID;
+          showNotification('Credentials imported successfully!', 'success');
+        } catch (err) {
+          showNotification('Invalid JSON file', 'error');
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+
+  // Clear form
+  function clearForm() {
+    document.getElementById('apiId').value = '';
+    document.getElementById('apiHash').value = '';
+    document.getElementById('botToken').value = '';
+    document.getElementById('userId').value = '';
+    document.getElementById('dumpId').value = '';
+    showNotification('Form cleared', 'info');
+  }
+
+  // Simulate deployment
+  async function simulateDeployment() {
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const logContainer = document.getElementById('logContainer');
+    
+    // Clear logs
+    logContainer.innerHTML = '';
+    
+    // Reset status indicators
+    const statuses = ['clone', 'deps', 'config', 'run'];
+    statuses.forEach(s => {
+      document.getElementById(`status-${s}`).className = 'w-2 h-2 rounded-full bg-gray-600';
+      document.getElementById(`time-${s}`).textContent = '--';
+    });
+
+    // Clear progress
+    progressBar.style.width = '0%';
+    progressText.textContent = '0%';
+
+    // Step 1: Clone repository
+    updateStatus('clone', 'processing', 'Cloning repository...');
+    await sleep(2000);
+    updateStatus('clone', 'active', '2.1s');
+    addLog('📥 Cloning repository from GitHub...');
+    addLog('Cloning into /content/tgdl...');
+    addLog('remote: Enumerating objects: 1243, done.');
+    addLog('remote: Counting objects: 100% (1243/1243), done.');
+    addLog('Receiving objects: 100% (1243/1243), 2.1 MiB | 8.5 MiB/s, done.');
+    addLog('Resolving deltas: 100% (847/847), done.');
+    await sleep(1000);
+    updateProgress(25);
+
+    // Step 2: Install dependencies
+    updateStatus('deps', 'processing', 'Installing dependencies...');
+    addLog('🔧 Installing system dependencies...');
+    await sleep(1500);
+    addLog('Reading package lists... Done');
+    addLog('Building dependency tree... Done');
+    addLog('The following NEW packages will be installed:');
+    addLog('  ffmpeg aria2 megatools p7zip-full unzip');
+    await sleep(1000);
+    addLog('🐍 Installing Python dependencies...');
+    await sleep(2000);
+    addLog('Collecting pyrogram==2.0.106');
+    addLog('  Downloading pyrogram-2.0.106-py3-none-any.whl (1.2 MB)');
+    addLog('Collecting tgcrypto');
+    addLog('  Downloading tgcrypto-1.2.5-cp310-cp310-linux_x86_64.whl (45 kB)');
+    addLog('Collecting requests');
+    addLog('  Downloading requests-2.31.0-py3-none-any.whl (62 kB)');
+    addLog('Installing collected packages: tgcrypto, requests, pyrogram');
+    addLog('Successfully installed pyrogram-2.0.106 tgcrypto-1.2.5 requests-2.31.0');
+    await sleep(500);
+    updateStatus('deps', 'active', '5.0s');
+    updateProgress(50);
+
+    // Step 3: Save configuration
+    updateStatus('config', 'processing', 'Saving configuration...');
+    addLog('📝 Saving credentials to credentials.json...');
+    await sleep(1000);
+    addLog('✓ API_ID: ' + document.getElementById('apiId').value);
+    addLog('✓ API_HASH: ' + '*'.repeat(20));
+    addLog('✓ BOT_TOKEN: ' + '*'.repeat(30));
+    addLog('✓ USER_ID: ' + document.getElementById('userId').value);
+    addLog('✓ DUMP_ID: ' + document.getElementById('dumpId').value);
+    addLog('✓ Configuration saved successfully!');
+    await sleep(500);
+    updateStatus('config', 'active', '1.0s');
+    updateProgress(75);
+
+    // Step 4: Start bot
+    updateStatus('run', 'processing', 'Starting bot...');
+    addLog('🚀 Starting LeechBot...');
+    await sleep(1500);
+    addLog('Initializing Pyrogram...');
+    addLog('Loading plugins...');
+    addLog('Connecting to Telegram servers...');
+    addLog('✓ Bot connected successfully!');
+    addLog('');
+    addLog('╔═══════════════════════════════════════╗');
+    addLog('║          🚀 LeechBot is Running!             ║');
+    addLog('║  Developer: Shineii Nouzen (tg@shineii86)    ║');
+    addLog('║  GitHub: github.com/Shineii86/LeechBot       ║');
+    addLog('╚═══════════════════════════════════════╝');
+    await sleep(500);
+    updateStatus('run', 'active', '2.0s');
+    updateProgress(100);
+
+    // Update banner
+    const banner = document.getElementById('statusBanner');
+    banner.className = 'mb-6 p-4 rounded-xl glass-card flex items-center justify-between animate-slide-up border border-green-500/30';
+    banner.innerHTML = `
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+          <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-medium text-white">Deployment Successful</h3>
+          <p class="text-sm text-gray-400">Bot is running and ready to use</p>
+        </div>
+      </div>
+      <button onclick="switchTab('config')" class="text-sm text-primary hover:text-secondary transition-colors flex items-center space-x-1">
+        <span>Configure New</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    `;
+
+    showNotification('Deployment completed successfully!', 'success');
+  }
+
+  // Helper functions
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function updateStatus(step, state, time) {
+    const indicator = document.getElementById(`status-${step}`);
+    const timeEl = document.getElementById(`time-${step}`);
+    
+    indicator.className = `w-2 h-2 rounded-full ${
+      state === 'processing' ? 'bg-yellow-400 animate-pulse' : 
+      state === 'active' ? 'bg-green-400 shadow-sm shadow-green-400/50' : 
+      'bg-gray-600'
+    }`;
+    timeEl.textContent = time;
+  }
+
+  function updateProgress(percent) {
+    document.getElementById('progressBar').style.width = percent + '%';
+    document.getElementById('progressText').textContent = percent + '%';
+  }
+
+  function addLog(message) {
+    const logContainer = document.getElementById('logContainer');
+    const logEntry = document.createElement('div');
+    logEntry.className = 'flex items-start space-x-2 animate-fade-in';
+    
+    const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
+    logEntry.innerHTML = `
+      <span class="text-gray-600 flex-shrink-0">${timestamp}</span>
+      <span class="text-gray-300">${message}</span>
+    `;
+    
+    logContainer.appendChild(logEntry);
+    
+    if (autoScroll) {
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+  }
+
+  function clearLogs() {
+    document.getElementById('logContainer').innerHTML = '<div class="text-gray-500">Logs cleared</div>';
+    showNotification('Logs cleared', 'info');
+  }
+
+  // Modal functions
+  function showDocumentation() {
+    document.getElementById('modal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+  }
+
+  // Close modal on outside click
+  document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+    if (e.ctrlKey && e.key === 'Enter') {
+      validateAndGenerate();
+    }
+  });
+
+  // Initialize with welcome notification
+  setTimeout(() => {
+    showNotification('Welcome to LeechBot Dashboard!', 'info');
+  }, 500);
+</script>
+</body>
+</html>
+
