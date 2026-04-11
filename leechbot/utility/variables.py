@@ -1,16 +1,14 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Global Variables and Configuration
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ʟᴇᴇᴄʜʙᴏᴛ ɢʟᴏʙᴀʟ ᴠᴀʀɪᴀʙʟᴇs ᴀɴᴅ ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴ ᴄʟᴀssᴇs
-
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ᴄᴏɴᴛᴀɪɴs ᴀʟʟ ɢʟᴏʙᴀʟ ᴠᴀʀɪᴀʙʟᴇs, ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴ ᴄʟᴀssᴇs,
-ᴀɴᴅ ᴘᴀᴛʜ ᴅᴇғɪɴɪᴛɪᴏɴs ᴜsᴇᴅ ᴛʜʀᴏᴜɢʜᴏᴜᴛ ᴛʜᴇ ʙᴏᴛ.
+Global variables and configuration classes for the bot.
 """
 
 from time import time
@@ -19,134 +17,134 @@ from pyrogram.types import Message
 
 
 # =============================================================================
-#  ʙᴏᴛ ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴ ᴄʟᴀss
+# Bot Configuration Class
 # =============================================================================
 class BOT:
     """
-    ᴍᴀɪɴ ʙᴏᴛ ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴ ᴄʟᴀss.
-    sᴛᴏʀᴇs ᴀʟʟ ʙᴏᴛ sᴇᴛᴛɪɴɢs, ᴏᴘᴛɪᴏɴs, ᴍᴏᴅᴇs, ᴀɴᴅ sᴛᴀᴛᴇs.
+    Main bot configuration class.
+    Stores all bot settings, options, modes, and states.
     """
     
-    # ᴅᴏᴡɴʟᴏᴀᴅ sᴏᴜʀᴄᴇs ʟɪsᴛ
+    # Download sources list
     SOURCE = []
     
-    # ᴀᴄᴛɪᴠᴇ ᴛᴀsᴋ ʀᴇғᴇʀᴇɴᴄᴇ
+    # Active task reference
     TASK = None
     
     class Setting:
-        """ᴜsᴇʀ ᴘʀᴇғᴇʀᴇɴᴄᴇ sᴇᴛᴛɪɴɢs"""
-        stream_upload = "ᴍᴇᴅɪᴀ"      # ᴜᴘʟᴏᴀᴅ ᴍᴏᴅᴇ: ᴍᴇᴅɪᴀ ᴏʀ ᴅᴏᴄᴜᴍᴇɴᴛ
-        convert_video = "ʏᴇs"        # ᴠɪᴅᴇᴏ ᴄᴏɴᴠᴇʀsɪᴏɴ ᴇɴᴀʙʟᴇᴅ
-        convert_quality = "ʟᴏᴡ"      # ᴠɪᴅᴇᴏ ǫᴜᴀʟɪᴛʏ: ʜɪɢʜ ᴏʀ ʟᴏᴡ
-        caption = "ᴍᴏɴᴏsᴘᴀᴄᴇ"       # ᴄᴀᴘᴛɪᴏɴ ғᴏɴᴛ sᴛʏʟᴇ
-        split_video = "sᴘʟɪᴛ"        # ᴠɪᴅᴇᴏ ʜᴀɴᴅʟɪɴɢ: sᴘʟɪᴛ ᴏʀ ᴢɪᴘ
-        prefix = ""                   # ғɪʟᴇɴᴀᴍᴇ ᴘʀᴇғɪx
-        suffix = ""                   # ғɪʟᴇɴᴀᴍᴇ sᴜғғɪx
-        thumbnail = False             # ᴛʜᴜᴍʙɴᴀɪʟ sᴇᴛ sᴛᴀᴛᴜs
+        """User preference settings"""
+        stream_upload = "media"      # Upload mode: media or document
+        convert_video = "yes"        # Video conversion enabled
+        convert_quality = "low"      # Video quality: high or low
+        caption = "regular"        # Caption font style
+        split_video = "split"        # Video handling: split or zip
+        prefix = ""                  # Filename prefix
+        suffix = ""                  # Filename suffix
+        thumbnail = False            # Thumbnail set status
     
     class Options:
-        """ʀᴜɴᴛɪᴍᴇ ᴏᴘᴛɪᴏɴs ғᴏʀ ᴄᴜʀʀᴇɴᴛ ᴛᴀsᴋ"""
-        stream_upload = True          # sᴛʀᴇᴀᴍɪɴɢ ᴜᴘʟᴏᴀᴅ ᴇɴᴀʙʟᴇᴅ
-        convert_video = True          # ᴠɪᴅᴇᴏ ᴄᴏɴᴠᴇʀsɪᴏɴ ᴇɴᴀʙʟᴇᴅ
-        convert_quality = False       # ʜɪɢʜ ǫᴜᴀʟɪᴛʏ ᴄᴏɴᴠᴇʀsɪᴏɴ
-        is_split = True               # sᴘʟɪᴛ ʟᴀʀɢᴇ ᴠɪᴅᴇᴏs
-        caption = "code"              # ᴄᴀᴘᴛɪᴏɴ ᴛᴀɢ ᴛʏᴘᴇ
-        video_out = "mp4"             # ᴏᴜᴛᴘᴜᴛ ᴠɪᴅᴇᴏ ғᴏʀᴍᴀᴛ
-        custom_name = ""              # ᴄᴜsᴛᴏᴍ ғɪʟᴇɴᴀᴍᴇ
-        zip_pswd = ""                 # ᴢɪᴘ ᴘᴀssᴡᴏʀᴅ
-        unzip_pswd = ""               # ᴜɴᴢɪᴘ ᴘᴀssᴡᴏʀᴅ
+        """Runtime options for current task"""
+        stream_upload = True         # Streaming upload enabled
+        convert_video = True         # Video conversion enabled
+        convert_quality = False      # High quality conversion
+        is_split = True              # Split large videos
+        caption = "code"             # Caption tag type
+        video_out = "mp4"            # Output video format
+        custom_name = ""             # Custom filename
+        zip_pswd = ""                # Zip password
+        unzip_pswd = ""              # Unzip password
     
     class Mode:
-        """ᴄᴜʀʀᴇɴᴛ ᴛᴀsᴋ ᴍᴏᴅᴇ"""
-        mode = "leech"                # ᴛᴀsᴋ ᴛʏᴘᴇ: ʟᴇᴇᴄʜ, ᴍɪʀʀᴏʀ, ᴅɪʀ-ʟᴇᴇᴄʜ
-        type = "normal"               # ᴜᴘʟᴏᴀᴅ ᴛʏᴘᴇ: ɴᴏʀᴍᴀʟ, ᴢɪᴘ, ᴜɴᴢɪᴘ, ᴜɴᴅᴢɪᴘ
-        ytdl = False                  # ʏᴛ-ᴅʟᴘ ᴍᴏᴅᴇ ᴇɴᴀʙʟᴇᴅ
+        """Current task mode"""
+        mode = "leech"               # Task type: leech, mirror, dir-leech
+        type = "normal"              # Upload type: normal, zip, unzip, undzip
+        ytdl = False                 # YT-DLP mode enabled
     
     class State:
-        """ʙᴏᴛ sᴛᴀᴛᴇ ᴛʀᴀᴄᴋɪɴɢ"""
-        started = False               # ᴛᴀsᴋ sᴛᴀʀᴛᴇᴅ ғʟᴀɢ
-        task_going = False            # ᴛᴀsᴋ ɪɴ ᴘʀᴏɢʀᴇss ғʟᴀɢ
-        prefix = False                # ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴘʀᴇғɪx ɪɴᴘᴜᴛ
-        suffix = False                # ᴡᴀɪᴛɪɴɢ ғᴏʀ sᴜғғɪx ɪɴᴘᴜᴛ
+        """Bot state tracking"""
+        started = False              # Task started flag
+        task_going = False           # Task in progress flag
+        prefix = False               # Waiting for prefix input
+        suffix = False               # Waiting for suffix input
 
 
 # =============================================================================
-#  ʏᴛ-ᴅʟᴘ ᴅᴏᴡɴʟᴏᴀᴅ sᴛᴀᴛᴜs
+# YT-DLP Download Status
 # =============================================================================
 class YTDL:
     """
-    ʏᴛ-ᴅʟᴘ ᴅᴏᴡɴʟᴏᴀᴅ sᴛᴀᴛᴜs ᴛʀᴀᴄᴋᴇʀ.
-    sᴛᴏʀᴇs ʀᴇᴀʟ-ᴛɪᴍᴇ ᴅᴏᴡɴʟᴏᴀᴅ ɪɴғᴏʀᴍᴀᴛɪᴏɴ.
+    YT-DLP download status tracker.
+    Stores real-time download information.
     """
-    header = ""           # ᴘʀᴏɢʀᴇss ʜᴇᴀᴅᴇʀ ᴍᴇssᴀɢᴇ
-    speed = ""            # ᴄᴜʀʀᴇɴᴛ ᴅᴏᴡɴʟᴏᴀᴅ sᴘᴇᴇᴅ
-    percentage = 0.0      # ᴅᴏᴡɴʟᴏᴀᴅ ᴘᴇʀᴄᴇɴᴛᴀɢᴇ
-    eta = ""              # ᴇsᴛɪᴍᴀᴛᴇᴅ ᴛɪᴍᴇ ᴏғ ᴀʀʀɪᴠᴀʟ
-    done = ""             # ʙʏᴛᴇs ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ
-    left = ""             # ʙʏᴛᴇs ʀᴇᴍᴀɪɴɪɴɢ
+    header = ""           # Progress header message
+    speed = ""            # Current download speed
+    percentage = 0.0      # Download percentage
+    eta = ""              # Estimated time of arrival
+    done = ""             # Bytes downloaded
+    left = ""             # Bytes remaining
 
 
 # =============================================================================
-#  ᴛʀᴀɴsғᴇʀ sᴛᴀᴛɪsᴛɪᴄs
+# Transfer Statistics
 # =============================================================================
 class Transfer:
     """
-    ғɪʟᴇ ᴛʀᴀɴsғᴇʀ sᴛᴀᴛɪsᴛɪᴄs ᴛʀᴀᴄᴋᴇʀ.
-    ᴋᴇᴇᴘs ᴛʀᴀᴄᴋ ᴏғ ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ ᴀɴᴅ ᴜᴘʟᴏᴀᴅᴇᴅ ʙʏᴛᴇs.
+    File transfer statistics tracker.
+    Keeps track of downloaded and uploaded bytes.
     """
-    down_bytes = [0, 0]           # ʟɪsᴛ ᴏғ ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ ғɪʟᴇ sɪᴢᴇs
-    up_bytes = [0, 0]             # ʟɪsᴛ ᴏғ ᴜᴘʟᴏᴀᴅᴇᴅ ғɪʟᴇ sɪᴢᴇs
-    total_down_size = 0           # ᴛᴏᴛᴀʟ ᴅᴏᴡɴʟᴏᴀᴅ sɪᴢᴇ
-    sent_file = []                # ʟɪsᴛ ᴏғ sᴇɴᴛ ᴍᴇssᴀɢᴇ ᴏʙᴊᴇᴄᴛs
-    sent_file_names = []          # ʟɪsᴛ ᴏғ sᴇɴᴛ ғɪʟᴇ ɴᴀᴍᴇs
+    down_bytes = [0, 0]           # List of downloaded file sizes
+    up_bytes = [0, 0]             # List of uploaded file sizes
+    total_down_size = 0           # Total download size
+    sent_file = []                # List of sent message objects
+    sent_file_names = []          # List of sent file names
 
 
 # =============================================================================
-#  ᴛᴀsᴋ ᴇʀʀᴏʀ ʜᴀɴᴅʟɪɴɢ
+# Task Error Handling
 # =============================================================================
 class TaskError:
     """
-    ᴛᴀsᴋ ᴇʀʀᴏʀ ᴛʀᴀᴄᴋᴇʀ.
-    sᴛᴏʀᴇs ᴇʀʀᴏʀ sᴛᴀᴛᴇ ᴀɴᴅ ᴍᴇssᴀɢᴇ.
+    Task error tracker.
+    Stores error state and message.
     """
-    state = False                 # ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ ғʟᴀɢ
-    text = ""                     # ᴇʀʀᴏʀ ᴍᴇssᴀɢᴇ
+    state = False                 # Error occurred flag
+    text = ""                     # Error message
 
 
 # =============================================================================
-#  ᴛɪᴍᴇ ᴛʀᴀᴄᴋɪɴɢ
+# Time Tracking
 # =============================================================================
 class BotTimes:
     """
-    ʙᴏᴛ ᴛɪᴍɪɴɢ ᴛʀᴀᴄᴋᴇʀ.
-    ᴋᴇᴇᴘs ᴛʀᴀᴄᴋ ᴏғ ᴠᴀʀɪᴏᴜs ᴛɪᴍᴇsᴛᴀᴍᴘs ғᴏʀ ᴘʀᴏɢʀᴇss ᴄᴀʟᴄᴜʟᴀᴛɪᴏɴs.
+    Bot timing tracker.
+    Keeps track of various timestamps for progress calculations.
     """
-    current_time = time()                     # ʟᴀsᴛ ᴜᴘᴅᴀᴛᴇ ᴛɪᴍᴇ
-    start_time = datetime.now()               # ᴛᴀsᴋ sᴛᴀʀᴛ ᴛɪᴍᴇ
-    task_start = datetime.now()               # ᴄᴜʀʀᴇɴᴛ sᴜʙᴛᴀsᴋ sᴛᴀʀᴛ ᴛɪᴍᴇ
+    current_time = time()                     # Last update time
+    start_time = datetime.now()               # Task start time
+    task_start = datetime.now()               # Current subtask start time
 
 
 # =============================================================================
-#  ғɪʟᴇ ᴘᴀᴛʜs
+# File Paths
 # =============================================================================
 class Paths:
     """
-    ғɪʟᴇ sʏsᴛᴇᴍ ᴘᴀᴛʜs.
-    ᴅᴇғɪɴᴇs ᴀʟʟ ᴡᴏʀᴋɪɴɢ ᴅɪʀᴇᴄᴛᴏʀɪᴇs ᴀɴᴅ ғɪʟᴇ ʟᴏᴄᴀᴛɪᴏɴs.
+    File system paths.
+    Defines all working directories and file locations.
     """
-    # ʙᴀsᴇ ᴡᴏʀᴋɪɴɢ ᴅɪʀᴇᴄᴛᴏʀʏ
+    # Base working directory
     WORK_PATH = "/content/tgdl/BOT_WORK"
     
-    # ᴛʜᴜᴍʙɴᴀɪʟ ᴘᴀᴛʜs
+    # Thumbnail paths
     THMB_PATH = "/content/tgdl/leechbot/Thumbnail.jpg"
     VIDEO_FRAME = f"{WORK_PATH}/video_frame.jpg"
     HERO_IMAGE = f"{WORK_PATH}/Hero.jpg"
     DEFAULT_HERO = "/content/tgdl/custom_thmb.jpg"
     
-    # ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ ᴍᴏᴜɴᴛ ᴘᴏɪɴᴛ
+    # Google Drive mount point
     MOUNTED_DRIVE = "/content/drive"
     
-    # ᴡᴏʀᴋɪɴɢ sᴜʙᴅɪʀᴇᴄᴛᴏʀɪᴇs
+    # Working subdirectories
     down_path = f"{WORK_PATH}/Downloads"
     temp_dirleech_path = f"{WORK_PATH}/dir_leech_temp"
     mirror_dir = "/content/drive/MyDrive/Downloads/tgdl"
@@ -155,85 +153,85 @@ class Paths:
     temp_files_dir = f"{WORK_PATH}/leech_temp"
     thumbnail_ytdl = f"{WORK_PATH}/ytdl_thumbnails"
     
-    # ᴛᴏᴋᴇɴ ғɪʟᴇ
+    # Token file
     access_token = "/content/token.pickle"
 
 
 # =============================================================================
-#  ᴍᴇssᴀɢᴇ ᴛᴇᴍᴘʟᴀᴛᴇs
+# Message Templates (will be styled dynamically using style_text)
 # =============================================================================
 class Messages:
     """
-    ᴍᴇssᴀɢᴇ ᴛᴇᴍᴘʟᴀᴛᴇs ᴀɴᴅ ᴛᴇxᴛs.
-    sᴛᴏʀᴇs ᴅʏɴᴀᴍɪᴄ ᴍᴇssᴀɢᴇ ᴄᴏɴᴛᴇɴᴛ.
+    Message templates and texts.
+    Stores dynamic message content.
     """
-    caution_msg = "\n\n**💡 ᴛɪᴘ:** ᴡʜɪʟᴇ ɪ'ᴍ ᴡᴏʀᴋɪɴɢ, ʏᴏᴜ ᴄᴀɴ ᴅᴏ sᴏᴍᴇᴛʜɪɴɢ ᴇʟsᴇ!"
-    download_name = ""             # ᴄᴜʀʀᴇɴᴛ ᴅᴏᴡɴʟᴏᴀᴅ ɴᴀᴍᴇ
-    task_msg = ""                  # ᴛᴀsᴋ ɪɴғᴏʀᴍᴀᴛɪᴏɴ ᴍᴇssᴀɢᴇ
-    status_head = "**📥 ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ**\n"  # sᴛᴀᴛᴜs ʜᴇᴀᴅᴇʀ
-    dump_task = ""                 # ᴛᴀsᴋ ʟᴏɢ ᴍᴇssᴀɢᴇ
-    src_link = ""                  # sᴏᴜʀᴄᴇ ʟɪɴᴋ
-    link_p = ""                    # ᴄʜᴀɴɴᴇʟ ʟɪɴᴋ ᴘᴀʀᴛ
+    caution_msg = ""              # Will be set with styled text
+    download_name = ""            # Current download name
+    task_msg = ""                 # Task information message
+    status_head = ""              # Status header (set dynamically)
+    dump_task = ""                # Task log message
+    src_link = ""                 # Source link
+    link_p = ""                   # Channel link part
 
 
 # =============================================================================
-#  ᴍᴇssᴀɢᴇ ᴏʙᴊᴇᴄᴛs
+# Message Objects
 # =============================================================================
 class MSG:
     """
-    ᴛᴇʟᴇɢʀᴀᴍ ᴍᴇssᴀɢᴇ ᴏʙᴊᴇᴄᴛs.
-    sᴛᴏʀᴇs ʀᴇғᴇʀᴇɴᴄᴇs ᴛᴏ sᴇɴᴛ ᴍᴇssᴀɢᴇs ғᴏʀ ᴇᴅɪᴛɪɴɢ.
+    Telegram message objects.
+    Stores references to sent messages for editing.
     """
-    sent_msg = Message(id=1)       # ʟᴀsᴛ sᴇɴᴛ ᴍᴇssᴀɢᴇ
-    status_msg = Message(id=2)     # sᴛᴀᴛᴜs ᴍᴇssᴀɢᴇ
+    sent_msg = Message(id=1)       # Last sent message
+    status_msg = Message(id=2)     # Status message
 
 
 # =============================================================================
-#  ᴀʀɪᴀ2ᴄ ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴ
+# Aria2c Configuration
 # =============================================================================
 class Aria2c:
     """
-    ᴀʀɪᴀ2ᴄ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴ.
-    sᴛᴏʀᴇs ᴀʀɪᴀ2ᴄ-sᴘᴇᴄɪғɪᴄ sᴇᴛᴛɪɴɢs ᴀɴᴅ sᴛᴀᴛᴇ.
+    Aria2c downloader configuration.
+    Stores aria2c-specific settings and state.
     """
-    link_info = False              # ʟɪɴᴋ ɪɴғᴏʀᴍᴀᴛɪᴏɴ ʀᴇᴄᴇɪᴠᴇᴅ
-    pic_dwn_url = "https://picsum.photos/900/600"  # ʀᴀɴᴅᴏᴍ ɪᴍᴀɢᴇ ᴜʀʟ
+    link_info = False              # Link information received
+    pic_dwn_url = "https://picsum.photos/900/600"  # Random image URL
 
 
 # =============================================================================
-#  ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ sᴇʀᴠɪᴄᴇ
+# Google Drive Service
 # =============================================================================
 class Gdrive:
     """
-    ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ sᴇʀᴠɪᴄᴇ.
-    sᴛᴏʀᴇs ᴛʜᴇ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ ᴀᴘɪ sᴇʀᴠɪᴄᴇ ɪɴsᴛᴀɴᴄᴇ.
+    Google Drive service.
+    Stores the Google Drive API service instance.
     """
-    service = None                 # ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ ᴀᴘɪ sᴇʀᴠɪᴄᴇ
+    service = None                 # Google Drive API service
 
 
 # =============================================================================
-#  ʙᴏᴛ sᴛᴀᴛɪsᴛɪᴄs
+# Bot Statistics
 # =============================================================================
 class BotStats:
     """
-    ʙᴏᴛ ᴜsᴀɢᴇ sᴛᴀᴛɪsᴛɪᴄs.
-    ᴛʀᴀᴄᴋs ᴛᴏᴛᴀʟ ᴅᴏᴡɴʟᴏᴀᴅs, ᴜᴘʟᴏᴀᴅs, ᴀɴᴅ ᴏᴛʜᴇʀ ᴍᴇᴛʀɪᴄs.
+    Bot usage statistics.
+    Tracks total downloads, uploads, and other metrics.
     """
-    total_tasks = 0                # ᴛᴏᴛᴀʟ ᴄᴏᴍᴘʟᴇᴛᴇᴅ ᴛᴀsᴋs
-    total_downloaded = 0           # ᴛᴏᴛᴀʟ ʙʏᴛᴇs ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ
-    total_uploaded = 0             # ᴛᴏᴛᴀʟ ʙʏᴛᴇs ᴜᴘʟᴏᴀᴅᴇᴅ
-    failed_tasks = 0               # ғᴀɪʟᴇᴅ ᴛᴀsᴋ ᴄᴏᴜɴᴛ
+    total_tasks = 0                # Total completed tasks
+    total_downloaded = 0           # Total bytes downloaded
+    total_uploaded = 0             # Total bytes uploaded
+    failed_tasks = 0               # Failed task count
 
 
 # =============================================================================
-#  ᴄᴏɴsᴛᴀɴᴛs
+# Constants
 # =============================================================================
-# ᴍᴀxɪᴍᴜᴍ ғɪʟᴇ sɪᴢᴇ ғᴏʀ ᴛᴇʟᴇɢʀᴀᴍ (2ɢʙ)
+# Maximum file size for Telegram (2GB)
 MAX_FILE_SIZE = 2097152000
 
-# ᴍᴀxɪᴍᴜᴍ ᴠɪᴅᴇᴏ sᴘʟɪᴛ sɪᴢᴇ (1.9ɢʙ)
+# Maximum video split size (1.9GB)
 MAX_VIDEO_SPLIT_SIZE = 1992294400
 
-# ᴠᴇʀsɪᴏɴ ɪɴғᴏʀᴍᴀᴛɪᴏɴ
-VERSION = "2.0.0"
-BUILD_DATE = "2025-01-11"
+# Version information
+VERSION = "0.2"
+BUILD_DATE = "2026-04-10"
