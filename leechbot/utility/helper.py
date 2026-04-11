@@ -20,13 +20,12 @@ from PIL import Image
 from os import path as ospath
 from datetime import datetime
 from urllib.parse import urlparse
-from asyncio import get_event_loop
+from asyncio import get_event_loop, sleep
 from leechbot import leechbot
 from pyrogram.errors import BadRequest
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from leechbot.utility.variables import BOT, MSG, BotTimes, Messages, Paths
-from leechbot.utility.style import style_text, style_button
 
 logger = logging.getLogger(__name__)
 
@@ -396,11 +395,11 @@ def sysINFO() -> str:
     
     info = f"""
 
-⌬───── **{style_text('System Info')}** ─────⌬
+⌬───── **System Info** ─────⌬
 
-┏🖥️ **{style_text('CPU')}:** `{cpu_usage}%`
-┠💽 **{style_text('RAM')}:** `{sizeUnit(ram_usage)}`
-┖💾 **{style_text('Disk')}:** `{sizeUnit(disk_usage.free)}`"""
+┏🖥️ **CPU:** `{cpu_usage}%`
+┠💽 **RAM:** `{sizeUnit(ram_usage)}`
+┖💾 **Disk:** `{sizeUnit(disk_usage.free)}`"""
     
     return info
 
@@ -423,13 +422,13 @@ def sysINFO_full() -> str:
     
     info = f"""
 
-⌬───── **{style_text('System Info (Detailed)')}** ─────⌬
+⌬───── **System Info (Detailed)** ─────⌬
 
-┏🖥️ **{style_text('CPU')}:** `{psutil.cpu_percent()}%` (cores: {', '.join(f'{c}%' for c in cpu_percent)})
-┠💽 **{style_text('RAM')}:** `{sizeUnit(ram.used)} / {sizeUnit(ram.total)}` ({ram.percent}%)
-┠💾 **{style_text('Disk')}:** `{sizeUnit(disk.used)} / {sizeUnit(disk.total)}` ({disk.percent}%)
-┠🌐 **{style_text('Net')}:** ↓`{sizeUnit(net.bytes_recv)}` ↑`{sizeUnit(net.bytes_sent)}`
-┗⏱️ **{style_text('Uptime')}:** `{getTime(int(time() - psutil.boot_time()))}`"""
+┏🖥️ **CPU:** `{psutil.cpu_percent()}%` (cores: {', '.join(f'{c}%' for c in cpu_percent)})
+┠💽 **RAM:** `{sizeUnit(ram.used)} / {sizeUnit(ram.total)}` ({ram.percent}%)
+┠💾 **Disk:** `{sizeUnit(disk.used)} / {sizeUnit(disk.total)}` ({disk.percent}%)
+┠🌐 **Net:** ↓`{sizeUnit(net.bytes_recv)}` ↑`{sizeUnit(net.bytes_sent)}`
+┗⏱️ **Uptime:** `{getTime(int(time() - psutil.boot_time()))}`"""
     return info
 
 
@@ -566,29 +565,33 @@ def speedETA(start_time: datetime, done: int, total: int):
 
 
 # =============================================================================
-# Message Deleter
+# Message Deleter (Auto-Delete Aware)
 # =============================================================================
-async def message_deleter(msg1, msg2):
+async def message_deleter(user_msg, bot_msg):
     """
-    Safely delete two messages.
+    Delete messages based on auto-delete settings.
     
     Args:
-        msg1: first message
-        msg2: second message
+        user_msg: user message (to be deleted)
+        bot_msg: bot message (to be deleted)
     """
-    try:
-        await msg1.delete()
-    except Exception as e:
-        logger.error(f"Failed to delete msg1: {e}")
+    from leechbot.utility.variables import BOT
     
-    try:
-        await msg2.delete()
-    except Exception as e:
-        logger.error(f"Failed to delete msg2: {e}")
+    if BOT.Setting.auto_delete:
+        delay = BOT.Setting.auto_delete_delay
+        await sleep(delay)
+        try:
+            await user_msg.delete()
+            await bot_msg.delete()
+        except Exception as e:
+            logger.error(f"Auto-delete error: {e}")
+    else:
+        # Manual deletion can be handled elsewhere if needed
+        pass
 
 
 # =============================================================================
-# Settings Menu
+# Settings Menu (Updated with Auto-Delete)
 # =============================================================================
 async def send_settings(client, message, msg_id: int, is_command: bool):
     """
@@ -607,21 +610,21 @@ async def send_settings(client, message, msg_id: int, is_command: bool):
         [
             [
                 InlineKeyboardButton(
-                    f"📤 {style_button(up_mode)}",
+                    f"📤 {up_mode}",
                     callback_data="media" if up_mode == "Document" else "document"
                 ),
                 InlineKeyboardButton(
-                    f"🎬 {style_button('Video')}",
+                    f"🎬 Video",
                     callback_data="video"
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    f"📝 {style_button('Caption')}",
+                    f"📝 Caption",
                     callback_data="caption"
                 ),
                 InlineKeyboardButton(
-                    f"🖼️ {style_button('Thumb')}",
+                    f"🖼️ Thumb",
                     callback_data="thumb"
                 ),
             ],
@@ -635,6 +638,12 @@ async def send_settings(client, message, msg_id: int, is_command: bool):
             ],
             [
                 InlineKeyboardButton(
+                    f"⏳ Auto-Delete: {'ON' if BOT.Setting.auto_delete else 'OFF'}",
+                    callback_data="autodelete"
+                )
+            ],
+            [
+                InlineKeyboardButton(
                     "Close", callback_data="close"
                 )
             ],
@@ -644,8 +653,9 @@ async def send_settings(client, message, msg_id: int, is_command: bool):
     pr = "✅" if BOT.Setting.prefix else "❎"
     su = "✅" if BOT.Setting.suffix else "❎"
     thmb = "✅" if BOT.Setting.thumbnail else "❎"
+    auto_del = f"{BOT.Setting.auto_delete_delay}s" if BOT.Setting.auto_delete else "Off"
     
-    text = style_text(f"""**⚙️ Bot Settings**
+    text = f"""**⚙️ Bot Settings**
 
 ┏📤 **Upload:** `{BOT.Setting.stream_upload}`
 ┠✂️ **Split:** `{BOT.Setting.split_video}`
@@ -653,7 +663,8 @@ async def send_settings(client, message, msg_id: int, is_command: bool):
 ┠📝 **Caption:** `{BOT.Setting.caption}`
 ┠➕ **Prefix:** {pr}
 ┠➕ **Suffix:** {su}
-┗🖼️ **Thumb:** {thmb}""")
+┠🖼️ **Thumb:** {thmb}
+┗⏳ **Auto-Delete:** `{auto_del}`"""
     
     try:
         if is_command:
@@ -691,21 +702,21 @@ async def status_bar(down_msg: str, speed: str, percentage: float, eta: str, don
     filled = int(percentage / 100 * bar_length)
     bar = "█" * filled + "░" * (bar_length - filled)
     
-    text = style_text(f"""
+    text = f"""
 ┏「{bar}」 **»** `{percentage:.1f}%`
 ┠⚡ **Speed:** `{speed}`
 ┠🔧 **Engine:** `{engine}`
 ┠⏳ **ETA:** `{eta}`
 ┠⏱️ **Elapsed:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`
 ┠✅ **Done:** `{done}`
-┗📦 **Total:** `{left}`""")
+┗📦 **Total:** `{left}`"""
     
     try:
         if isTimeOver():
             await MSG.status_msg.edit_text(
                 text=Messages.task_msg + down_msg + text + sysINFO(),
                 disable_web_page_preview=True,
-                reply_markup=status_keyboard()   # <-- Uses enhanced keyboard
+                reply_markup=status_keyboard()
             )
     except BadRequest as e:
         logger.error(f"Status bar error: {e}")
@@ -726,14 +737,14 @@ def keyboard():
     return InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton(style_button("Cancel"), callback_data="cancel")
+                InlineKeyboardButton("Cancel", callback_data="cancel")
             ]
         ]
     )
 
 
 # =============================================================================
-# Status Keyboard with System Info Buttons (New)
+# Status Keyboard with System Info Buttons
 # =============================================================================
 def status_keyboard():
     """
@@ -745,20 +756,11 @@ def status_keyboard():
     return InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton(
-                    style_button("🔄 Refresh"), 
-                    callback_data="sys_refresh"
-                ),
-                InlineKeyboardButton(
-                    style_button("📊 Stats"), 
-                    callback_data="sys_stats"
-                ),
+                InlineKeyboardButton("🔄 Refresh", callback_data="sys_refresh"),
+                InlineKeyboardButton("📊 Stats", callback_data="sys_stats"),
             ],
             [
-                InlineKeyboardButton(
-                    style_button("❌ Cancel"), 
-                    callback_data="cancel"
-                )
+                InlineKeyboardButton("❌ Cancel", callback_data="cancel")
             ]
         ]
     )
