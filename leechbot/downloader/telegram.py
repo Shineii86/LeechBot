@@ -1,15 +1,16 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Telegram Downloader
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ᴛᴇʟᴇɢʀᴀᴍ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ᴍᴏᴅᴜʟᴇ
+Telegram downloader module.
 
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ʜᴀɴᴅʟᴇs ᴅᴏᴡɴʟᴏᴀᴅs ғʀᴏᴍ ᴛᴇʟᴇɢʀᴀᴍ ᴍᴇssᴀɢᴇs.
+Handles downloads from Telegram messages.
 """
 
 import logging
@@ -19,22 +20,23 @@ from leechbot import leechbot
 from leechbot.utility.handler import cancelTask
 from leechbot.utility.variables import Transfer, Paths, Messages, BotTimes
 from leechbot.utility.helper import speedETA, getTime, sizeUnit, status_bar
+from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-#  ᴍᴇᴅɪᴀ ɪᴅᴇɴᴛɪғɪᴄᴀᴛɪᴏɴ
+# Media Identification
 # =============================================================================
 async def media_Identifier(link: str):
     """
-    ɪᴅᴇɴᴛɪғʏ ᴍᴇᴅɪᴀ ғʀᴏᴍ ᴛᴇʟᴇɢʀᴀᴍ ʟɪɴᴋ.
+    Identify media from Telegram link.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ᴛᴇʟᴇɢʀᴀᴍ ᴍᴇssᴀɢᴇ ʟɪɴᴋ
+    Args:
+        link: Telegram message link
     
-    ʀᴇᴛᴜʀɴs:
-        ᴛᴜᴘʟᴇ: (ᴍᴇᴅɪᴀ, ᴍᴇssᴀɢᴇ)
+    Returns:
+        tuple: (media, message)
     """
     parts = link.split("/")
     message_id = int(parts[-1])
@@ -43,14 +45,14 @@ async def media_Identifier(link: str):
     try:
         message = await leechbot.get_messages(msg_chat_id, message_id)
     except Exception as e:
-        logger.error(f"ᴛᴇʟᴇɢʀᴀᴍ ᴍᴇssᴀɢᴇ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Telegram message error: {e}")
         return None, None
     
     if message is None:
-        logger.error("ᴍᴇssᴀɢᴇ ɴᴏᴛ ғᴏᴜɴᴅ")
+        logger.error("Message not found")
         return None, None
     
-    # ɢᴇᴛ ᴍᴇᴅɪᴀ ғʀᴏᴍ ᴍᴇssᴀɢᴇ
+    # Get media from message
     media = (
         message.document
         or message.photo
@@ -66,15 +68,15 @@ async def media_Identifier(link: str):
 
 
 # =============================================================================
-#  ᴅᴏᴡɴʟᴏᴀᴅ ᴘʀᴏɢʀᴇss ᴄᴀʟʟʙᴀᴄᴋ
+# Download Progress Callback
 # =============================================================================
 async def download_progress(current: int, total: int):
     """
-    ᴜᴘᴅᴀᴛᴇ ᴅᴏᴡɴʟᴏᴀᴅ ᴘʀᴏɢʀᴇss.
+    Update download progress.
     
-    ᴀʀɢs:
-        ᴄᴜʀʀᴇɴᴛ: ʙʏᴛᴇs ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ
-        ᴛᴏᴛᴀʟ: ᴛᴏᴛᴀʟ ʙʏᴛᴇs
+    Args:
+        current: bytes downloaded
+        total: total bytes
     """
     speed_string, eta, percentage = speedETA(start_time, current, total)
     
@@ -85,32 +87,32 @@ async def download_progress(current: int, total: int):
         eta=getTime(eta),
         done=sizeUnit(sum(Transfer.down_bytes) + current),
         left=sizeUnit(Transfer.total_down_size),
-        engine="ᴛᴇʟᴇɢʀᴀᴍ 💬"
+        engine="Telegram 💬"
     )
 
 
 # =============================================================================
-#  ᴍᴀɪɴ ᴅᴏᴡɴʟᴏᴀᴅ ғᴜɴᴄᴛɪᴏɴ
+# Main Download Function
 # =============================================================================
 async def TelegramDownload(link: str, num: int):
     """
-    ᴅᴏᴡɴʟᴏᴀᴅ ғɪʟᴇ ғʀᴏᴍ ᴛᴇʟᴇɢʀᴀᴍ.
+    Download file from Telegram.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ᴛᴇʟᴇɢʀᴀᴍ ᴍᴇssᴀɢᴇ ʟɪɴᴋ
-        ɴᴜᴍ: ʟɪɴᴋ ɴᴜᴍʙᴇʀ ғᴏʀ ᴅɪsᴘʟᴀʏ
+    Args:
+        link: Telegram message link
+        num: link number for display
     """
     global start_time
     
     media, message = await media_Identifier(link)
     
     if media is None:
-        logger.error("ᴄᴏᴜʟᴅ ɴᴏᴛ ɪᴅᴇɴᴛɪғʏ ᴛᴇʟᴇɢʀᴀᴍ ᴍᴇᴅɪᴀ")
-        await cancelTask("ᴄᴏᴜʟᴅ ɴᴏᴛ ɪᴅᴇɴᴛɪғʏ ᴛᴇʟᴇɢʀᴀᴍ ᴍᴇᴅɪᴀ")
+        logger.error("Could not identify Telegram media")
+        await cancelTask(style_text("Could Not Identify Telegram Media"))
         return
     
-    name = media.file_name if hasattr(media, "file_name") else "ᴜɴᴋɴᴏᴡɴ"
-    Messages.status_head = f"**📥 ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ** `ʟɪɴᴋ {str(num).zfill(2)}`\n\n`{name}`\n"
+    name = media.file_name if hasattr(media, "file_name") else "Unknown"
+    Messages.status_head = style_text(f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n") + f"`{name}`\n"
     
     start_time = datetime.now()
     file_path = ospath.join(Paths.down_path, name)
