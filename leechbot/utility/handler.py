@@ -26,7 +26,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from leechbot.utility.variables import BOT, MSG, BotTimes, Messages, Paths, Transfer
 from leechbot.utility.converters import archive, extract, videoConverter, sizeChecker
 from leechbot.utility.helper import fileType, getSize, getTime, keyboard, shortFileName, sizeUnit, sysINFO
-from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
@@ -75,11 +74,11 @@ async def Leech(folder_path: str, remove: bool):
                 os.rename(short_path, new_path)
                 
                 BotTimes.current_time = time()
-                Messages.status_head = style_text(f"**📤 Uploading Split** `{count}/{len(dir_list)}`\n\n`{file_name}`\n")
+                Messages.status_head = f"**📤 Uploading Split** `{count}/{len(dir_list)}`\n\n`{file_name}`\n"
                 
                 try:
                     MSG.status_msg = await MSG.status_msg.edit_text(
-                        text=Messages.task_msg + Messages.status_head + "\n⏳ " + style_text("Starting...") + sysINFO(),
+                        text=Messages.task_msg + Messages.status_head + "\n⏳ Starting..." + sysINFO(),
                         reply_markup=keyboard()
                     )
                 except Exception as e:
@@ -103,11 +102,11 @@ async def Leech(folder_path: str, remove: bool):
             os.rename(file_path, new_path)
             
             BotTimes.current_time = time()
-            Messages.status_head = style_text(f"**📤 Uploading**\n\n`{file_name}`\n")
+            Messages.status_head = f"**📤 Uploading**\n\n`{file_name}`\n"
             
             try:
                 MSG.status_msg = await MSG.status_msg.edit_text(
-                    text=Messages.task_msg + Messages.status_head + "\n⏳ " + style_text("Starting...") + sysINFO(),
+                    text=Messages.task_msg + Messages.status_head + "\n⏳ Starting..." + sysINFO(),
                     reply_markup=keyboard()
                 )
             except Exception as e:
@@ -147,7 +146,7 @@ async def Zip_Handler(down_path: str, is_split: bool, remove: bool):
     """
     global BOT, Messages, MSG, Transfer
     
-    Messages.status_head = style_text(f"**🗜️ Zipping**\n\n`{Messages.download_name}`\n")
+    Messages.status_head = f"**🗜️ Zipping**\n\n`{Messages.download_name}`\n"
     
     try:
         MSG.status_msg = await MSG.status_msg.edit_text(
@@ -185,10 +184,10 @@ async def Unzip_Handler(down_path: str, remove: bool):
     """
     global MSG, Messages
     
-    Messages.status_head = style_text(f"\n**📂 Extracting**\n\n`{Messages.download_name}`\n")
+    Messages.status_head = f"\n**📂 Extracting**\n\n`{Messages.download_name}`\n"
     
     MSG.status_msg = await MSG.status_msg.edit_text(
-        text=Messages.task_msg + Messages.status_head + "\n⏳ " + style_text("Starting...") + sysINFO(),
+        text=Messages.task_msg + Messages.status_head + "\n⏳ Starting..." + sysINFO(),
         reply_markup=keyboard()
     )
     
@@ -225,12 +224,12 @@ async def cancelTask(reason: str):
     Args:
         reason: cancellation reason
     """
-    text = style_text(f"""**🚫 Task Cancelled**
+    text = f"""**🚫 Task Cancelled**
 
 ┏🔗 **Source:** [Here]({Messages.src_link})
 ┠🎯 **Mode:** `{BOT.Mode.mode.capitalize()}`
 ┠⚠️ **Reason:** `{reason}`
-┗⏱️ **Elapsed:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`""")
+┗⏱️ **Elapsed:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`"""
     
     if BOT.State.task_going:
         try:
@@ -249,8 +248,8 @@ async def cancelTask(reason: str):
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
-                            InlineKeyboardButton(style_button("📣 Channel"), url="https://t.me/MaximXBots"),
-                            InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup"),
+                            InlineKeyboardButton("📣 Channel", url="https://t.me/MaximXBots"),
+                            InlineKeyboardButton("Support 💬", url="https://t.me/MaximXGroup"),
                         ]
                     ]
                 )
@@ -269,7 +268,7 @@ async def SendLogs(is_leech: bool):
     """
     global Transfer, Messages
     
-    final_text = style_text(f"**📋 File List:** `{len(Transfer.sent_file)}`\n\n**📜 Logs:**\n")
+    final_text = f"**📋 File List:** `{len(Transfer.sent_file)}`\n\n**📜 Logs:**\n"
     
     if is_leech:
         file_count = f"┠📋 **Files:** `{len(Transfer.sent_file)}`\n"
@@ -278,7 +277,7 @@ async def SendLogs(is_leech: bool):
         file_count = ""
         size = sizeUnit(Transfer.total_down_size)
     
-    summary = style_text(f"""
+    summary = f"""
 
 **✅ Task Complete**
 
@@ -286,7 +285,7 @@ async def SendLogs(is_leech: bool):
 ┠📦 **Size:** `{size}`
 {file_count}
 ┠⏱️ **Time:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`
-┗🤖 **By:** [LeechBot](https://github.com/Shineii86/LeechBot)""")
+┗🤖 **By:** [LeechBot](https://github.com/Shineii86/LeechBot)"""
     
     if BOT.State.task_going:
         await MSG.sent_msg.reply_text(
@@ -298,11 +297,11 @@ async def SendLogs(is_leech: bool):
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton(style_button("📣 Channel"), url="https://t.me/MaximXBots"),
-                        InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup"),
+                        InlineKeyboardButton("📣 Channel", url="https://t.me/MaximXBots"),
+                        InlineKeyboardButton("Support 💬", url="https://t.me/MaximXGroup"),
                     ],
                     [
-                        InlineKeyboardButton(style_button("📂 GitHub ✨"), url="https://github.com/Shineii86/LeechBot"),
+                        InlineKeyboardButton("📂 GitHub ✨", url="https://github.com/Shineii86/LeechBot"),
                     ]
                 ]
             )
