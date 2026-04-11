@@ -18,7 +18,6 @@ import logging
 from leechbot.utility.variables import Aria2c
 from leechbot.utility.handler import cancelTask
 from leechbot.downloader.aria2 import aria2_Download
-from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +59,7 @@ async def terabox_download(link: str, index: int):
                     slow_url = json_response["response"][0]["resolutions"]["HD Video"]
                 except Exception as e:
                     logger.error(f"Terabox API error: {e}")
-                    await cancelTask(style_text(f"Terabox Link Generation Failed: {e}"))
+                    await cancelTask(f"Terabox Link Generation Failed: {e}")
                     return
             
             # Try fast download first
@@ -76,4 +75,4 @@ async def terabox_download(link: str, index: int):
     
     except Exception as e:
         logger.error(f"Terabox download error: {e}")
-        await cancelTask(style_text(f"Terabox Download Failed: {e}"))
+        await cancelTask(f"Terabox Download Failed: {e}")
