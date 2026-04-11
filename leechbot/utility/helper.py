@@ -409,7 +409,13 @@ def sysINFO() -> str:
 # System Information (Detailed)
 # =============================================================================
 def sysINFO_full() -> str:
-    """Get detailed system information."""
+    """
+    Get detailed system information.
+    
+    Returns:
+        str: formatted detailed system info string
+    """
+    import psutil
     ram = psutil.virtual_memory()
     disk = psutil.disk_usage("/")
     cpu_percent = psutil.cpu_percent(interval=0.5, percpu=True)
@@ -596,6 +602,7 @@ async def send_settings(client, message, msg_id: int, is_command: bool):
     """
     up_mode = "Document" if not BOT.Options.stream_upload else "Media"
     
+    # Build keyboard
     keyboard = InlineKeyboardMarkup(
         [
             [
@@ -698,7 +705,7 @@ async def status_bar(down_msg: str, speed: str, percentage: float, eta: str, don
             await MSG.status_msg.edit_text(
                 text=Messages.task_msg + down_msg + text + sysINFO(),
                 disable_web_page_preview=True,
-                reply_markup=status_keyboard()
+                reply_markup=status_keyboard()   # <-- Uses enhanced keyboard
             )
     except BadRequest as e:
         logger.error(f"Status bar error: {e}")
@@ -719,14 +726,14 @@ def keyboard():
     return InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton(style_button("Cancel", "danger"), callback_data="cancel")
+                InlineKeyboardButton(style_button("Cancel"), callback_data="cancel")
             ]
         ]
     )
 
 
 # =============================================================================
-# Status Keyboard with System Info Buttons
+# Status Keyboard with System Info Buttons (New)
 # =============================================================================
 def status_keyboard():
     """
@@ -739,17 +746,17 @@ def status_keyboard():
         [
             [
                 InlineKeyboardButton(
-                    style_button("🔄 Refresh", "primary"), 
+                    style_button("🔄 Refresh"), 
                     callback_data="sys_refresh"
                 ),
                 InlineKeyboardButton(
-                    style_button("📊 Stats", "primary"), 
+                    style_button("📊 Stats"), 
                     callback_data="sys_stats"
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    style_button("❌ Cancel", "danger"), 
+                    style_button("❌ Cancel"), 
                     callback_data="cancel"
                 )
             ]
