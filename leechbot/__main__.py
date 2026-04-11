@@ -227,14 +227,14 @@ Send Any Image To Set It As Thumbnail""")
     keyboard = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton(style_button("📂 GitHub Repository ✨"), url="https://github.com/Shineii86/LeechBot", style="primary")
+                InlineKeyboardButton(style_button("📂 GitHub Repository ✨"), url="https://github.com/Shineii86/LeechBot")
             ],
             [
-                InlineKeyboardButton(style_button("🔔 Updates"), url="https://t.me/MaximXBots", style="success"),
-                InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup", style="success"),
+                InlineKeyboardButton(style_button("🔔 Updates"), url="https://t.me/MaximXBots"),
+                InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup"),
             ],
             [
-                InlineKeyboardButton(style_button("🧑‍💻 Developer ✨"), url="https://t.me/Shineii86/", style="primary")
+                InlineKeyboardButton(style_button("🧑‍💻 Developer ✨"), url="https://t.me/Shineii86")
             ]
         ]
     )
@@ -412,14 +412,14 @@ async def handle_url(client, message):
         keyboard = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton(style_button("📄 Regular ✨"), callback_data="normal", style="primary")
+                    InlineKeyboardButton(style_button("📄 Regular ✨"), callback_data="normal")
                 ],
                 [
-                    InlineKeyboardButton(style_button("🗜️ Compress"), callback_data="zip", style="success"),
-                    InlineKeyboardButton(style_button("Extract 📂"), callback_data="unzip", style="success"),
+                    InlineKeyboardButton(style_button("🗜️ Compress"), callback_data="zip"),
+                    InlineKeyboardButton(style_button("Extract 📂"), callback_data="unzip"),
                 ],
                 [
-                    InlineKeyboardButton(style_button("🔄 Unzip+Zip ✨"), callback_data="undzip", style="primary")
+                    InlineKeyboardButton(style_button("🔄 Unzip+Zip ✨"), callback_data="undzip")
                 ],
             ]
         )
@@ -469,7 +469,7 @@ async def handle_callback(client, callback_query):
             chat_id=OWNER,
             text=style_text("**🚀 Initializing Task...**\n\nPlease Wait While I Prepare Your Download"),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(style_button("Cancel"), callback_data="cancel", style="danger")]]
+                [[InlineKeyboardButton(style_button("Cancel"), callback_data="cancel")]]
             )
         )
         
@@ -494,23 +494,23 @@ async def handle_callback(client, callback_query):
         keyboard = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton(style_button("✂️ Split"), callback_data="split-true", style="primary"),
-                    InlineKeyboardButton(style_button("Zip 🗜️"), callback_data="split-false", style="primary"),
+                    InlineKeyboardButton(style_button("✂️ Split"), callback_data="split-true"),
+                    InlineKeyboardButton(style_button("Zip 🗜️"), callback_data="split-false"),
                 ],
                 [
-                    InlineKeyboardButton(style_button("🔄 Convert"), callback_data="convert-true", style="success"),
-                    InlineKeyboardButton(style_button("Skip ⏭️"), callback_data="convert-false", style="success"),
+                    InlineKeyboardButton(style_button("🔄 Convert"), callback_data="convert-true"),
+                    InlineKeyboardButton(style_button("Skip ⏭️"), callback_data="convert-false"),
                 ],
                 [
-                    InlineKeyboardButton("🎬 Mp4", callback_data="mp4", style="primary"),
-                    InlineKeyboardButton("Mkv 📼", callback_data="mkv", style="primary"),
+                    InlineKeyboardButton("🎬 Mp4", callback_data="mp4"),
+                    InlineKeyboardButton("Mkv 📼", callback_data="mkv"),
                 ],
                 [
-                    InlineKeyboardButton(style_button("👍 High Quality"), callback_data="q-High", style="success"),
-                    InlineKeyboardButton(style_button("Low Quality 👎"), callback_data="q-Low", style="success"),
+                    InlineKeyboardButton(style_button("👍 High Quality"), callback_data="q-High"),
+                    InlineKeyboardButton(style_button("Low Quality 👎"), callback_data="q-Low"),
                 ],
                 [
-                    InlineKeyboardButton(style_button("❰ Back"), callback_data="back", style="danger")
+                    InlineKeyboardButton(style_button("❰ Back"), callback_data="back")
                 ],
             ]
         )
@@ -529,15 +529,15 @@ async def handle_callback(client, callback_query):
         keyboard = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("<code>Monospace</code>", callback_data="code-Monospace", style="primary"),
-                    InlineKeyboardButton("**Bold**", callback_data="b-Bold", style="primary"),
+                    InlineKeyboardButton("<code>Monospace</code>", callback_data="code-Monospace"),
+                    InlineKeyboardButton("**Bold**", callback_data="b-Bold"),
                 ],
                 [
-                    InlineKeyboardButton("__Italic__", callback_data="i-Italic", style="primary"),
-                    InlineKeyboardButton("__Underline__", callback_data="u-Underlined", style="primary"),
+                    InlineKeyboardButton("__Italic__", callback_data="i-Italic"),
+                    InlineKeyboardButton("__Underline__", callback_data="u-Underlined"),
                 ],
-                [InlineKeyboardButton("Regular", callback_data="p-Regular", style="primary")],
-                [InlineKeyboardButton(style_button("❰ Back"), callback_data="back", style="danger")],
+                [InlineKeyboardButton("Regular", callback_data="p-Regular")],
+                [InlineKeyboardButton(style_button("❰ Back"), callback_data="back")],
             ]
         )
         
@@ -555,8 +555,8 @@ async def handle_callback(client, callback_query):
     elif data == "thumb":
         keyboard = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton(style_button("🗑️ Delete Thumbnail"), callback_data="del-thumb", style="danger")],
-                [InlineKeyboardButton(style_button("❰ Back"), callback_data="back", style="primary")],
+                [InlineKeyboardButton(style_button("🗑️ Delete Thumbnail"), callback_data="del-thumb")],
+                [InlineKeyboardButton(style_button("❰ Back"), callback_data="back")],
             ]
         )
         
@@ -646,7 +646,7 @@ async def handle_callback(client, callback_query):
             chat_id=OWNER,
             text=style_text("**🚀 Initializing Task...**\n\nPlease Wait While I Prepare Your Download"),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(style_button("Cancel"), callback_data="cancel", style="danger")]]
+                [[InlineKeyboardButton(style_button("Cancel"), callback_data="cancel")]]
             )
         )
         
