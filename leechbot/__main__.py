@@ -1,18 +1,22 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Command Handlers and Entry Point
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
-#  x: https://x.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
+# =============================================================================
+# License   : MIT License
+# You may use, modify, and distribute this code under the MIT License.
+# Please retain this header when using or modifying the code.
 # =============================================================================
 
 """
-ʟᴇᴇᴄʜʙᴏᴛ ᴄᴏᴍᴍᴀɴᴅ ʜᴀɴᴅʟᴇʀs ᴀɴᴅ ᴇɴᴛʀʏ ᴘᴏɪɴᴛ
+LeechBot command handlers and entry point
 
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ᴄᴏɴᴛᴀɪɴs ᴀʟʟ ᴛᴇʟᴇɢʀᴀᴍ ʙᴏᴛ ᴄᴏᴍᴍᴀɴᴅ ʜᴀɴᴅʟᴇʀs, ᴄᴀʟʟʙᴀᴄᴋ ǫᴜᴇʀɪᴇs,
-ᴀɴᴅ ᴛʜᴇ ᴍᴀɪɴ ʙᴏᴛ ᴇxᴇᴄᴜᴛɪᴏɴ ʟᴏᴏᴘ. ɪᴛ ʜᴀɴᴅʟᴇs ᴜsᴇʀ ɪɴᴛᴇʀᴀᴄᴛɪᴏɴs
-ᴀɴᴅ ᴏʀᴄʜᴇsᴛʀᴀᴛᴇs ᴛʜᴇ ᴅᴏᴡɴʟᴏᴀᴅ ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ᴘʀᴏᴄᴇssᴇs.
+This module contains all Telegram bot command handlers, callback queries,
+and the main bot execution loop. It handles user interactions
+and orchestrates the download and upload processes.
 """
 
 import logging
@@ -26,70 +30,48 @@ from leechbot.utility.variables import BOT, MSG, BotTimes, Paths
 from leechbot.utility.task_manager import taskScheduler, task_starter
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from leechbot.utility.helper import isLink, setThumbnail, message_deleter, send_settings
+from leechbot.utility.style import style_text, style_button
 
 logger = logging.getLogger(__name__)
 
 # =============================================================================
-#  ɢʟᴏʙᴀʟ ᴠᴀʀɪᴀʙʟᴇs
+# Global Variables
 # =============================================================================
 src_request_msg = None
 
 # =============================================================================
-#  ᴜɴɪᴄᴏᴅᴇ sᴛʏʟɪɴɢ ғᴜɴᴄᴛɪᴏɴs
+# Welcome Message (Styled)
 # =============================================================================
-def style_text(text: str) -> str:
-    """
-    ᴄᴏɴᴠᴇʀᴛ ʀᴇɢᴜʟᴀʀ ᴛᴇxᴛ ᴛᴏ ᴜɴɪᴄᴏᴅᴇ sᴍᴀʟʟ ᴄᴀᴘs sᴛʏʟᴇ.
-    
-    ᴄᴀᴘɪᴛᴀʟ ʟᴇᴛᴛᴇʀs: ᴀ, ʙ, ᴄ, ᴅ, ᴇ, ғ, ɢ, ʜ, ɪ, ᴊ, ᴋ, ʟ, ᴍ, ɴ, ᴏ, ᴘ, Ҩ, ʀ, s, ᴛ, ᴜ, ᴠ, ᴡ, x, ʏ, ᴢ
-    sᴍᴀʟʟ ʟᴇᴛᴛᴇʀs: ᴀ, ʙ, ᴄ, ᴅ, ᴇ, ғ, ɢ, ʜ, ɪ, ᴊ, ᴋ, ʟ, ᴍ, ɴ, ᴏ, ᴘ, ҩ, ʀ, s, ᴛ, ᴜ, ᴠ, ᴡ, x, ʏ, ᴢ
-    """
-    normal_caps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    normal_small = "abcdefghijklmnopqrstuvwxyz"
-    unicode_caps = "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘҨʀsᴛᴜᴠᴡxʏᴢ"
-    unicode_small = "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘҩʀsᴛᴜᴠᴡxʏᴢ"
-    
-    result = ""
-    for char in text:
-        if char in normal_caps:
-            result += unicode_caps[normal_caps.index(char)]
-        elif char in normal_small:
-            result += unicode_small[normal_small.index(char)]
-        else:
-            result += char
-    return result
+WELCOME_TEXT = style_text("""**Welcome To Telegram Leechbot** 🚀
+
+◈ **Powerful File Transloader Bot**
+◈ **Download From Multiple Sources**
+◈ **Upload To Telegram Or Google Drive**
+
+**Developer:** [Shinei Nouzen](https://t.me/Shineii86)""")
 
 # =============================================================================
-#  ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ
-# =============================================================================
-WELCOME_TEXT = """**ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ʟᴇᴇᴄʜʙᴏᴛ** 🚀
-
-◈ **ᴘᴏᴡᴇʀғᴜʟ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ ʙᴏᴛ**
-◈ **ᴅᴏᴡɴʟᴏᴀᴅ ғʀᴏᴍ ᴍᴜʟᴛɪᴘʟᴇ sᴏᴜʀᴄᴇs**
-◈ **ᴜᴘʟᴏᴀᴅ ᴛᴏ ᴛᴇʟᴇɢʀᴀᴍ ᴏʀ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ**
-
-**ᴅᴇᴠᴇʟᴏᴘᴇʀ:** @sʜɪɴᴇɪɪ86
-**ɢɪᴛʜᴜʙ:** sʜɪɴᴇɪɪ86/ʟᴇᴇᴄʜʙᴏᴛ"""
-
-# =============================================================================
-#  ʙᴏᴛ ᴄᴏᴍᴍᴀɴᴅs
+# Bot Commands
 # =============================================================================
 @leechbot.on_message(filters.command("start") & filters.private)
 async def start_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /sᴛᴀʀᴛ ᴄᴏᴍᴍᴀɴᴅ.
-    sᴇɴᴅs ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ ʀᴇᴘᴏsɪᴛᴏʀʏ ᴀɴᴅ sᴜᴘᴘᴏʀᴛ ʟɪɴᴋs.
+    Handle the /start command.
+    Sends welcome message with repository and support links.
     """
     await message.delete()
     
     keyboard = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("📂 ʀᴇᴘᴏsɪᴛᴏʀʏ", url="https://github.com/Shineii86/LeechBot"),
-                InlineKeyboardButton("💬 sᴜᴘᴘᴏʀᴛ", url="https://t.me/Shineii86"),
+                InlineKeyboardButton(style_button("📂 GitHub Repository ✨"), url="https://github.com/Shineii86/LeechBot", style="primary")
             ],
             [
-                InlineKeyboardButton("⚙️ sᴇᴛᴛɪɴɢs", callback_data="settings_menu"),
+                InlineKeyboardButton(style_button("🔔 Updates"), url="https://t.me/MaximXBots", style="success"),
+                InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup", style="success"),
+            ],
+            [
+                InlineKeyboardButton(style_button("⚙️ Settings"), callback_data="settings_menu", style="primary"),
             ]
         ]
     )
@@ -100,29 +82,29 @@ async def start_command(client, message):
 @leechbot.on_message(filters.command("tupload") & filters.private)
 async def telegram_upload_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /ᴛᴜᴘʟᴏᴀᴅ ᴄᴏᴍᴍᴀɴᴅ.
-    sᴇᴛs ᴜᴘ ʟᴇᴇᴄʜ ᴍᴏᴅᴇ ғᴏʀ ᴜᴘʟᴏᴀᴅɪɴɢ ғɪʟᴇs ᴛᴏ ᴛᴇʟᴇɢʀᴀᴍ.
+    Handle the /tupload command.
+    Sets up leech mode for uploading files to Telegram.
     """
     global BOT, src_request_msg
     
     BOT.Mode.mode = "leech"
     BOT.Mode.ytdl = False
     
-    text = """**⚡ sᴇɴᴅ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ(s)** 🔗
+    text = style_text("""**⚡ Send Download Link(s)** 🔗
 
-📋 **ғᴏʟʟᴏᴡ ᴛʜᴇ ᴘᴀᴛᴛᴇʀɴ ʙᴇʟᴏᴡ:**
+📋 **Follow The Pattern Below:**
 
 <code>https://example.com/file1.mp4
 https://example.com/file2.mp4
-[ᴄᴜsᴛᴏᴍ ɴᴀᴍᴇ.mp4]
-{ᴢɪᴘ ᴘᴀssᴡᴏʀᴅ}
-(ᴜɴᴢɪᴘ ᴘᴀssᴡᴏʀᴅ)</code>
+[Custom Name.mp4]
+{Zip Password}
+(Unzip Password)</code>
 
-**💡 ᴛɪᴘs:**
-• ᴍᴜʟᴛɪᴘʟᴇ ʟɪɴᴋs sᴜᴘᴘᴏʀᴛᴇᴅ
-• ᴜsᴇ [] ғᴏʀ ᴄᴜsᴛᴏᴍ ғɪʟᴇɴᴀᴍᴇ
-• ᴜsᴇ {} ғᴏʀ ᴢɪᴘ ᴘᴀssᴡᴏʀᴅ
-• ᴜsᴇ () ғᴏʀ ᴇxᴛʀᴀᴄᴛ ᴘᴀssᴡᴏʀᴅ"""
+**💡 Tips:**
+• Multiple Links Supported
+• Use [] For Custom Filename
+• Use {} For Zip Password
+• Use () For Extract Password""")
     
     src_request_msg = await task_starter(message, text)
 
@@ -130,28 +112,28 @@ https://example.com/file2.mp4
 @leechbot.on_message(filters.command("gdupload") & filters.private)
 async def gdrive_upload_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /ɢᴅᴜᴘʟᴏᴀᴅ ᴄᴏᴍᴍᴀɴᴅ.
-    sᴇᴛs ᴜᴘ ᴍɪʀʀᴏʀ ᴍᴏᴅᴇ ғᴏʀ ᴜᴘʟᴏᴀᴅɪɴɢ ғɪʟᴇs ᴛᴏ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ.
+    Handle the /gdupload command.
+    Sets up mirror mode for uploading files to Google Drive.
     """
     global BOT, src_request_msg
     
     BOT.Mode.mode = "mirror"
     BOT.Mode.ytdl = False
     
-    text = """**⚡ sᴇɴᴅ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ(s)** 🔗
+    text = style_text("""**⚡ Send Download Link(s)** 🔗
 
-📋 **ғᴏʟʟᴏᴡ ᴛʜᴇ ᴘᴀᴛᴛᴇʀɴ ʙᴇʟᴏᴡ:**
+📋 **Follow The Pattern Below:**
 
 <code>https://example.com/file1.mp4
 https://example.com/file2.mp4
-[ᴄᴜsᴛᴏᴍ ɴᴀᴍᴇ.mp4]
-{ᴢɪᴘ ᴘᴀssᴡᴏʀᴅ}
-(ᴜɴᴢɪᴘ ᴘᴀssᴡᴏʀᴅ)</code>
+[Custom Name.mp4]
+{Zip Password}
+(Unzip Password)</code>
 
-**💡 ᴛɪᴘs:**
-• ᴍᴜʟᴛɪᴘʟᴇ ʟɪɴᴋs sᴜᴘᴘᴏʀᴛᴇᴅ
-• ғɪʟᴇs ᴡɪʟʟ ʙᴇ ᴍɪʀʀᴏʀᴇᴅ ᴛᴏ ʏᴏᴜʀ ɢᴅʀɪᴠᴇ
-• ᴍᴀᴋᴇ sᴜʀᴇ ɢᴅʀɪᴠᴇ ɪs ᴍᴏᴜɴᴛᴇᴅ"""
+**💡 Tips:**
+• Multiple Links Supported
+• Files Will Be Mirrored To Your Gdrive
+• Make Sure Gdrive Is Mounted""")
     
     src_request_msg = await task_starter(message, text)
 
@@ -159,23 +141,23 @@ https://example.com/file2.mp4
 @leechbot.on_message(filters.command("drupload") & filters.private)
 async def directory_upload_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /ᴅʀᴜᴘʟᴏᴀᴅ ᴄᴏᴍᴍᴀɴᴅ.
-    sᴇᴛs ᴜᴘ ᴅɪʀᴇᴄᴛᴏʀʏ ʟᴇᴇᴄʜ ᴍᴏᴅᴇ ғᴏʀ ᴜᴘʟᴏᴀᴅɪɴɢ ʟᴏᴄᴀʟ ғᴏʟᴅᴇʀs.
+    Handle the /drupload command.
+    Sets up directory leech mode for uploading local folders.
     """
     global BOT, src_request_msg
     
     BOT.Mode.mode = "dir-leech"
     BOT.Mode.ytdl = False
     
-    text = """**⚡ sᴇɴᴅ ғᴏʟᴅᴇʀ ᴘᴀᴛʜ** 📁
+    text = style_text("""**⚡ Send Folder Path** 📁
 
-📋 **ᴇxᴀᴍᴘʟᴇ:**
+📋 **Example:**
 
 <code>/home/user/Downloads/myfolder</code>
 
-**💡 ɴᴏᴛᴇ:**
-• ᴘʀᴏᴠɪᴅᴇ ᴀʙsᴏʟᴜᴛᴇ ᴘᴀᴛʜ ᴛᴏ ᴛʜᴇ ғᴏʟᴅᴇʀ
-• ᴇɴsᴜʀᴇ ᴛʜᴇ ʙᴏᴛ ʜᴀs ʀᴇᴀᴅ ᴘᴇʀᴍɪssɪᴏɴs"""
+**💡 Note:**
+• Provide Absolute Path To The Folder
+• Ensure The Bot Has Read Permissions""")
     
     src_request_msg = await task_starter(message, text)
 
@@ -183,26 +165,26 @@ async def directory_upload_command(client, message):
 @leechbot.on_message(filters.command("ytupload") & filters.private)
 async def ytdl_upload_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /ʏᴛᴜᴘʟᴏᴀᴅ ᴄᴏᴍᴍᴀɴᴅ.
-    sᴇᴛs ᴜᴘ ʏᴛ-ᴅʟᴘ ᴍᴏᴅᴇ ғᴏʀ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ғʀᴏᴍ ʏᴏᴜᴛᴜʙᴇ ᴀɴᴅ ᴏᴛʜᴇʀ sɪᴛᴇs.
+    Handle the /ytupload command.
+    Sets up YT-DLP mode for downloading from YouTube and other sites.
     """
     global BOT, src_request_msg
     
     BOT.Mode.mode = "leech"
     BOT.Mode.ytdl = True
     
-    text = """**⚡ sᴇɴᴅ ʏᴛ-ᴅʟᴘ ʟɪɴᴋ(s)** 🔗
+    text = style_text("""**⚡ Send Yt-Dlp Link(s)** 🔗
 
-📋 **ғᴏʟʟᴏᴡ ᴛʜᴇ ᴘᴀᴛᴛᴇʀɴ ʙᴇʟᴏᴡ:**
+📋 **Follow The Pattern Below:**
 
 <code>https://youtube.com/watch?v=xxxxx
 https://youtu.be/xxxxx
-[ᴄᴜsᴛᴏᴍ ɴᴀᴍᴇ.mp4]
-{ᴢɪᴘ ᴘᴀssᴡᴏʀᴅ}</code>
+[Custom Name.mp4]
+{Zip Password}</code>
 
-**💡 sᴜᴘᴘᴏʀᴛᴇᴅ sɪᴛᴇs:**
-• ʏᴏᴜᴛᴜʙᴇ, ғᴀᴄᴇʙᴏᴏᴋ, ɪɴsᴛᴀɢʀᴀᴍ
-• ᴛᴡɪᴛᴛᴇʀ, ᴛɪᴋᴛᴏᴋ, ᴀɴᴅ ᴍᴏʀᴇ..."""
+**💡 Supported Sites:**
+• Youtube, Facebook, Instagram
+• Twitter, Tiktok, And More...""")
     
     src_request_msg = await task_starter(message, text)
 
@@ -210,8 +192,8 @@ https://youtu.be/xxxxx
 @leechbot.on_message(filters.command("settings") & filters.private)
 async def settings_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /sᴇᴛᴛɪɴɢs ᴄᴏᴍᴍᴀɴᴅ.
-    ᴏᴘᴇɴs ᴛʜᴇ ʙᴏᴛ sᴇᴛᴛɪɴɢs ᴍᴇɴᴜ (ᴏᴡɴᴇʀ ᴏɴʟʏ).
+    Handle the /settings command.
+    Opens the bot settings menu (owner only).
     """
     if message.chat.id == OWNER:
         await message.delete()
@@ -221,32 +203,35 @@ async def settings_command(client, message):
 @leechbot.on_message(filters.command("help") & filters.private)
 async def help_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /ʜᴇʟᴘ ᴄᴏᴍᴍᴀɴᴅ.
-    ᴅɪsᴘʟᴀʏs ʜᴇʟᴘ ɪɴғᴏʀᴍᴀᴛɪᴏɴ ᴀɴᴅ ᴀᴠᴀɪʟᴀʙʟᴇ ᴄᴏᴍᴍᴀɴᴅs.
+    Handle the /help command.
+    Displays help information and available commands.
     """
-    help_text = """**📖 ʟᴇᴇᴄʜʙᴏᴛ ʜᴇʟᴘ ᴍᴇɴᴜ**
+    help_text = style_text("""**📖 Leechbot Help Menu**
 
-**ᴀᴠᴀɪʟᴀʙʟᴇ ᴄᴏᴍᴍᴀɴᴅs:**
+**Available Commands:**
 
-/start - sᴛᴀʀᴛ ᴛʜᴇ ʙᴏᴛ
-/tupload - ᴜᴘʟᴏᴀᴅ ᴛᴏ ᴛᴇʟᴇɢʀᴀᴍ
-/gdupload - ᴍɪʀʀᴏʀ ᴛᴏ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ
-/drupload - ᴜᴘʟᴏᴀᴅ ʟᴏᴄᴀʟ ᴅɪʀᴇᴄᴛᴏʀʏ
-/ytupload - ᴅᴏᴡɴʟᴏᴀᴅ ᴡɪᴛʜ ʏᴛ-ᴅʟᴘ
-/settings - ʙᴏᴛ sᴇᴛᴛɪɴɢs
-/setname - sᴇᴛ ᴄᴜsᴛᴏᴍ ғɪʟᴇɴᴀᴍᴇ
-/zipaswd - sᴇᴛ ᴢɪᴘ ᴘᴀssᴡᴏʀᴅ
-/unzipaswd - sᴇᴛ ᴜɴᴢɪᴘ ᴘᴀssᴡᴏʀᴅ
-/help - sʜᴏᴡ ᴛʜɪs ʜᴇʟᴘ ᴍᴇssᴀɢᴇ
+/start - Start The Bot
+/tupload - Upload To Telegram
+/gdupload - Mirror To Google Drive
+/drupload - Upload Local Directory
+/ytupload - Download With Yt-Dlp
+/settings - Bot Settings
+/setname - Set Custom Filename
+/zipaswd - Set Zip Password
+/unzipaswd - Set Unzip Password
+/help - Show This Help Message
 
-**🖼️ ᴛʜᴜᴍʙɴᴀɪʟ:**
-sᴇɴᴅ ᴀɴʏ ɪᴍᴀɢᴇ ᴛᴏ sᴇᴛ ɪᴛ ᴀs ᴛʜᴜᴍʙɴᴀɪʟ"""
+**🖼️ Thumbnail:**
+Send Any Image To Set It As Thumbnail""")
     
     keyboard = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("📂 ʀᴇᴘᴏsɪᴛᴏʀʏ", url="https://github.com/Shineii86/LeechBot"),
-                InlineKeyboardButton("💬 sᴜᴘᴘᴏʀᴛ", url="https://t.me/Shineii86"),
+                InlineKeyboardButton(style_button("📂 GitHub Repository ✨"), url="https://github.com/Shineii86/LeechBot", style="primary")
+            ],
+            [
+                InlineKeyboardButton(style_button("🔔 Updates"), url="https://t.me/MaximXBots", style="success"),
+                InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup", style="success"),
             ]
         ]
     )
@@ -259,20 +244,20 @@ sᴇɴᴅ ᴀɴʏ ɪᴍᴀɢᴇ ᴛᴏ sᴇᴛ ɪᴛ ᴀs ᴛʜᴜᴍʙɴᴀɪʟ
 @leechbot.on_message(filters.command("setname") & filters.private)
 async def setname_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /sᴇᴛɴᴀᴍᴇ ᴄᴏᴍᴍᴀɴᴅ.
-    sᴇᴛs ᴀ ᴄᴜsᴛᴏᴍ ғɪʟᴇɴᴀᴍᴇ ғᴏʀ ᴅᴏᴡɴʟᴏᴀᴅs.
+    Handle the /setname command.
+    Sets a custom filename for downloads.
     """
     global BOT
     
     if len(message.command) < 2:
         msg = await message.reply_text(
-            "**⚠️ ᴜsᴀɢᴇ:**\n`/setname <filename.extension>`\n\n**ᴇxᴀᴍᴘʟᴇ:**\n`/setname myvideo.mp4`",
+            style_text("**⚠️ Usage:**\n`/setname <filename.extension>`\n\n**Example:**\n`/setname myvideo.mp4`"),
             quote=True
         )
     else:
         BOT.Options.custom_name = " ".join(message.command[1:])
         msg = await message.reply_text(
-            f"**✅ ᴄᴜsᴛᴏᴍ ɴᴀᴍᴇ sᴇᴛ:**\n`{BOT.Options.custom_name}`",
+            style_text(f"**✅ Custom Name Set:**\n`{BOT.Options.custom_name}`"),
             quote=True
         )
     
@@ -283,20 +268,20 @@ async def setname_command(client, message):
 @leechbot.on_message(filters.command("zipaswd") & filters.private)
 async def zipaswd_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /ᴢɪᴘᴀsᴡᴅ ᴄᴏᴍᴍᴀɴᴅ.
-    sᴇᴛs ᴀ ᴘᴀssᴡᴏʀᴅ ғᴏʀ ᴢɪᴘ ᴄᴏᴍᴘʀᴇssɪᴏɴ.
+    Handle the /zipaswd command.
+    Sets a password for zip compression.
     """
     global BOT
     
     if len(message.command) != 2:
         msg = await message.reply_text(
-            "**⚠️ ᴜsᴀɢᴇ:**\n`/zipaswd <password>`\n\n**ᴇxᴀᴍᴘʟᴇ:**\n`/zipaswd mypassword123`",
+            style_text("**⚠️ Usage:**\n`/zipaswd <password>`\n\n**Example:**\n`/zipaswd mypassword123`"),
             quote=True
         )
     else:
         BOT.Options.zip_pswd = message.command[1]
         msg = await message.reply_text(
-            "**🔐 ᴢɪᴘ ᴘᴀssᴡᴏʀᴅ sᴇᴛ sᴜᴄᴄᴇssғᴜʟʟʏ**",
+            style_text("**🔐 Zip Password Set Successfully**"),
             quote=True
         )
     
@@ -307,20 +292,20 @@ async def zipaswd_command(client, message):
 @leechbot.on_message(filters.command("unzipaswd") & filters.private)
 async def unzipaswd_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /ᴜɴᴢɪᴘᴀsᴡᴅ ᴄᴏᴍᴍᴀɴᴅ.
-    sᴇᴛs ᴀ ᴘᴀssᴡᴏʀᴅ ғᴏʀ ᴇxᴛʀᴀᴄᴛɪɴɢ ᴀʀᴄʜɪᴠᴇs.
+    Handle the /unzipaswd command.
+    Sets a password for extracting archives.
     """
     global BOT
     
     if len(message.command) != 2:
         msg = await message.reply_text(
-            "**⚠️ ᴜsᴀɢᴇ:**\n`/unzipaswd <password>`\n\n**ᴇxᴀᴍᴘʟᴇ:**\n`/unzipaswd mypassword123`",
+            style_text("**⚠️ Usage:**\n`/unzipaswd <password>`\n\n**Example:**\n`/unzipaswd mypassword123`"),
             quote=True
         )
     else:
         BOT.Options.unzip_pswd = message.command[1]
         msg = await message.reply_text(
-            "**🔓 ᴜɴᴢɪᴘ ᴘᴀssᴡᴏʀᴅ sᴇᴛ sᴜᴄᴄᴇssғᴜʟʟʏ**",
+            style_text("**🔓 Unzip Password Set Successfully**"),
             quote=True
         )
     
@@ -331,12 +316,12 @@ async def unzipaswd_command(client, message):
 @leechbot.on_message(filters.command("stats") & filters.private)
 async def stats_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /sᴛᴀᴛs ᴄᴏᴍᴍᴀɴᴅ.
-    ᴅɪsᴘʟᴀʏs ʙᴏᴛ sᴛᴀᴛɪsᴛɪᴄs ᴀɴᴅ sʏsᴛᴇᴍ ɪɴғᴏʀᴍᴀᴛɪᴏɴ.
+    Handle the /stats command.
+    Displays bot statistics and system information.
     """
     from leechbot.utility.helper import sysINFO
     
-    stats_text = f"**📊 ʙᴏᴛ sᴛᴀᴛɪsᴛɪᴄs**{sysINFO()}"
+    stats_text = style_text(f"**📊 Bot Statistics**{sysINFO()}")
     
     msg = await message.reply_text(stats_text, quote=True)
     await sleep(15)
@@ -346,26 +331,26 @@ async def stats_command(client, message):
 @leechbot.on_message(filters.command("cancel") & filters.private)
 async def cancel_command(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴛʜᴇ /ᴄᴀɴᴄᴇʟ ᴄᴏᴍᴍᴀɴᴅ.
-    ᴄᴀɴᴄᴇʟs ᴛʜᴇ ᴄᴜʀʀᴇɴᴛ ʀᴜɴɴɪɴɢ ᴛᴀsᴋ.
+    Handle the /cancel command.
+    Cancels the current running task.
     """
     if BOT.State.task_going:
-        await cancelTask("ᴜsᴇʀ ᴄᴀɴᴄᴇʟʟᴇᴅ ᴛʜᴇ ᴛᴀsᴋ")
-        msg = await message.reply_text("**❌ ᴛᴀsᴋ ᴄᴀɴᴄᴇʟʟᴇᴅ**", quote=True)
+        await cancelTask("User cancelled the task")
+        msg = await message.reply_text(style_text("**❌ Task Cancelled**"), quote=True)
     else:
-        msg = await message.reply_text("**⚠️ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴛᴀsᴋ ᴛᴏ ᴄᴀɴᴄᴇʟ**", quote=True)
+        msg = await message.reply_text(style_text("**⚠️ No Active Task To Cancel**"), quote=True)
     
     await sleep(10)
     await message_deleter(message, msg)
 
 
 # =============================================================================
-#  ʀᴇᴘʟʏ ʜᴀɴᴅʟᴇʀs
+# Reply Handlers
 # =============================================================================
 @leechbot.on_message(filters.reply)
 async def handle_reply(client, message):
     """
-    ʜᴀɴᴅʟᴇ ʀᴇᴘʟʏ ᴍᴇssᴀɢᴇs ғᴏʀ sᴇᴛᴛɪɴɢ ᴘʀᴇғɪx/sᴜғғɪx.
+    Handle reply messages for setting prefix/suffix.
     """
     global BOT
     
@@ -382,17 +367,17 @@ async def handle_reply(client, message):
 
 
 # =============================================================================
-#  ʟɪɴᴋ ʜᴀɴᴅʟᴇʀ
+# Link Handler
 # =============================================================================
 @leechbot.on_message(filters.create(isLink) & ~filters.photo)
 async def handle_url(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴜʀʟ ᴍᴇssᴀɢᴇs ғᴏʀ ᴅᴏᴡɴʟᴏᴀᴅ ᴘʀᴏᴄᴇssɪɴɢ.
-    ᴘᴀʀsᴇs ᴏᴘᴛɪᴏɴs ʟɪᴋᴇ ᴄᴜsᴛᴏᴍ ɴᴀᴍᴇ, ᴢɪᴘ ᴘᴀssᴡᴏʀᴅ, ᴀɴᴅ ᴜɴᴢɪᴘ ᴘᴀssᴡᴏʀᴅ.
+    Handle URL messages for download processing.
+    Parses options like custom name, zip password, and unzip password.
     """
     global BOT, src_request_msg
     
-    # ʀᴇsᴇᴛ ᴏᴘᴛɪᴏɴs
+    # Reset options
     BOT.Options.custom_name = ""
     BOT.Options.zip_pswd = ""
     BOT.Options.unzip_pswd = ""
@@ -403,7 +388,7 @@ async def handle_url(client, message):
     if not BOT.State.task_going and BOT.State.started:
         temp_source = message.text.splitlines()
         
-        # ᴘᴀʀsᴇ ᴏᴘᴛɪᴏɴs ғʀᴏᴍ ᴍᴇssᴀɢᴇ
+        # Parse options from message
         for _ in range(3):
             if not temp_source:
                 break
@@ -423,22 +408,22 @@ async def handle_url(client, message):
         
         keyboard = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("📄 ʀᴇɢᴜʟᴀʀ", callback_data="normal")],
+                [InlineKeyboardButton(style_button("📄 Regular"), callback_data="normal", style="primary")],
                 [
-                    InlineKeyboardButton("🗜️ ᴄᴏᴍᴘʀᴇss", callback_data="zip"),
-                    InlineKeyboardButton("📂 ᴇxᴛʀᴀᴄᴛ", callback_data="unzip"),
+                    InlineKeyboardButton(style_button("🗜️ Compress"), callback_data="zip", style="success"),
+                    InlineKeyboardButton(style_button("📂 Extract"), callback_data="unzip", style="success"),
                 ],
-                [InlineKeyboardButton("🔄 ᴜɴᴢɪᴘ+ᴢɪᴘ", callback_data="undzip")],
+                [InlineKeyboardButton(style_button("🔄 Unzip+Zip"), callback_data="undzip", style="primary")],
             ]
         )
         
         mode_text = BOT.Mode.mode.capitalize()
-        options_text = f"""**🎯 sᴇʟᴇᴄᴛ ᴜᴘʟᴏᴀᴅ ᴛʏᴘᴇ ғᴏʀ {mode_text}**
+        options_text = style_text(f"""**🎯 Select Upload Type For {mode_text}**
 
-📄 **ʀᴇɢᴜʟᴀʀ** - ɴᴏʀᴍᴀʟ ғɪʟᴇ ᴜᴘʟᴏᴀᴅ
-🗜️ **ᴄᴏᴍᴘʀᴇss** - ᴢɪᴘ ғɪʟᴇ ᴜᴘʟᴏᴀᴅ
-📂 **ᴇxᴛʀᴀᴄᴛ** - ᴇxᴛʀᴀᴄᴛ ᴀʀᴄʜɪᴠᴇ ʙᴇғᴏʀᴇ ᴜᴘʟᴏᴀᴅ
-🔄 **ᴜɴᴢɪᴘ+ᴢɪᴘ** - ᴇxᴛʀᴀᴄᴛ ᴛʜᴇɴ ᴄᴏᴍᴘʀᴇss"""
+📄 **Regular** - Normal File Upload
+🗜️ **Compress** - Zip File Upload
+📂 **Extract** - Extract Archive Before Upload
+🔄 **Unzip+Zip** - Extract Then Compress""")
         
         await message.reply_text(
             text=options_text,
@@ -447,24 +432,24 @@ async def handle_url(client, message):
         )
     elif BOT.State.started:
         await message.delete()
-        msg = await message.reply_text("**⏳ ɪ'ᴍ ᴀʟʀᴇᴀᴅʏ ᴡᴏʀᴋɪɴɢ! ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ...**")
+        msg = await message.reply_text(style_text("**⏳ I'm Already Working! Please Wait...**"))
         await sleep(10)
         await msg.delete()
 
 
 # =============================================================================
-#  ᴄᴀʟʟʙᴀᴄᴋ ǫᴜᴇʀʏ ʜᴀɴᴅʟᴇʀ
+# Callback Query Handler
 # =============================================================================
 @leechbot.on_callback_query()
 async def handle_callback(client, callback_query):
     """
-    ʜᴀɴᴅʟᴇ ᴀʟʟ ɪɴʟɪɴᴇ ᴋᴇʏʙᴏᴀʀᴅ ᴄᴀʟʟʙᴀᴄᴋs.
+    Handle all inline keyboard callbacks.
     """
     global BOT, MSG
     
     data = callback_query.data
     
-    # ᴜᴘʟᴏᴀᴅ ᴛʏᴘᴇ sᴇʟᴇᴄᴛɪᴏɴ
+    # Upload type selection
     if data in ["normal", "zip", "unzip", "undzip"]:
         BOT.Mode.type = data
         await callback_query.message.delete()
@@ -475,9 +460,9 @@ async def handle_callback(client, callback_query):
         
         MSG.status_msg = await leechbot.send_message(
             chat_id=OWNER,
-            text="**🚀 ɪɴɪᴛɪᴀʟɪᴢɪɴɢ ᴛᴀsᴋ...**\n\nᴘʟᴇᴀsᴇ ᴡᴀɪᴛ ᴡʜɪʟᴇ ɪ ᴘʀᴇᴘᴀʀᴇ ʏᴏᴜʀ ᴅᴏᴡɴʟᴏᴀᴅ",
+            text=style_text("**🚀 Initializing Task...**\n\nPlease Wait While I Prepare Your Download"),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("❌ ᴄᴀɴᴄᴇʟ", callback_data="cancel")]]
+                [[InlineKeyboardButton(style_button("❌ Cancel"), callback_data="cancel", style="danger")]]
             )
         )
         
@@ -493,153 +478,153 @@ async def handle_callback(client, callback_query):
         finally:
             BOT.State.task_going = False
     
-    # sᴇᴛᴛɪɴɢs ᴍᴇɴᴜ
+    # Settings menu
     elif data == "settings_menu":
         await send_settings(client, callback_query.message, callback_query.message.id, False)
     
-    # ᴠɪᴅᴇᴏ sᴇᴛᴛɪɴɢs
+    # Video settings
     elif data == "video":
         keyboard = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("✂️ sᴘʟɪᴛ", callback_data="split-true"),
-                    InlineKeyboardButton("🗜️ ᴢɪᴘ", callback_data="split-false"),
+                    InlineKeyboardButton(style_button("✂️ Split"), callback_data="split-true", style="primary"),
+                    InlineKeyboardButton(style_button("🗜️ Zip"), callback_data="split-false", style="primary"),
                 ],
                 [
-                    InlineKeyboardButton("🔄 ᴄᴏɴᴠᴇʀᴛ", callback_data="convert-true"),
-                    InlineKeyboardButton("⏭️ sᴋɪᴘ", callback_data="convert-false"),
+                    InlineKeyboardButton(style_button("🔄 Convert"), callback_data="convert-true", style="success"),
+                    InlineKeyboardButton(style_button("⏭️ Skip"), callback_data="convert-false", style="success"),
                 ],
                 [
-                    InlineKeyboardButton("🎬 ᴍᴘ4", callback_data="mp4"),
-                    InlineKeyboardButton("📼 ᴍᴋᴠ", callback_data="mkv"),
+                    InlineKeyboardButton("🎬 Mp4", callback_data="mp4", style="primary"),
+                    InlineKeyboardButton("📼 Mkv", callback_data="mkv", style="primary"),
                 ],
                 [
-                    InlineKeyboardButton("🔴 ʜɪɢʜ ǫᴜᴀʟɪᴛʏ", callback_data="q-High"),
-                    InlineKeyboardButton("🔵 ʟᴏᴡ ǫᴜᴀʟɪᴛʏ", callback_data="q-Low"),
+                    InlineKeyboardButton(style_button("🔴 High Quality"), callback_data="q-High", style="success"),
+                    InlineKeyboardButton(style_button("🔵 Low Quality"), callback_data="q-Low", style="success"),
                 ],
-                [InlineKeyboardButton("⏎ ʙᴀᴄᴋ", callback_data="back")],
+                [InlineKeyboardButton(style_button("❰ Back"), callback_data="back", style="danger")],
             ]
         )
         
         await callback_query.message.edit_text(
-            f"**⚙️ ᴠɪᴅᴇᴏ sᴇᴛᴛɪɴɢs**\n\n"
-            f"╭🔄 **ᴄᴏɴᴠᴇʀᴛ:** `{BOT.Setting.convert_video}`\n"
-            f"├✂️ **sᴘʟɪᴛ:** `{BOT.Setting.split_video}`\n"
-            f"├🎬 **ғᴏʀᴍᴀᴛ:** `{BOT.Options.video_out}`\n"
-            f"╰🔴 **ǫᴜᴀʟɪᴛʏ:** `{BOT.Setting.convert_quality}`",
+            style_text(f"**⚙️ Video Settings**\n\n"
+                      f"┏🔄 **Convert:** `{BOT.Setting.convert_video}`\n"
+                      f"┠✂️ **Split:** `{BOT.Setting.split_video}`\n"
+                      f"┠🎬 **Format:** `{BOT.Options.video_out}`\n"
+                      f"┗🔴 **Quality:** `{BOT.Setting.convert_quality}`"),
             reply_markup=keyboard
         )
     
-    # ᴄᴀᴘᴛɪᴏɴ sᴇᴛᴛɪɴɢs
+    # Caption settings
     elif data == "caption":
         keyboard = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("<code>ᴍᴏɴᴏsᴘᴀᴄᴇ</code>", callback_data="code-Monospace"),
-                    InlineKeyboardButton("**ʙᴏʟᴅ**", callback_data="b-Bold"),
+                    InlineKeyboardButton("<code>Monospace</code>", callback_data="code-Monospace", style="primary"),
+                    InlineKeyboardButton("**Bold**", callback_data="b-Bold", style="primary"),
                 ],
                 [
-                    InlineKeyboardButton("__ɪᴛᴀʟɪᴄ__", callback_data="i-Italic"),
-                    InlineKeyboardButton("__ᴜɴᴅᴇʀʟɪɴᴇ__", callback_data="u-Underlined"),
+                    InlineKeyboardButton("__Italic__", callback_data="i-Italic", style="primary"),
+                    InlineKeyboardButton("__Underline__", callback_data="u-Underlined", style="primary"),
                 ],
-                [InlineKeyboardButton("ʀᴇɢᴜʟᴀʀ", callback_data="p-Regular")],
-                [InlineKeyboardButton("⏎ ʙᴀᴄᴋ", callback_data="back")],
+                [InlineKeyboardButton("Regular", callback_data="p-Regular", style="primary")],
+                [InlineKeyboardButton(style_button("❰ Back"), callback_data="back", style="danger")],
             ]
         )
         
         await callback_query.message.edit_text(
-            "**📝 ᴄᴀᴘᴛɪᴏɴ ғᴏɴᴛ sᴛʏʟᴇ**\n\n"
-            "<code>ᴍᴏɴᴏsᴘᴀᴄᴇ</code>\n"
-            "ʀᴇɢᴜʟᴀʀ\n"
-            "**ʙᴏʟᴅ**\n"
-            "__ɪᴛᴀʟɪᴄ__\n"
-            "__ᴜɴᴅᴇʀʟɪɴᴇ__",
+            style_text("**📝 Caption Font Style**\n\n"
+                      "<code>Monospace</code>\n"
+                      "Regular\n"
+                      "**Bold**\n"
+                      "__Italic__\n"
+                      "__Underline__"),
             reply_markup=keyboard
         )
     
-    # ᴛʜᴜᴍʙɴᴀɪʟ sᴇᴛᴛɪɴɢs
+    # Thumbnail settings
     elif data == "thumb":
         keyboard = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("🗑️ ᴅᴇʟᴇᴛᴇ ᴛʜᴜᴍʙɴᴀɪʟ", callback_data="del-thumb")],
-                [InlineKeyboardButton("⏎ ʙᴀᴄᴋ", callback_data="back")],
+                [InlineKeyboardButton(style_button("🗑️ Delete Thumbnail"), callback_data="del-thumb", style="danger")],
+                [InlineKeyboardButton(style_button("⏎ Back"), callback_data="back", style="primary")],
             ]
         )
         
-        thmb_status = "✅ sᴇᴛ" if BOT.Setting.thumbnail else "❌ ɴᴏɴᴇ"
+        thmb_status = style_text("✅ Set") if BOT.Setting.thumbnail else style_text("❌ None")
         
         await callback_query.message.edit_text(
-            f"**🖼️ ᴛʜᴜᴍʙɴᴀɪʟ sᴇᴛᴛɪɴɢs**\n\n"
-            f"**sᴛᴀᴛᴜs:** {thmb_status}\n\n"
-            f"💡 sᴇɴᴅ ᴀɴ ɪᴍᴀɢᴇ ᴛᴏ sᴇᴛ ᴀs ᴛʜᴜᴍʙɴᴀɪʟ",
+            style_text(f"**🖼️ Thumbnail Settings**\n\n"
+                      f"**Status:** {thmb_status}\n\n"
+                      f"💡 Send An Image To Set As Thumbnail"),
             reply_markup=keyboard
         )
     
-    # ᴅᴇʟᴇᴛᴇ ᴛʜᴜᴍʙɴᴀɪʟ
+    # Delete thumbnail
     elif data == "del-thumb":
         if BOT.Setting.thumbnail and os.path.exists(Paths.THMB_PATH):
             os.remove(Paths.THMB_PATH)
         BOT.Setting.thumbnail = False
         await send_settings(client, callback_query.message, callback_query.message.id, False)
     
-    # sᴇᴛ ᴘʀᴇғɪx/sᴜғғɪx
+    # Set prefix/suffix
     elif data == "set-prefix":
         await callback_query.message.edit_text(
-            "**⌨️ sᴇɴᴅ ᴛᴇxᴛ ᴛᴏ sᴇᴛ ᴀs ᴘʀᴇғɪx**\n\nʀᴇᴘʟʏ ᴛᴏ ᴛʜɪs ᴍᴇssᴀɢᴇ ᴡɪᴛʜ ʏᴏᴜʀ ᴘʀᴇғɪx"
+            style_text("**⌨️ Send Text To Set As Prefix**\n\nReply To This Message With Your Prefix")
         )
         BOT.State.prefix = True
     
     elif data == "set-suffix":
         await callback_query.message.edit_text(
-            "**⌨️ sᴇɴᴅ ᴛᴇxᴛ ᴛᴏ sᴇᴛ ᴀs sᴜғғɪx**\n\nʀᴇᴘʟʏ ᴛᴏ ᴛʜɪs ᴍᴇssᴀɢᴇ ᴡɪᴛʜ ʏᴏᴜʀ sᴜғғɪx"
+            style_text("**⌨️ Send Text To Set As Suffix**\n\nReply To This Message With Your Suffix")
         )
         BOT.State.suffix = True
     
-    # ᴄᴀᴘᴛɪᴏɴ sᴛʏʟᴇ sᴇʟᴇᴄᴛɪᴏɴ
+    # Caption style selection
     elif data in ["code-Monospace", "p-Regular", "b-Bold", "i-Italic", "u-Underlined"]:
         res = data.split("-")
         BOT.Options.caption = res[0]
         BOT.Setting.caption = res[1]
         await send_settings(client, callback_query.message, callback_query.message.id, False)
     
-    # ᴠɪᴅᴇᴏ sᴘʟɪᴛ sᴇʟᴇᴄᴛɪᴏɴ
+    # Video split selection
     elif data in ["split-true", "split-false"]:
         BOT.Options.is_split = data == "split-true"
-        BOT.Setting.split_video = "sᴘʟɪᴛ" if data == "split-true" else "ᴢɪᴘ"
+        BOT.Setting.split_video = "Split" if data == "split-true" else "Zip"
         await send_settings(client, callback_query.message, callback_query.message.id, False)
     
-    # ᴠɪᴅᴇᴏ ᴄᴏɴᴠᴇʀᴛ sᴇʟᴇᴄᴛɪᴏɴ
+    # Video convert selection
     elif data in ["convert-true", "convert-false"]:
         BOT.Options.convert_video = data == "convert-true"
-        BOT.Setting.convert_video = "ʏᴇs" if data == "convert-true" else "ɴᴏ"
+        BOT.Setting.convert_video = "Yes" if data == "convert-true" else "No"
         await send_settings(client, callback_query.message, callback_query.message.id, False)
     
-    # ᴠɪᴅᴇᴏ ғᴏʀᴍᴀᴛ sᴇʟᴇᴄᴛɪᴏɴ
+    # Video format selection
     elif data in ["mp4", "mkv"]:
         BOT.Options.video_out = data
         await send_settings(client, callback_query.message, callback_query.message.id, False)
     
-    # ǫᴜᴀʟɪᴛʏ sᴇʟᴇᴄᴛɪᴏɴ
+    # Quality selection
     elif data in ["q-High", "q-Low"]:
         BOT.Setting.convert_quality = data.split("-")[-1]
         BOT.Options.convert_quality = BOT.Setting.convert_quality == "High"
         await send_settings(client, callback_query.message, callback_query.message.id, False)
     
-    # ᴜᴘʟᴏᴀᴅ ᴍᴏᴅᴇ sᴇʟᴇᴄᴛɪᴏɴ
+    # Upload mode selection
     elif data in ["media", "document"]:
         BOT.Options.stream_upload = data == "media"
-        BOT.Setting.stream_upload = "ᴍᴇᴅɪᴀ" if data == "media" else "ᴅᴏᴄᴜᴍᴇɴᴛ"
+        BOT.Setting.stream_upload = "Media" if data == "media" else "Document"
         await send_settings(client, callback_query.message, callback_query.message.id, False)
     
-    # ᴄʟᴏsᴇ ᴍᴇɴᴜ
+    # Close menu
     elif data == "close":
         await callback_query.message.delete()
     
-    # ɢᴏ ʙᴀᴄᴋ
+    # Go back
     elif data == "back":
         await send_settings(client, callback_query.message, callback_query.message.id, False)
     
-    # ʏᴛᴅʟ ᴄᴏɴғɪʀᴍᴀᴛɪᴏɴ
+    # YTDL confirmation
     elif data in ["ytdl-true", "ytdl-false"]:
         BOT.Mode.ytdl = data == "ytdl-true"
         await callback_query.message.delete()
@@ -650,9 +635,9 @@ async def handle_callback(client, callback_query):
         
         MSG.status_msg = await leechbot.send_message(
             chat_id=OWNER,
-            text="**🚀 ɪɴɪᴛɪᴀʟɪᴢɪɴɢ ᴛᴀsᴋ...**\n\nᴘʟᴇᴀsᴇ ᴡᴀɪᴛ ᴡʜɪʟᴇ ɪ ᴘʀᴇᴘᴀʀᴇ ʏᴏᴜʀ ᴅᴏᴡɴʟᴏᴀᴅ",
+            text=style_text("**🚀 Initializing Task...**\n\nPlease Wait While I Prepare Your Download"),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("❌ ᴄᴀɴᴄᴇʟ", callback_data="cancel")]]
+                [[InlineKeyboardButton(style_button("❌ Cancel"), callback_data="cancel", style="danger")]]
             )
         )
         
@@ -668,40 +653,40 @@ async def handle_callback(client, callback_query):
         finally:
             BOT.State.task_going = False
     
-    # ᴄᴀɴᴄᴇʟ ᴛᴀsᴋ
+    # Cancel task
     elif data == "cancel":
-        await cancelTask("ᴜsᴇʀ ᴄᴀɴᴄᴇʟʟᴇᴅ ᴛʜᴇ ᴛᴀsᴋ")
+        await cancelTask("User cancelled the task")
 
 
 # =============================================================================
-#  ᴘʜᴏᴛᴏ ʜᴀɴᴅʟᴇʀ (ᴛʜᴜᴍʙɴᴀɪʟ)
+# Photo Handler (Thumbnail)
 # =============================================================================
 @leechbot.on_message(filters.photo & filters.private)
 async def handle_photo(client, message):
     """
-    ʜᴀɴᴅʟᴇ ᴘʜᴏᴛᴏ ᴍᴇssᴀɢᴇs ᴛᴏ sᴇᴛ ᴛʜᴜᴍʙɴᴀɪʟ.
+    Handle photo messages to set thumbnail.
     """
-    msg = await message.reply_text("**🖼️ ᴘʀᴏᴄᴇssɪɴɢ ᴛʜᴜᴍʙɴᴀɪʟ...**")
+    msg = await message.reply_text(style_text("**🖼️ Processing Thumbnail...**"))
     
     success = await setThumbnail(message)
     
     if success:
-        await msg.edit_text("**✅ ᴛʜᴜᴍʙɴᴀɪʟ sᴇᴛ sᴜᴄᴄᴇssғᴜʟʟʏ**")
+        await msg.edit_text(style_text("**✅ Thumbnail Set Successfully**"))
         await message.delete()
     else:
-        await msg.edit_text("**❌ ғᴀɪʟᴇᴅ ᴛᴏ sᴇᴛ ᴛʜᴜᴍʙɴᴀɪʟ**")
+        await msg.edit_text(style_text("**❌ Failed To Set Thumbnail**"))
     
     await sleep(15)
     await message_deleter(message, msg)
 
 
 # =============================================================================
-#  ʙᴏᴛ sᴛᴀʀᴛᴜᴘ
+# Bot Startup
 # =============================================================================
 logger.info("=" * 60)
-logger.info("ʟᴇᴇᴄʜʙᴏᴛ sᴛᴀʀᴛᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ")
-logger.info("ᴅᴇᴠᴇʟᴏᴘᴇʀ: sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ (@sʜɪɴᴇɪɪ86)")
-logger.info("ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86/ʟᴇᴇᴄʜʙᴏᴛ")
+logger.info("LeechBot started successfully")
+logger.info("Developer: Shinei Nouzen (@Shineii86)")
+logger.info("GitHub: https://github.com/Shineii86/LeechBot")
 logger.info("=" * 60)
 
 leechbot.run()
