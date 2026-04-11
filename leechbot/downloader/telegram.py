@@ -20,7 +20,6 @@ from leechbot import leechbot
 from leechbot.utility.handler import cancelTask
 from leechbot.utility.variables import Transfer, Paths, Messages, BotTimes
 from leechbot.utility.helper import speedETA, getTime, sizeUnit, status_bar
-from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
@@ -108,11 +107,11 @@ async def TelegramDownload(link: str, num: int):
     
     if media is None:
         logger.error("Could not identify Telegram media")
-        await cancelTask(style_text("Could Not Identify Telegram Media"))
+        await cancelTask("Could Not Identify Telegram Media")
         return
     
     name = media.file_name if hasattr(media, "file_name") else "Unknown"
-    Messages.status_head = style_text(f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n") + f"`{name}`\n"
+    Messages.status_head = f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n`{name}`\n"
     
     start_time = datetime.now()
     file_path = ospath.join(Paths.down_path, name)
