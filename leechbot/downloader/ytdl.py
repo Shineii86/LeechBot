@@ -1,15 +1,16 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - YT-DLP Downloader
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ʏᴛ-ᴅʟᴘ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ᴍᴏᴅᴜʟᴇ
+YT-DLP downloader module.
 
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ʜᴀɴᴅʟᴇs ᴅᴏᴡɴʟᴏᴀᴅs ғʀᴏᴍ ʏᴏᴜᴛᴜʙᴇ ᴀɴᴅ ᴏᴛʜᴇʀ sɪᴛᴇs sᴜᴘᴘᴏʀᴛᴇᴅ ʙʏ ʏᴛ-ᴅʟᴘ.
+Handles downloads from YouTube and other sites supported by yt-dlp.
 """
 
 import logging
@@ -20,31 +21,32 @@ from os import makedirs, path as ospath
 from leechbot.utility.handler import cancelTask
 from leechbot.utility.variables import YTDL, MSG, Messages, Paths, BOT
 from leechbot.utility.helper import getTime, keyboard, sizeUnit, status_bar, sysINFO
+from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-#  ʏᴛ-ᴅʟᴘ sᴛᴀᴛᴜs ᴍᴏɴɪᴛᴏʀ
+# YT-DLP Status Monitor
 # =============================================================================
 async def YTDL_Status(link: str, num: int):
     """
-    ᴍᴏɴɪᴛᴏʀ ʏᴛ-ᴅʟᴘ ᴅᴏᴡɴʟᴏᴀᴅ ᴘʀᴏɢʀᴇss.
+    Monitor YT-DLP download progress.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ᴠɪᴅᴇᴏ ᴜʀʟ
-        ɴᴜᴍ: ʟɪɴᴋ ɴᴜᴍʙᴇʀ ғᴏʀ ᴅɪsᴘʟᴀʏ
+    Args:
+        link: video URL
+        num: link number for display
     """
     global Messages, YTDL
     
     name = await get_YT_Name(link)
-    Messages.status_head = f"**📥 ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ** `ʟɪɴᴋ {str(num).zfill(2)}`\n\n`{name}`\n"
+    Messages.status_head = style_text(f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n") + f"`{name}`\n"
     
-    # sᴛᴀʀᴛ ʏᴛ-ᴅʟᴘ ɪɴ sᴇᴘᴀʀᴀᴛᴇ ᴛʜʀᴇᴀᴅ
-    ytdl_thread = Thread(target=YouTubeDL, name="ʏᴛ-ᴅʟᴘ", args=(link,))
+    # Start YT-DLP in separate thread
+    ytdl_thread = Thread(target=YouTubeDL, name="YT-DLP", args=(link,))
     ytdl_thread.start()
     
-    # ᴍᴏɴɪᴛᴏʀ ᴘʀᴏɢʀᴇss
+    # Monitor progress
     while ytdl_thread.is_alive():
         if YTDL.header:
             try:
@@ -63,7 +65,7 @@ async def YTDL_Status(link: str, num: int):
                     eta=YTDL.eta,
                     done=YTDL.done,
                     left=YTDL.left,
-                    engine="ʏᴛ-ᴅʟᴘ 🏮"
+                    engine="YT-DLP 🏮"
                 )
             except Exception:
                 pass
@@ -72,10 +74,10 @@ async def YTDL_Status(link: str, num: int):
 
 
 # =============================================================================
-#  ʏᴛ-ᴅʟᴘ ʟᴏɢɢᴇʀ
+# YT-DLP Logger
 # =============================================================================
 class MyLogger:
-    """ᴄᴜsᴛᴏᴍ ʟᴏɢɢᴇʀ ғᴏʀ ʏᴛ-ᴅʟᴘ"""
+    """Custom logger for YT-DLP"""
     
     def __init__(self):
         pass
@@ -84,7 +86,7 @@ class MyLogger:
         global YTDL
         if "item" in str(msg):
             msgs = msg.split(" ")
-            YTDL.header = f"\n⏳ `ɢᴇᴛᴛɪɴɢ ɪɴғᴏ {msgs[-3]} ᴏғ {msgs[-1]}`"
+            YTDL.header = style_text(f"\n⏳ `Getting Info {msgs[-3]} of {msgs[-1]}`")
     
     @staticmethod
     def warning(msg):
@@ -96,25 +98,25 @@ class MyLogger:
 
 
 # =============================================================================
-#  ʏᴛ-ᴅʟᴘ ᴅᴏᴡɴʟᴏᴀᴅ ғᴜɴᴄᴛɪᴏɴ
+# YT-DLP Download Function
 # =============================================================================
 def YouTubeDL(url: str):
     """
-    ᴅᴏᴡɴʟᴏᴀᴅ ᴠɪᴅᴇᴏ ᴜsɪɴɢ ʏᴛ-ᴅʟᴘ.
+    Download video using YT-DLP.
     
-    ᴀʀɢs:
-        ᴜʀʟ: ᴠɪᴅᴇᴏ ᴜʀʟ
+    Args:
+        url: video URL
     """
     global YTDL
     
     def progress_hook(d):
-        """ᴘʀᴏɢʀᴇss ʜᴏᴏᴋ ғᴏʀ ʏᴛ-ᴅʟᴘ"""
+        """Progress hook for YT-DLP"""
         global YTDL
         
         if d["status"] == "downloading":
             total_bytes = d.get("total_bytes") or d.get("total_bytes_estimate", 0)
             dl_bytes = d.get("downloaded_bytes", 0)
-            speed = d.get("speed", "ɴ/ᴀ")
+            speed = d.get("speed", "N/A")
             eta = d.get("eta", 0)
             
             if total_bytes:
@@ -123,13 +125,13 @@ def YouTubeDL(url: str):
                 percent = 0
             
             YTDL.header = ""
-            YTDL.speed = sizeUnit(speed) if speed else "ɴ/ᴀ"
+            YTDL.speed = sizeUnit(speed) if speed else "N/A"
             YTDL.percentage = percent
-            YTDL.eta = getTime(eta) if eta else "ɴ/ᴀ"
-            YTDL.done = sizeUnit(dl_bytes) if dl_bytes else "ɴ/ᴀ"
-            YTDL.left = sizeUnit(total_bytes) if total_bytes else "ɴ/ᴀ"
+            YTDL.eta = getTime(eta) if eta else "N/A"
+            YTDL.done = sizeUnit(dl_bytes) if dl_bytes else "N/A"
+            YTDL.left = sizeUnit(total_bytes) if total_bytes else "N/A"
     
-    # ʏᴛ-ᴅʟᴘ ᴏᴘᴛɪᴏɴs
+    # YT-DLP options
     ydl_opts = {
         "format": "bestvideo+bestaudio/best",
         "merge_output_format": "mp4",
@@ -148,17 +150,17 @@ def YouTubeDL(url: str):
         }
     }
     
-    # ᴄʀᴇᴀᴛᴇ ᴛʜᴜᴍʙɴᴀɪʟ ᴅɪʀᴇᴄᴛᴏʀʏ
+    # Create thumbnail directory
     if not ospath.exists(Paths.thumbnail_ytdl):
         makedirs(Paths.thumbnail_ytdl)
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
             info = ydl.extract_info(url, download=False)
-            YTDL.header = "⏳ `ᴘʀᴇᴘᴀʀɪɴɢ...`"
+            YTDL.header = style_text("⏳ `Preparing...`")
             
             if info.get("_type") == "playlist":
-                # ᴘʟᴀʏʟɪsᴛ ᴅᴏᴡɴʟᴏᴀᴅ
+                # Playlist download
                 playlist_name = info["title"]
                 playlist_path = ospath.join(Paths.down_path, playlist_name)
                 
@@ -173,32 +175,32 @@ def YouTubeDL(url: str):
                             try:
                                 ydl2.download([entry["webpage_url"]])
                             except Exception as e:
-                                logger.error(f"ᴘʟᴀʏʟɪsᴛ ɪᴛᴇᴍ ᴇʀʀᴏʀ: {e}")
+                                logger.error(f"Playlist item error: {e}")
             else:
-                # sɪɴɢʟᴇ ᴠɪᴅᴇᴏ ᴅᴏᴡɴʟᴏᴀᴅ
+                # Single video download
                 ydl.download([url])
         
         except Exception as e:
-            logger.error(f"ʏᴛ-ᴅʟᴘ ᴇʀʀᴏʀ: {e}")
+            logger.error(f"YT-DLP error: {e}")
 
 
 # =============================================================================
-#  ɢᴇᴛ ᴠɪᴅᴇᴏ ɴᴀᴍᴇ
+# Get Video Name
 # =============================================================================
 async def get_YT_Name(link: str) -> str:
     """
-    ɢᴇᴛ ᴠɪᴅᴇᴏ ᴛɪᴛʟᴇ ғʀᴏᴍ ʟɪɴᴋ.
+    Get video title from link.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ᴠɪᴅᴇᴏ ᴜʀʟ
+    Args:
+        link: video URL
     
-    ʀᴇᴛᴜʀɴs:
-        sᴛʀ: ᴠɪᴅᴇᴏ ᴛɪᴛʟᴇ
+    Returns:
+        str: video title
     """
     with yt_dlp.YoutubeDL({"logger": MyLogger()}) as ydl:
         try:
             info = ydl.extract_info(link, download=False)
-            return info.get("title", "ᴜɴᴋɴᴏᴡɴ")
+            return info.get("title", "Unknown")
         except Exception as e:
-            await cancelTask(f"ᴄᴀɴɴᴏᴛ ᴅᴏᴡɴʟᴏᴀᴅ: {e}")
-            return "ᴜɴᴋɴᴏᴡɴ"
+            await cancelTask(style_text(f"Cannot Download: {e}"))
+            return "Unknown"
