@@ -1,16 +1,16 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Download Manager
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ᴅᴏᴡɴʟᴏᴀᴅ ᴍᴀɴᴀɢᴇʀ ᴍᴏᴅᴜʟᴇ
+Download manager module.
 
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ᴏʀᴄʜᴇsᴛʀᴀᴛᴇs ᴅᴏᴡɴʟᴏᴀᴅs ғʀᴏᴍ ᴠᴀʀɪᴏᴜs sᴏᴜʀᴄᴇs ᴀɴᴅ ᴍᴀɴᴀɢᴇs
-ᴛʜᴇ ᴏᴠᴇʀᴀʟʟ ᴅᴏᴡɴʟᴏᴀᴅ ᴘʀᴏᴄᴇss.
+Orchestrates downloads from various sources and manages the overall process.
 """
 
 import logging
@@ -24,26 +24,27 @@ from leechbot.utility.helper import isYtdlComplete, keyboard, sysINFO
 from leechbot.downloader.telegram import TelegramDownload, media_Identifier
 from leechbot.utility.variables import BOT, Transfer, MSG, Messages, BotTimes
 from leechbot.downloader.gdrive import build_service, g_DownLoad, get_Gfolder_size, getFileMetadata, getIDFromURL
+from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-#  ᴍᴀɪɴ ᴅᴏᴡɴʟᴏᴀᴅ ᴍᴀɴᴀɢᴇʀ
+# Main Download Manager
 # =============================================================================
 async def downloadManager(sources: list, is_ytdl: bool):
     """
-    ᴍᴀɴᴀɢᴇ ᴅᴏᴡɴʟᴏᴀᴅs ғʀᴏᴍ ᴍᴜʟᴛɪᴘʟᴇ sᴏᴜʀᴄᴇs.
+    Manage downloads from multiple sources.
     
-    ᴀʀɢs:
-        sᴏᴜʀᴄᴇs: ʟɪsᴛ ᴏғ ᴜʀʟs ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ
-        ɪs_ʏᴛᴅʟ: ᴡʜᴇᴛʜᴇʀ ᴛᴏ ᴜsᴇ ʏᴛ-ᴅʟᴘ
+    Args:
+        sources: list of URLs to download
+        is_ytdl: whether to use YT-DLP
     """
-    message = "\n**⏳ ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ...**\n`ᴍᴇʀɢɪɴɢ ʏᴛ-ᴅʟᴘ ᴠɪᴅᴇᴏ...`"
+    message = style_text("\n**⏳ Please Wait...**\n`Merging YT-DLP Video...`")
     BotTimes.task_start = datetime.now()
     
     if is_ytdl:
-        # ʏᴛ-ᴅʟᴘ ᴍᴏᴅᴇ
+        # YT-DLP mode
         for i, link in enumerate(sources):
             await YTDL_Status(link, i + 1)
         
@@ -53,13 +54,13 @@ async def downloadManager(sources: list, is_ytdl: bool):
                 reply_markup=keyboard()
             )
         except Exception as e:
-            logger.error(f"ʏᴛᴅʟ ᴍᴇssᴀɢᴇ ᴇʀʀᴏʀ: {e}")
+            logger.error(f"YTDL message error: {e}")
         
         while not isYtdlComplete():
             await sleep(2)
     
     else:
-        # ɢᴇɴᴇʀᴀʟ ᴅᴏᴡɴʟᴏᴀᴅ ᴍᴏᴅᴇ
+        # General download mode
         for i, link in enumerate(sources):
             try:
                 if "drive.google.com" in link:
@@ -74,7 +75,7 @@ async def downloadManager(sources: list, is_ytdl: bool):
                             reply_markup=keyboard()
                         )
                     except Exception as e:
-                        logger.error(f"ʏᴛᴅʟ ᴍᴇssᴀɢᴇ ᴇʀʀᴏʀ: {e}")
+                        logger.error(f"YTDL message error: {e}")
                     while not isYtdlComplete():
                         await sleep(2)
                 elif "mega.nz" in link:
@@ -83,34 +84,34 @@ async def downloadManager(sources: list, is_ytdl: bool):
                     from leechbot.downloader.terabox import terabox_download
                     await terabox_download(link, i + 1)
                 else:
-                    # ɢᴇɴᴇʀᴀʟ ʜᴛᴛᴘ/ᴛᴏʀʀᴇɴᴛ
-                    aria_msg = f"**⏳ ɢᴇᴛᴛɪɴɢ ɪɴғᴏ...**\n\n`{link}`"
+                    # General HTTP/torrent
+                    aria_msg = style_text(f"**⏳ Getting Info...**\n\n`{link}`")
                     try:
                         await MSG.status_msg.edit_text(
                             text=aria_msg + sysINFO(),
                             reply_markup=keyboard()
                         )
                     except Exception as e:
-                        logger.error(f"ᴀʀɪᴀ2 ᴍᴇssᴀɢᴇ ᴇʀʀᴏʀ: {e}")
+                        logger.error(f"Aria2 message error: {e}")
                     
                     Aria2c.link_info = False
                     await aria2_Download(link, i + 1)
             
             except Exception as error:
-                await cancelTask(f"ᴅᴏᴡɴʟᴏᴀᴅ ᴇʀʀᴏʀ: {error}")
-                logger.error(f"ᴅᴏᴡɴʟᴏᴀᴅ ᴇʀʀᴏʀ: {error}")
+                await cancelTask(style_text(f"Download Error: {error}"))
+                logger.error(f"Download error: {error}")
                 return
 
 
 # =============================================================================
-#  ᴄᴀʟᴄᴜʟᴀᴛᴇ ᴛᴏᴛᴀʟ ᴅᴏᴡɴʟᴏᴀᴅ sɪᴢᴇ
+# Calculate Total Download Size
 # =============================================================================
 async def calDownSize(sources: list):
     """
-    ᴄᴀʟᴄᴜʟᴀᴛᴇ ᴛᴏᴛᴀʟ ᴅᴏᴡɴʟᴏᴀᴅ sɪᴢᴇ ғʀᴏᴍ sᴏᴜʀᴄᴇs.
+    Calculate total download size from sources.
     
-    ᴀʀɢs:
-        sᴏᴜʀᴄᴇs: ʟɪsᴛ ᴏғ ᴜʀʟs
+    Args:
+        sources: list of URLs
     """
     for link in natsorted(sources):
         if "drive.google.com" in link:
@@ -119,14 +120,14 @@ async def calDownSize(sources: list):
             try:
                 meta = getFileMetadata(file_id)
             except Exception as e:
-                if "ғɪʟᴇ ɴᴏᴛ ғᴏᴜɴᴅ" in str(e):
-                    err_msg = "ғɪʟᴇ ɴᴏᴛ ғᴏᴜɴᴅ ᴏʀ ɴᴏ ᴀᴄᴄᴇss"
-                elif "ᴀᴜᴛʜᴏʀɪᴢᴀᴛɪᴏɴ" in str(e):
-                    err_msg = "ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ ᴀᴜᴛʜᴏʀɪᴢᴀᴛɪᴏɴ ғᴀɪʟᴇᴅ"
+                if "File not found" in str(e):
+                    err_msg = "File not found or no access"
+                elif "authorization" in str(e):
+                    err_msg = "Google Drive authorization failed"
                 else:
-                    err_msg = f"ɢᴅʀɪᴠᴇ ᴇʀʀᴏʀ: {e}"
+                    err_msg = f"GDrive error: {e}"
                 logger.error(err_msg)
-                await cancelTask(err_msg)
+                await cancelTask(style_text(err_msg))
             else:
                 if meta.get("mimeType") == "application/vnd.google-apps.folder":
                     Transfer.total_down_size += get_Gfolder_size(file_id)
@@ -138,18 +139,18 @@ async def calDownSize(sources: list):
             if media and hasattr(media, "file_size"):
                 Transfer.total_down_size += media.file_size
             else:
-                logger.error("ᴄᴏᴜʟᴅ ɴᴏᴛ ɢᴇᴛ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ sɪᴢᴇ")
+                logger.error("Could not get Telegram file size")
 
 
 # =============================================================================
-#  ɢᴇᴛ ᴅᴏᴡɴʟᴏᴀᴅ ɴᴀᴍᴇ
+# Get Download Name
 # =============================================================================
 async def get_d_name(link: str):
     """
-    ɢᴇᴛ ᴅᴏᴡɴʟᴏᴀᴅ ɴᴀᴍᴇ ғʀᴏᴍ ʟɪɴᴋ.
+    Get download name from link.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: sᴏᴜʀᴄᴇ ᴜʀʟ
+    Args:
+        link: source URL
     """
     if BOT.Options.custom_name:
         Messages.download_name = BOT.Options.custom_name
@@ -161,10 +162,10 @@ async def get_d_name(link: str):
         Messages.download_name = meta["name"]
     elif "t.me" in link:
         media, _ = await media_Identifier(link)
-        Messages.download_name = media.file_name if hasattr(media, "file_name") else "ᴜɴᴋɴᴏᴡɴ"
+        Messages.download_name = media.file_name if hasattr(media, "file_name") else "Unknown"
     elif "youtube.com" in link or "youtu.be" in link:
         Messages.download_name = await get_YT_Name(link)
     elif "mega.nz" in link:
-        Messages.download_name = "ᴍᴇɢᴀ ᴅᴏᴡɴʟᴏᴀᴅ"
+        Messages.download_name = "Mega Download"
     else:
         Messages.download_name = get_Aria2c_Name(link)
