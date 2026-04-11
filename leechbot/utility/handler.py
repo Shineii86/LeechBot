@@ -1,16 +1,14 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Task Handlers
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ʟᴇᴇᴄʜʙᴏᴛ ᴛᴀsᴋ ʜᴀɴᴅʟᴇʀs
-
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ᴄᴏɴᴛᴀɪɴs ᴛʜᴇ ᴍᴀɪɴ ʟᴇᴇᴄʜ, ᴢɪᴘ, ᴜɴᴢɪᴘ, ᴀɴᴅ ʟᴏɢ ɢᴇɴᴇʀᴀᴛɪᴏɴ ғᴜɴᴄᴛɪᴏɴs.
-ɪᴛ ʜᴀɴᴅʟᴇs ғɪʟᴇ ᴜᴘʟᴏᴀᴅs, ᴄᴀɴᴄᴇʟʟᴀᴛɪᴏɴs, ᴀɴᴅ ᴄᴏᴍᴘʟᴇᴛɪᴏɴ ʟᴏɢs.
+Main leech task handlers for file processing, zipping, and upload.
 """
 
 import os
@@ -28,27 +26,28 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from leechbot.utility.variables import BOT, MSG, BotTimes, Messages, Paths, Transfer
 from leechbot.utility.converters import archive, extract, videoConverter, sizeChecker
 from leechbot.utility.helper import fileType, getSize, getTime, keyboard, shortFileName, sizeUnit, sysINFO
+from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-#  ᴍᴀɪɴ ʟᴇᴇᴄʜ ғᴜɴᴄᴛɪᴏɴ
+# Main Leech Function
 # =============================================================================
 async def Leech(folder_path: str, remove: bool):
     """
-    ᴍᴀɪɴ ʟᴇᴇᴄʜ ғᴜɴᴄᴛɪᴏɴ ᴛᴏ ᴘʀᴏᴄᴇss ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ғɪʟᴇs.
+    Main leech function to process and upload files.
     
-    ᴀʀɢs:
-        ғᴏʟᴅᴇʀ_ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ғᴏʟᴅᴇʀ ᴄᴏɴᴛᴀɪɴɪɴɢ ғɪʟᴇs
-        ʀᴇᴍᴏᴠᴇ: ᴡʜᴇᴛʜᴇʀ ᴛᴏ ʀᴇᴍᴏᴠᴇ ғɪʟᴇs ᴀғᴛᴇʀ ᴜᴘʟᴏᴀᴅ
+    Args:
+        folder_path: path to folder containing files
+        remove: whether to remove files after upload
     """
     global BOT, BotTimes, Messages, Paths, Transfer
     
-    # ɢᴇᴛ ᴀʟʟ ғɪʟᴇs ɪɴ ғᴏʟᴅᴇʀ
+    # Get all files in folder
     files = [str(p) for p in pathlib.Path(folder_path).glob("**/*") if p.is_file()]
     
-    # ᴄᴏɴᴠᴇʀᴛ ᴠɪᴅᴇᴏs ɪғ ɴᴇᴇᴅᴇᴅ
+    # Convert videos if needed
     for f in natsorted(files):
         file_path = ospath.join(folder_path, f)
         if BOT.Options.convert_video and fileType(file_path) == "video":
@@ -56,13 +55,13 @@ async def Leech(folder_path: str, remove: bool):
     
     Transfer.total_down_size = getSize(folder_path)
     
-    # ᴘʀᴏᴄᴇss ᴀɴᴅ ᴜᴘʟᴏᴀᴅ ғɪʟᴇs
+    # Process and upload files
     files = [str(p) for p in pathlib.Path(folder_path).glob("**/*") if p.is_file()]
     for f in natsorted(files):
         file_path = ospath.join(folder_path, f)
         leech_result = await sizeChecker(file_path, remove)
         
-        if leech_result:  # ғɪʟᴇ ᴡᴀs sᴘʟɪᴛ
+        if leech_result:  # File was split
             if ospath.exists(file_path) and remove:
                 os.remove(file_path)
             
@@ -76,11 +75,11 @@ async def Leech(folder_path: str, remove: bool):
                 os.rename(short_path, new_path)
                 
                 BotTimes.current_time = time()
-                Messages.status_head = f"**📤 ᴜᴘʟᴏᴀᴅɪɴɢ sᴘʟɪᴛ** `{count}/{len(dir_list)}`\n\n`{file_name}`\n"
+                Messages.status_head = style_text(f"**📤 Uploading Split** `{count}/{len(dir_list)}`\n\n`{file_name}`\n")
                 
                 try:
                     MSG.status_msg = await MSG.status_msg.edit_text(
-                        text=Messages.task_msg + Messages.status_head + "\n⏳ `sᴛᴀʀᴛɪɴɢ...`" + sysINFO(),
+                        text=Messages.task_msg + Messages.status_head + "\n⏳ " + style_text("Starting...") + sysINFO(),
                         reply_markup=keyboard()
                     )
                 except Exception as e:
@@ -92,7 +91,7 @@ async def Leech(folder_path: str, remove: bool):
             
             shutil.rmtree(Paths.temp_zpath)
         
-        else:  # ʀᴇɢᴜʟᴀʀ ғɪʟᴇ ᴜᴘʟᴏᴀᴅ
+        else:  # Regular file upload
             if not ospath.exists(Paths.temp_files_dir):
                 makedirs(Paths.temp_files_dir)
             
@@ -104,15 +103,15 @@ async def Leech(folder_path: str, remove: bool):
             os.rename(file_path, new_path)
             
             BotTimes.current_time = time()
-            Messages.status_head = f"**📤 ᴜᴘʟᴏᴀᴅɪɴɢ**\n\n`{file_name}`\n"
+            Messages.status_head = style_text(f"**📤 Uploading**\n\n`{file_name}`\n")
             
             try:
                 MSG.status_msg = await MSG.status_msg.edit_text(
-                    text=Messages.task_msg + Messages.status_head + "\n⏳ `sᴛᴀʀᴛɪɴɢ...`" + sysINFO(),
+                    text=Messages.task_msg + Messages.status_head + "\n⏳ " + style_text("Starting...") + sysINFO(),
                     reply_markup=keyboard()
                 )
             except Exception as e:
-                logger.error(f"sᴛᴀᴛᴜs ᴜᴘᴅᴀᴛᴇ ᴇʀʀᴏʀ: {e}")
+                logger.error(f"Status update error: {e}")
             
             file_size = os.stat(new_path).st_size
             await upload_file(new_path, file_name)
@@ -125,7 +124,7 @@ async def Leech(folder_path: str, remove: bool):
                 for file in os.listdir(Paths.temp_files_dir):
                     os.remove(ospath.join(Paths.temp_files_dir, file))
     
-    # ᴄʟᴇᴀɴᴜᴘ
+    # Cleanup
     if remove and ospath.exists(folder_path):
         shutil.rmtree(folder_path)
     if ospath.exists(Paths.thumbnail_ytdl):
@@ -135,20 +134,20 @@ async def Leech(folder_path: str, remove: bool):
 
 
 # =============================================================================
-#  ᴢɪᴘ ʜᴀɴᴅʟᴇʀ
+# Zip Handler
 # =============================================================================
 async def Zip_Handler(down_path: str, is_split: bool, remove: bool):
     """
-    ʜᴀɴᴅʟᴇ ᴢɪᴘ ᴄᴏᴍᴘʀᴇssɪᴏɴ ᴏғ ғɪʟᴇs.
+    Handle zip compression of files.
     
-    ᴀʀɢs:
-        ᴅᴏᴡɴ_ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ғᴏʟᴅᴇʀ/ғɪʟᴇ ᴛᴏ ᴢɪᴘ
-        ɪs_sᴘʟɪᴛ: ᴡʜᴇᴛʜᴇʀ ᴛᴏ sᴘʟɪᴛ ʟᴀʀɢᴇ ᴀʀᴄʜɪᴠᴇs
-        ʀᴇᴍᴏᴠᴇ: ᴡʜᴇᴛʜᴇʀ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴏʀɪɢɪɴᴀʟ ғɪʟᴇs
+    Args:
+        down_path: path to file/folder to zip
+        is_split: whether to split large archives
+        remove: whether to remove original files
     """
     global BOT, Messages, MSG, Transfer
     
-    Messages.status_head = f"**🗜️ ᴢɪᴘᴘɪɴɢ**\n\n`{Messages.download_name}`\n"
+    Messages.status_head = style_text(f"**🗜️ Zipping**\n\n`{Messages.download_name}`\n")
     
     try:
         MSG.status_msg = await MSG.status_msg.edit_text(
@@ -156,9 +155,9 @@ async def Zip_Handler(down_path: str, is_split: bool, remove: bool):
             reply_markup=keyboard()
         )
     except Exception as e:
-        logger.error(f"ᴢɪᴘ ʜᴀɴᴅʟᴇʀ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Zip handler error: {e}")
     
-    logger.info("sᴛᴀʀᴛɪɴɢ ᴢɪᴘ ᴄᴏᴍᴘʀᴇssɪᴏɴ...")
+    logger.info("Starting zip compression...")
     BotTimes.current_time = time()
     
     if not ospath.exists(Paths.temp_zpath):
@@ -174,22 +173,22 @@ async def Zip_Handler(down_path: str, is_split: bool, remove: bool):
 
 
 # =============================================================================
-#  ᴜɴᴢɪᴘ ʜᴀɴᴅʟᴇʀ
+# Unzip Handler
 # =============================================================================
 async def Unzip_Handler(down_path: str, remove: bool):
     """
-    ʜᴀɴᴅʟᴇ ᴇxᴛʀᴀᴄᴛɪᴏɴ ᴏғ ᴀʀᴄʜɪᴠᴇ ғɪʟᴇs.
+    Handle extraction of archive files.
     
-    ᴀʀɢs:
-        ᴅᴏᴡɴ_ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴄᴏɴᴛᴀɪɴɪɴɢ ᴀʀᴄʜɪᴠᴇs
-        ʀᴇᴍᴏᴠᴇ: ᴡʜᴇᴛʜᴇʀ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴀʀᴄʜɪᴠᴇs ᴀғᴛᴇʀ ᴇxᴛʀᴀᴄᴛɪᴏɴ
+    Args:
+        down_path: path containing archives
+        remove: whether to remove archives after extraction
     """
     global MSG, Messages
     
-    Messages.status_head = f"\n**📂 ᴇxᴛʀᴀᴄᴛɪɴɢ**\n\n`{Messages.download_name}`\n"
+    Messages.status_head = style_text(f"\n**📂 Extracting**\n\n`{Messages.download_name}`\n")
     
     MSG.status_msg = await MSG.status_msg.edit_text(
-        text=Messages.task_msg + Messages.status_head + "\n⏳ `sᴛᴀʀᴛɪɴɢ...`" + sysINFO(),
+        text=Messages.task_msg + Messages.status_head + "\n⏳ " + style_text("Starting...") + sysINFO(),
         reply_markup=keyboard()
     )
     
@@ -210,37 +209,37 @@ async def Unzip_Handler(down_path: str, remove: bool):
                 else:
                     shutil.copy(short_path, Paths.temp_unzip_path)
         except Exception as e:
-            logger.error(f"ᴜɴᴢɪᴘ ʜᴀɴᴅʟᴇʀ ᴇʀʀᴏʀ: {e}")
+            logger.error(f"Unzip handler error: {e}")
     
     if remove:
         shutil.rmtree(down_path)
 
 
 # =============================================================================
-#  ᴛᴀsᴋ ᴄᴀɴᴄᴇʟʟᴀᴛɪᴏɴ
+# Task Cancellation
 # =============================================================================
 async def cancelTask(reason: str):
     """
-    ᴄᴀɴᴄᴇʟ ᴛʜᴇ ᴄᴜʀʀᴇɴᴛ ʀᴜɴɴɪɴɢ ᴛᴀsᴋ.
+    Cancel the current running task.
     
-    ᴀʀɢs:
-        ʀᴇᴀsᴏɴ: ᴄᴀɴᴄᴇʟʟᴀᴛɪᴏɴ ʀᴇᴀsᴏɴ
+    Args:
+        reason: cancellation reason
     """
-    text = f"""**❌ ᴛᴀsᴋ ᴄᴀɴᴄᴇʟʟᴇᴅ**
+    text = style_text(f"""**❌ Task Cancelled**
 
-╭🔗 **sᴏᴜʀᴄᴇ:** [ʜᴇʀᴇ]({Messages.src_link})
-├🎯 **ᴍᴏᴅᴇ:** `{BOT.Mode.mode.capitalize()}`
-├⚠️ **ʀᴇᴀsᴏɴ:** `{reason}`
-╰⏱️ **ᴇʟᴀᴘsᴇᴅ:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`"""
+┏🔗 **Source:** [Here]({Messages.src_link})
+┠🎯 **Mode:** `{BOT.Mode.mode.capitalize()}`
+┠⚠️ **Reason:** `{reason}`
+┗⏱️ **Elapsed:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`""")
     
     if BOT.State.task_going:
         try:
             BOT.TASK.cancel()
             shutil.rmtree(Paths.WORK_PATH)
         except Exception as e:
-            logger.error(f"ᴛᴀsᴋ ᴄᴀɴᴄᴇʟʟᴀᴛɪᴏɴ ᴇʀʀᴏʀ: {e}")
+            logger.error(f"Task cancellation error: {e}")
         else:
-            logger.info("ᴛᴀsᴋ ᴄᴀɴᴄᴇʟʟᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ")
+            logger.info("Task cancelled successfully")
         finally:
             BOT.State.task_going = False
             await MSG.status_msg.delete()
@@ -250,8 +249,8 @@ async def cancelTask(reason: str):
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
-                            InlineKeyboardButton("📣 ᴄʜᴀɴɴᴇʟ", url="https://t.me/Shineii86"),
-                            InlineKeyboardButton("💬 sᴜᴘᴘᴏʀᴛ", url="https://t.me/Shineii86"),
+                            InlineKeyboardButton(style_button("📣 Channel"), url="https://t.me/MaximXBots", style="primary"),
+                            InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup", style="success"),
                         ]
                     ]
                 )
@@ -259,38 +258,39 @@ async def cancelTask(reason: str):
 
 
 # =============================================================================
-#  ᴄᴏᴍᴘʟᴇᴛɪᴏɴ ʟᴏɢs
+# Completion Logs
 # =============================================================================
 async def SendLogs(is_leech: bool):
     """
-    sᴇɴᴅ ᴄᴏᴍᴘʟᴇᴛɪᴏɴ ʟᴏɢs ᴀɴᴅ sᴜᴍᴍᴀʀʏ.
+    Send completion logs and summary.
     
-    ᴀʀɢs:
-        ɪs_ʟᴇᴇᴄʜ: ᴡʜᴇᴛʜᴇʀ ᴛʜɪs ᴡᴀs ᴀ ʟᴇᴇᴄʜ ᴛᴀsᴋ
+    Args:
+        is_leech: whether this was a leech task
     """
     global Transfer, Messages
     
-    final_text = f"**📋 ғɪʟᴇ ʟɪsᴛ:** `{len(Transfer.sent_file)}`\n\n**📜 ʟᴏɢs:**\n"
+    final_text = style_text(f"**📋 File List:** `{len(Transfer.sent_file)}`\n\n**📜 Logs:**\n")
     
     if is_leech:
-        file_count = f"├📋 **ғɪʟᴇs:** `{len(Transfer.sent_file)}`\n"
+        file_count = f"┠📋 **Files:** `{len(Transfer.sent_file)}`\n"
         size = sizeUnit(sum(Transfer.up_bytes))
     else:
         file_count = ""
         size = sizeUnit(Transfer.total_down_size)
     
-    summary = f"""
+    summary = style_text(f"""
 
-**✅ ᴛᴀsᴋ ᴄᴏᴍᴘʟᴇᴛᴇ**
+**✅ Task Complete**
 
-╭📛 **ɴᴀᴍᴇ:** `{Messages.download_name}`
-├📦 **sɪᴢᴇ:** `{size}`
-{file_count}├⏱️ **ᴛɪᴍᴇ:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`
-╰👤 **ʙʏ:** @sʜɪɴᴇɪɪ86"""
+┏📛 **Name:** `{Messages.download_name}`
+┠📦 **Size:** `{size}`
+{file_count}
+┠⏱️ **Time:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`
+┗🤖 **By:** [LeechBot](https://github.com/Shineii86/LeechBot)""")
     
     if BOT.State.task_going:
         await MSG.sent_msg.reply_text(
-            text=f"**🔗 sᴏᴜʀᴄᴇ:** [ʜᴇʀᴇ]({Messages.src_link})" + summary
+            text=f"**🔗 Source:** [Here]({Messages.src_link})" + summary
         )
         
         await MSG.status_msg.edit_text(
@@ -298,17 +298,17 @@ async def SendLogs(is_leech: bool):
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("📣 ᴄʜᴀɴɴᴇʟ", url="https://t.me/Shineii86"),
-                        InlineKeyboardButton("💬 sᴜᴘᴘᴏʀᴛ", url="https://t.me/Shineii86"),
+                        InlineKeyboardButton(style_button("📣 Channel"), url="https://t.me/MaximXBots", style="primary"),
+                        InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup", style="success"),
                     ],
                     [
-                        InlineKeyboardButton("📂 ɢɪᴛʜᴜʙ", url="https://github.com/Shineii86/LeechBot"),
+                        InlineKeyboardButton(style_button("📂 GitHub ✨"), url="https://github.com/Shineii86/LeechBot", style="primary"),
                     ]
                 ]
             )
         )
         
-        # sᴇɴᴅ ғɪʟᴇ ʟɪsᴛ ɪғ ʟᴇᴇᴄʜ ᴛᴀsᴋ
+        # Send file list if leech task
         if is_leech:
             try:
                 final_texts = []
@@ -329,7 +329,7 @@ async def SendLogs(is_leech: bool):
                     MSG.status_msg = await MSG.status_msg.reply_text(text=fn_txt)
             
             except Exception as e:
-                error_msg = f"**❌ ʟᴏɢ ᴇʀʀᴏʀ:** `{e}`"
+                error_msg = f"**❌ Log Error:** `{e}`"
                 await MSG.status_msg.reply_text(text=error_msg)
     
     BOT.State.started = False
