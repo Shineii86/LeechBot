@@ -1,21 +1,21 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Advanced Telegram File Transloder
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
-#  x: https://x.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
-#  ʟɪᴄᴇɴsᴇ: ᴍɪᴛ ʟɪᴄᴇɴsᴇ
-#  ʏᴏᴜ ᴍᴀʏ ᴜsᴇ, ᴍᴏᴅɪғʏ, ᴀɴᴅ ᴅɪsᴛʀɪʙᴜᴛᴇ ᴛʜɪs ᴄᴏᴅᴇ ᴜɴᴅᴇʀ ᴛʜᴇ ᴍɪᴛ ʟɪᴄᴇɴsᴇ.
-#  ᴘʟᴇᴀsᴇ ʀᴇᴛᴀɪɴ ᴛʜɪs ʜᴇᴀᴅᴇʀ ᴡʜᴇɴ ᴜsɪɴɢ ᴏʀ ᴍᴏᴅɪғʏɪɴɢ ᴛʜᴇ ᴄᴏᴅᴇ.
+# License   : MIT License
+# You may use, modify, and distribute this code under the MIT License.
+# Please retain this header when using or modifying the code.
 # =============================================================================
 
 """
-ʟᴇᴇᴄʜʙᴏᴛ ᴍᴀɪɴ ᴍᴏᴅᴜʟᴇ ɪɴɪᴛɪᴀʟɪᴢᴀᴛɪᴏɴ
+LeechBot main module initialization
 
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ʜᴀɴᴅʟᴇs ᴛʜᴇ ᴘʏʀᴏɢʀᴀᴍ ᴄʟɪᴇɴᴛ ɪɴɪᴛɪᴀʟɪᴢᴀᴛɪᴏɴ ᴀɴᴅ ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴ ʟᴏᴀᴅɪɴɢ.
-ɪᴛ sᴇᴛs ᴜᴘ ᴛʜᴇ ʙᴏᴛ ɪɴsᴛᴀɴᴄᴇ ᴡɪᴛʜ ᴛʜᴇ ʀᴇǫᴜɪʀᴇᴅ ᴀᴘɪ ᴄʀᴇᴅᴇɴᴛɪᴀʟs ᴀɴᴅ ʟᴏɢɢɪɴɢ.
+This module handles the pyrogram client initialization and configuration loading.
+It sets up the bot instance with the required API credentials and logging.
 """
 
 import asyncio
@@ -25,7 +25,7 @@ import os
 from pyrogram import Client
 
 # =============================================================================
-#  ʟᴏɢɢɪɴɢ ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴ
+# Logging Configuration
 # =============================================================================
 logging.basicConfig(
     level=logging.INFO,
@@ -35,18 +35,18 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # =============================================================================
-#  ᴄʀᴇᴅᴇɴᴛɪᴀʟs ʟᴏᴀᴅɪɴɢ
+# Credentials Loading
 # =============================================================================
 def load_credentials():
     """
-    ʟᴏᴀᴅ ʙᴏᴛ ᴄʀᴇᴅᴇɴᴛɪᴀʟs ғʀᴏᴍ ᴛʜᴇ ᴄʀᴇᴅᴇɴᴛɪᴀʟs.ᴊsᴏɴ ғɪʟᴇ.
+    Load bot credentials from the credentials.json file.
     
-    ʀᴇᴛᴜʀɴs:
-        ᴅɪᴄᴛ: ᴄᴏɴᴛᴀɪɴɪɴɢ ᴀᴘɪ_ɪᴅ, ᴀᴘɪ_ʜᴀsʜ, ʙᴏᴛ_ᴛᴏᴋᴇɴ, ᴏᴡɴᴇʀ, ᴀɴᴅ ᴅᴜᴍᴘ_ɪᴅ
+    Returns:
+        dict: containing api_id, api_hash, bot_token, owner, and dump_id
     """
     credentials_path = "/content/tgdl/credentials.json"
     
-    # ᴄʜᴇᴄᴋ ɪғ ʀᴜɴɴɪɴɢ ɪɴ ʟᴏᴄᴀʟ ᴍᴏᴅᴇ
+    # Check if running in local mode
     if not os.path.exists(credentials_path):
         credentials_path = "credentials.json"
     
@@ -54,7 +54,7 @@ def load_credentials():
         return json.load(file)
 
 # =============================================================================
-#  ɢʟᴏʙᴀʟ ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴ ᴠᴀʀɪᴀʙʟᴇs
+# Global Configuration Variables
 # =============================================================================
 credentials = load_credentials()
 
@@ -65,12 +65,12 @@ OWNER = credentials["USER_ID"]
 DUMP_ID = credentials["DUMP_ID"]
 
 # =============================================================================
-#  ᴇᴠᴇɴᴛ ʟᴏᴏᴘ sᴇᴛᴜᴘ
+# Event Loop Setup
 # =============================================================================
 def setup_event_loop():
     """
-    ᴇɴsᴜʀᴇ ᴀɴ ᴇᴠᴇɴᴛ ʟᴏᴏᴇxɪsᴛs ʙᴇғᴏʀᴇ ᴜsɪɴɢ ᴘʏʀᴏɢʀᴀᴍ.
-    ᴛʜɪs ɪs ɴᴇᴄᴇssᴀʀʏ ғᴏʀ ᴄᴇʀᴛᴀɪɴ ᴇɴᴠɪʀᴏɴᴍᴇɴᴛs ʟɪᴋᴇ ɢᴏᴏɢʟᴇ ᴄᴏʟᴀʙ.
+    Ensure an event loop exists before using pyrogram.
+    This is necessary for certain environments like Google Colab.
     """
     try:
         asyncio.get_event_loop()
@@ -80,7 +80,7 @@ def setup_event_loop():
 setup_event_loop()
 
 # =============================================================================
-#  ᴘʏʀᴏɢʀᴀᴍ ᴄʟɪᴇɴᴛ ᴄʀᴇᴀᴛɪᴏɴ
+# Pyrogram Client Creation
 # =============================================================================
 leechbot = Client(
     "my_bot",
@@ -91,4 +91,4 @@ leechbot = Client(
     max_concurrent_transmissions=5
 )
 
-logger.info("ʟᴇᴇᴄʜʙᴏᴛ ᴄʟɪᴇɴᴛ ɪɴɪᴛɪᴀʟɪᴢᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ")
+logger.info("LeechBot client initialized successfully")
