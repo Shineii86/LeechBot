@@ -27,7 +27,6 @@ from googleapiclient.http import MediaIoBaseDownload
 from leechbot.utility.handler import cancelTask
 from leechbot.utility.helper import sizeUnit, getTime, speedETA, status_bar
 from leechbot.utility.variables import Gdrive, Messages, Paths, BotTimes, Transfer
-from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +45,7 @@ async def build_service():
             creds = pickle.load(token)
             Gdrive.service = build("drive", "v3", credentials=creds)
     else:
-        await cancelTask(style_text("Token.pickle Not Found! Please Run The Google Drive Setup First."))
+        await cancelTask("Token.pickle Not Found! Please Run The Google Drive Setup First.")
 
 
 # =============================================================================
@@ -62,7 +61,7 @@ async def g_DownLoad(link: str, num: int):
     """
     global down_msg
     
-    down_msg = style_text(f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n**🏷️ Name:** ") + f"`{Messages.download_name}`\n"
+    down_msg = f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n**🏷️ Name:** `{Messages.download_name}`\n"
     file_id = await getIDFromURL(link)
     meta = getFileMetadata(file_id)
     
@@ -89,7 +88,7 @@ async def getIDFromURL(link: str) -> str:
         regex = r"https:\/\/drive\.google\.com\/(?:drive(.*?)\/folders\/|file(.*?)?\/d\/)([-\w]+)"
         res = re_search(regex, link)
         if res is None:
-            await cancelTask(style_text("Invalid Google Drive Link"))
+            await cancelTask("Invalid Google Drive Link")
             logger.error("G-Drive ID not found")
             return ""
         return res.group(3)
@@ -221,13 +220,13 @@ async def gDownloadFile(file_id: str, path: str):
     except HttpError as error:
         err = "File not found or not accessible"
         logger.error(err)
-        await cancelTask(style_text(err))
+        await cancelTask(err)
         return
     
     if file["mimeType"].startswith("application/vnd.google-apps"):
         err = "Google Docs/Sheets/Slides cannot be downloaded directly"
         logger.error(err)
-        await cancelTask(style_text(err))
+        await cancelTask(err)
         return
     
     try:
@@ -276,14 +275,14 @@ async def gDownloadFile(file_id: str, path: str):
     except HttpError as error:
         if error.resp.status == 403 and "User rate limit" in str(error):
             logger.error("Download quota exceeded")
-            await cancelTask(style_text("Download Quota Exceeded"))
+            await cancelTask("Download Quota Exceeded")
         else:
             logger.error(f"GDrive error: {error}")
-            await cancelTask(style_text(f"GDrive Error: {error}"))
+            await cancelTask(f"GDrive Error: {error}")
     
     except Exception as e:
         logger.error(f"Download error: {e}")
-        await cancelTask(style_text(f"Download Error: {e}"))
+        await cancelTask(f"Download Error: {e}")
 
 
 # =============================================================================
