@@ -3,7 +3,8 @@
 # =============================================================================
 # Project   : LeechBot
 # Developer : Shinei Nouzen
-# GitHub: @Shineii86 || Telegram: @Shineii86 || X: @Shinei86
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
