@@ -26,7 +26,7 @@ from pyrogram.errors import BadRequest
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from leechbot.utility.variables import BOT, MSG, BotTimes, Messages, Paths
-from leechbot.utility.style import style_text
+from leechbot.utility.style import style_text, style_button
 
 logger = logging.getLogger(__name__)
 
@@ -381,7 +381,7 @@ def convertIMG(image_path: str) -> str:
 
 
 # =============================================================================
-# System Information
+# System Information (Basic)
 # =============================================================================
 def sysINFO() -> str:
     """
@@ -402,6 +402,28 @@ def sysINFO() -> str:
 ┠💽 **{style_text('RAM')}:** `{sizeUnit(ram_usage)}`
 ┖💾 **{style_text('Disk')}:** `{sizeUnit(disk_usage.free)}`"""
     
+    return info
+
+
+# =============================================================================
+# System Information (Detailed)
+# =============================================================================
+def sysINFO_full() -> str:
+    """Get detailed system information."""
+    ram = psutil.virtual_memory()
+    disk = psutil.disk_usage("/")
+    cpu_percent = psutil.cpu_percent(interval=0.5, percpu=True)
+    net = psutil.net_io_counters()
+    
+    info = f"""
+
+⌬───── **{style_text('System Info (Detailed)')}** ─────⌬
+
+┏🖥️ **{style_text('CPU')}:** `{psutil.cpu_percent()}%` (cores: {', '.join(f'{c}%' for c in cpu_percent)})
+┠💽 **{style_text('RAM')}:** `{sizeUnit(ram.used)} / {sizeUnit(ram.total)}` ({ram.percent}%)
+┠💾 **{style_text('Disk')}:** `{sizeUnit(disk.used)} / {sizeUnit(disk.total)}` ({disk.percent}%)
+┠🌐 **{style_text('Net')}:** ↓`{sizeUnit(net.bytes_recv)}` ↑`{sizeUnit(net.bytes_sent)}`
+┗⏱️ **{style_text('Uptime')}:** `{getTime(int(time() - psutil.boot_time()))}`"""
     return info
 
 
@@ -574,7 +596,6 @@ async def send_settings(client, message, msg_id: int, is_command: bool):
     """
     up_mode = "Document" if not BOT.Options.stream_upload else "Media"
     
-    # Build keyboard with colored buttons
     keyboard = InlineKeyboardMarkup(
         [
             [
@@ -677,7 +698,7 @@ async def status_bar(down_msg: str, speed: str, percentage: float, eta: str, don
             await MSG.status_msg.edit_text(
                 text=Messages.task_msg + down_msg + text + sysINFO(),
                 disable_web_page_preview=True,
-                reply_markup=keyboard()
+                reply_markup=status_keyboard()
             )
     except BadRequest as e:
         logger.error(f"Status bar error: {e}")
@@ -686,7 +707,7 @@ async def status_bar(down_msg: str, speed: str, percentage: float, eta: str, don
 
 
 # =============================================================================
-# Cancel Keyboard
+# Cancel Keyboard (Legacy)
 # =============================================================================
 def keyboard():
     """
@@ -698,7 +719,39 @@ def keyboard():
     return InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton(style_button("Cancel"), callback_data="cancel")
+                InlineKeyboardButton(style_button("Cancel", "danger"), callback_data="cancel")
+            ]
+        ]
+    )
+
+
+# =============================================================================
+# Status Keyboard with System Info Buttons
+# =============================================================================
+def status_keyboard():
+    """
+    Generate inline keyboard with Cancel, Refresh, and Stats buttons.
+    
+    Returns:
+        InlineKeyboardMarkup: enhanced status keyboard
+    """
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    style_button("🔄 Refresh", "primary"), 
+                    callback_data="sys_refresh"
+                ),
+                InlineKeyboardButton(
+                    style_button("📊 Stats", "primary"), 
+                    callback_data="sys_stats"
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    style_button("❌ Cancel", "danger"), 
+                    callback_data="cancel"
+                )
             ]
         ]
     )
