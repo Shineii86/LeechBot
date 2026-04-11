@@ -1,15 +1,15 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Package Initialization
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ʟᴇᴇᴄʜʙᴏᴛ ᴜᴛɪʟɪᴛʏ ᴍᴏᴅᴜʟᴇs
-
-ᴛʜɪs ᴘᴀᴄᴋᴀɢᴇ ᴄᴏɴᴛᴀɪɴs ʜᴇʟᴘᴇʀ ᴜᴛɪʟɪᴛɪᴇs ᴀɴᴅ ᴄᴏɴғɪɢᴜʀᴀᴛɪᴏɴs.
+LeechBot utility package initialization.
+Exports all core modules and functions.
 """
 
 from .variables import BOT, YTDL, Transfer, TaskError, BotTimes, Paths, Messages, MSG, Aria2c, Gdrive, MAX_FILE_SIZE, VERSION
@@ -17,6 +17,7 @@ from .helper import isLink, getTime, sizeUnit, fileType, getSize, sysINFO, speed
 from .handler import Leech, Zip_Handler, Unzip_Handler, SendLogs, cancelTask
 from .task_manager import taskScheduler, task_starter
 from .converters import videoConverter, sizeChecker, archive, extract
+from .style import style_text, to_small_caps, style_button
 
 __all__ = [
     "BOT",
@@ -51,4 +52,7 @@ __all__ = [
     "sizeChecker",
     "archive",
     "extract",
+    "style_text",
+    "to_small_caps",
+    "style_button",
 ]
