@@ -1,15 +1,16 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Terabox Downloader
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ᴛᴇʀᴀʙᴏx ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ᴍᴏᴅᴜʟᴇ
+Terabox downloader module.
 
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ʜᴀɴᴅʟᴇs ᴅᴏᴡɴʟᴏᴀᴅs ғʀᴏᴍ ᴛᴇʀᴀʙᴏx ᴜsɪɴɢ ᴛʜɪʀᴅ-ᴘᴀʀᴛʏ ᴀᴘɪs.
+Handles downloads from Terabox using third-party APIs.
 """
 
 import aiohttp
@@ -17,20 +18,21 @@ import logging
 from leechbot.utility.variables import Aria2c
 from leechbot.utility.handler import cancelTask
 from leechbot.downloader.aria2 import aria2_Download
+from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-#  ᴍᴀɪɴ ᴅᴏᴡɴʟᴏᴀᴅ ғᴜɴᴄᴛɪᴏɴ
+# Main Download Function
 # =============================================================================
 async def terabox_download(link: str, index: int):
     """
-    ᴅᴏᴡɴʟᴏᴀᴅ ғɪʟᴇ ғʀᴏᴍ ᴛᴇʀᴀʙᴏx.
+    Download file from Terabox.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ᴛᴇʀᴀʙᴏx sʜᴀʀᴇ ʟɪɴᴋ
-        ɪɴᴅᴇx: ʟɪɴᴋ ɴᴜᴍʙᴇʀ
+    Args:
+        link: Terabox share link
+        index: link number
     """
     global Aria2c
     
@@ -45,7 +47,7 @@ async def terabox_download(link: str, index: int):
     
     try:
         async with aiohttp.ClientSession() as session:
-            # ɢᴇᴛ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋs
+            # Get download links
             async with session.post(
                 "https://ytshorts.savetube.me/api/v1/terabox-downloader",
                 data=payload,
@@ -57,11 +59,11 @@ async def terabox_download(link: str, index: int):
                     fast_url = json_response["response"][0]["resolutions"]["Fast Download"]
                     slow_url = json_response["response"][0]["resolutions"]["HD Video"]
                 except Exception as e:
-                    logger.error(f"ᴛᴇʀᴀʙᴏx ᴀᴘɪ ᴇʀʀᴏʀ: {e}")
-                    await cancelTask(f"ᴛᴇʀᴀʙᴏx ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛɪᴏɴ ғᴀɪʟᴇᴅ: {e}")
+                    logger.error(f"Terabox API error: {e}")
+                    await cancelTask(style_text(f"Terabox Link Generation Failed: {e}"))
                     return
             
-            # ᴛʀʏ ғᴀsᴛ ᴅᴏᴡɴʟᴏᴀᴅ ғɪʀsᴛ
+            # Try fast download first
             async with session.get(fast_url, allow_redirects=True) as response:
                 content_type = response.headers.get("Content-Type", "")
                 Aria2c.link_info = False
@@ -69,9 +71,9 @@ async def terabox_download(link: str, index: int):
                 if "application/octet-stream" in content_type or "video" in content_type:
                     await aria2_Download(fast_url, index)
                 else:
-                    logger.info("ғᴀsᴛ ʟɪɴᴋ ᴜɴᴀᴠᴀɪʟᴀʙʟᴇ, ᴜsɪɴɢ sʟᴏᴡ ʟɪɴᴋ")
+                    logger.info("Fast link unavailable, using slow link")
                     await aria2_Download(slow_url, index)
     
     except Exception as e:
-        logger.error(f"ᴛᴇʀᴀʙᴏx ᴅᴏᴡɴʟᴏᴀᴅ ᴇʀʀᴏʀ: {e}")
-        await cancelTask(f"ᴛᴇʀᴀʙᴏx ᴅᴏᴡɴʟᴏᴀᴅ ғᴀɪʟᴇᴅ: {e}")
+        logger.error(f"Terabox download error: {e}")
+        await cancelTask(style_text(f"Terabox Download Failed: {e}"))
