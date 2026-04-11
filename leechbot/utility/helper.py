@@ -1,16 +1,14 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Helper Utilities
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ʟᴇᴇᴄʜʙᴏᴛ ʜᴇʟᴘᴇʀ ᴜᴛɪʟɪᴛɪᴇs
-
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ᴄᴏɴᴛᴀɪɴs ᴠᴀʀɪᴏᴜs ʜᴇʟᴘᴇʀ ғᴜɴᴄᴛɪᴏɴs ғᴏʀ ғɪʟᴇ ᴏᴘᴇʀᴀᴛɪᴏɴs,
-sʏsᴛᴇᴍ ɪɴғᴏʀᴍᴀᴛɪᴏɴ, ᴍᴇssᴀɢᴇ ʜᴀɴᴅʟɪɴɢ, ᴀɴᴅ ᴜɪ ᴜᴘᴅᴀᴛᴇs.
+Helper functions for file operations, formatting, and UI updates.
 """
 
 import os
@@ -28,34 +26,35 @@ from pyrogram.errors import BadRequest
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from leechbot.utility.variables import BOT, MSG, BotTimes, Messages, Paths
+from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-#  ʟɪɴᴋ ᴠᴀʟɪᴅᴀᴛɪᴏɴ
+# Link Validation
 # =============================================================================
 def isLink(_, __, update):
     """
-    ᴠᴀʟɪᴅᴀᴛᴇ ɪғ ᴛʜᴇ ᴍᴇssᴀɢᴇ ᴄᴏɴᴛᴀɪɴs ᴀ ᴠᴀʟɪᴅ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ.
+    Validate if the message contains a valid download link.
     
-    ᴀʀɢs:
-        ᴜᴘᴅᴀᴛᴇ: ᴛʜᴇ ᴍᴇssᴀɢᴇ ᴜᴘᴅᴀᴛᴇ ᴏʙᴊᴇᴄᴛ
+    Args:
+        update: the message update object
     
-    ʀᴇᴛᴜʀɴs:
-        ʙᴏᴏʟ: ᴛʀᴜᴇ ɪғ ᴠᴀʟɪᴅ ʟɪɴᴋ ғᴏᴜɴᴅ
+    Returns:
+        bool: True if valid link found
     """
     if update.text:
-        # ʟᴏᴄᴀʟ ᴘᴀᴛʜs
+        # Local paths
         if "/content/" in str(update.text) or "/home" in str(update.text):
             return True
-        # ᴍᴀɢɴᴇᴛ ʟɪɴᴋs
+        # Magnet links
         elif update.text.startswith("magnet:?xt=urn:btih:"):
             return True
         
         parsed = urlparse(update.text)
         
-        # ʜᴛᴛᴘ/ʜᴛᴛᴘs ᴜʀʟs
+        # HTTP/HTTPS URLs
         if parsed.scheme in ("http", "https") and parsed.netloc:
             return True
     
@@ -63,47 +62,47 @@ def isLink(_, __, update):
 
 
 def is_google_drive(link: str) -> bool:
-    """ᴄʜᴇᴄᴋ ɪғ ʟɪɴᴋ ɪs ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ"""
+    """Check if link is Google Drive"""
     return "drive.google.com" in link
 
 
 def is_mega(link: str) -> bool:
-    """ᴄʜᴇᴄᴋ ɪғ ʟɪɴᴋ ɪs ᴍᴇɢᴀ.ɴᴢ"""
+    """Check if link is Mega.nz"""
     return "mega.nz" in link
 
 
 def is_terabox(link: str) -> bool:
-    """ᴄʜᴇᴄᴋ ɪғ ʟɪɴᴋ ɪs ᴛᴇʀᴀʙᴏx"""
+    """Check if link is Terabox"""
     return "terabox" in link or "1024tera" in link
 
 
 def is_ytdl_link(link: str) -> bool:
-    """ᴄʜᴇᴄᴋ ɪғ ʟɪɴᴋ ɪs ʏᴏᴜᴛᴜʙᴇ/ʏᴛ-ᴅʟᴘ sᴜᴘᴘᴏʀᴛᴇᴅ"""
+    """Check if link is YouTube/YT-DLP supported"""
     return "youtube.com" in link or "youtu.be" in link
 
 
 def is_telegram(link: str) -> bool:
-    """ᴄʜᴇᴄᴋ ɪғ ʟɪɴᴋ ɪs ᴛᴇʟᴇɢʀᴀᴍ"""
+    """Check if link is Telegram"""
     return "t.me" in link
 
 
 def is_torrent(link: str) -> bool:
-    """ᴄʜᴇᴄᴋ ɪғ ʟɪɴᴋ ɪs ᴛᴏʀʀᴇɴᴛ/ᴍᴀɢɴᴇᴛ"""
+    """Check if link is torrent/magnet"""
     return "magnet" in link or ".torrent" in link
 
 
 # =============================================================================
-#  ᴛɪᴍᴇ ғᴏʀᴍᴀᴛᴛɪɴɢ
+# Time Formatting
 # =============================================================================
 def getTime(seconds: int) -> str:
     """
-    ᴄᴏɴᴠᴇʀᴛ sᴇᴄᴏɴᴅs ᴛᴏ ʜᴜᴍᴀɴ-ʀᴇᴀᴅᴀʙʟᴇ ғᴏʀᴍᴀᴛ.
+    Convert seconds to human-readable format.
     
-    ᴀʀɢs:
-        sᴇᴄᴏɴᴅs: ᴛɪᴍᴇ ɪɴ sᴇᴄᴏɴᴅs
+    Args:
+        seconds: time in seconds
     
-    ʀᴇᴛᴜʀɴs:
-        sᴛʀ: ғᴏʀᴍᴀᴛᴛᴇᴅ ᴛɪᴍᴇ sᴛʀɪɴɢ
+    Returns:
+        str: formatted time string
     """
     seconds = int(seconds)
     days = seconds // (24 * 3600)
@@ -114,67 +113,67 @@ def getTime(seconds: int) -> str:
     seconds %= 60
     
     if days > 0:
-        return f"{days}ᴅ {hours}ʜ {minutes}ᴍ {seconds}s"
+        return f"{days}d {hours}h {minutes}m {seconds}s"
     elif hours > 0:
-        return f"{hours}ʜ {minutes}ᴍ {seconds}s"
+        return f"{hours}h {minutes}m {seconds}s"
     elif minutes > 0:
-        return f"{minutes}ᴍ {seconds}s"
+        return f"{minutes}m {seconds}s"
     else:
         return f"{seconds}s"
 
 
 # =============================================================================
-#  sɪᴢᴇ ғᴏʀᴍᴀᴛᴛɪɴɢ
+# Size Formatting
 # =============================================================================
 def sizeUnit(size: float) -> str:
     """
-    ᴄᴏɴᴠᴇʀᴛ ʙʏᴛᴇs ᴛᴏ ʜᴜᴍᴀɴ-ʀᴇᴀᴅᴀʙʟᴇ sɪᴢᴇ.
+    Convert bytes to human-readable size.
     
-    ᴀʀɢs:
-        sɪᴢᴇ: sɪᴢᴇ ɪɴ ʙʏᴛᴇs
+    Args:
+        size: size in bytes
     
-    ʀᴇᴛᴜʀɴs:
-        sᴛʀ: ғᴏʀᴍᴀᴛᴛᴇᴅ sɪᴢᴇ sᴛʀɪɴɢ
+    Returns:
+        str: formatted size string
     """
     if size > 1024 ** 5:
-        return f"{size / (1024 ** 5):.2f} ᴘɪʙ"
+        return f"{size / (1024 ** 5):.2f} PiB"
     elif size > 1024 ** 4:
-        return f"{size / (1024 ** 4):.2f} ᴛɪʙ"
+        return f"{size / (1024 ** 4):.2f} TiB"
     elif size > 1024 ** 3:
-        return f"{size / (1024 ** 3):.2f} ɢɪʙ"
+        return f"{size / (1024 ** 3):.2f} GiB"
     elif size > 1024 ** 2:
-        return f"{size / (1024 ** 2):.2f} ᴍɪʙ"
+        return f"{size / (1024 ** 2):.2f} MiB"
     elif size > 1024:
-        return f"{size / 1024:.2f} ᴋɪʙ"
+        return f"{size / 1024:.2f} KiB"
     else:
-        return f"{size:.2f} ʙ"
+        return f"{size:.2f} B"
 
 
 # =============================================================================
-#  ғɪʟᴇ ᴛʏᴘᴇ ᴅᴇᴛᴇᴄᴛɪᴏɴ
+# File Type Detection
 # =============================================================================
 def fileType(file_path: str) -> str:
     """
-    ᴅᴇᴛᴇᴄᴛ ғɪʟᴇ ᴛʏᴘᴇ ʙᴀsᴇᴅ ᴏɴ ᴇxᴛᴇɴsɪᴏɴ.
+    Detect file type based on extension.
     
-    ᴀʀɢs:
-        ғɪʟᴇ_ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ᴛʜᴇ ғɪʟᴇ
+    Args:
+        file_path: path to the file
     
-    ʀᴇᴛᴜʀɴs:
-        sᴛʀ: ғɪʟᴇ ᴛʏᴘᴇ (ᴠɪᴅᴇᴏ, ᴀᴜᴅɪᴏ, ᴘʜᴏᴛᴏ, ᴅᴏᴄᴜᴍᴇɴᴛ)
+    Returns:
+        str: file type (video, audio, photo, document)
     """
     extensions_dict = {
-        # ᴠɪᴅᴇᴏ ғᴏʀᴍᴀᴛs
+        # Video formats
         ".mp4": "video", ".avi": "video", ".mkv": "video",
         ".m2ts": "video", ".mov": "video", ".ts": "video",
         ".m3u8": "video", ".webm": "video", ".mpg": "video",
         ".mpeg": "video", ".mpeg4": "video", ".vob": "video",
         ".m4v": "video", ".flv": "video", ".wmv": "video",
-        # ᴀᴜᴅɪᴏ ғᴏʀᴍᴀᴛs
+        # Audio formats
         ".mp3": "audio", ".wav": "audio", ".flac": "audio",
         ".aac": "audio", ".ogg": "audio", ".m4a": "audio",
         ".wma": "audio", ".opus": "audio",
-        # ɪᴍᴀɢᴇ ғᴏʀᴍᴀᴛs
+        # Image formats
         ".jpg": "photo", ".jpeg": "photo", ".png": "photo",
         ".bmp": "photo", ".gif": "photo", ".webp": "photo",
         ".tiff": "photo",
@@ -185,17 +184,17 @@ def fileType(file_path: str) -> str:
 
 
 # =============================================================================
-#  ғɪʟᴇɴᴀᴍᴇ ʜᴀɴᴅʟɪɴɢ
+# Filename Handling
 # =============================================================================
 def shortFileName(path: str) -> str:
     """
-    ᴛʀᴜɴᴄᴀᴛᴇ ғɪʟᴇɴᴀᴍᴇ ᴛᴏ ғɪᴛ ᴛᴇʟᴇɢʀᴀᴍ ʟɪᴍɪᴛs.
+    Truncate filename to fit Telegram limits.
     
-    ᴀʀɢs:
-        ᴘᴀᴛʜ: ғɪʟᴇ ᴏʀ ᴅɪʀᴇᴄᴛᴏʀʏ ᴘᴀᴛʜ
+    Args:
+        path: file or directory path
     
-    ʀᴇᴛᴜʀɴs:
-        sᴛʀ: ᴛʀᴜɴᴄᴀᴛᴇᴅ ᴘᴀᴛʜ
+    Returns:
+        str: truncated path
     """
     max_len = 60
     
@@ -218,17 +217,17 @@ def shortFileName(path: str) -> str:
 
 
 # =============================================================================
-#  ғɪʟᴇ sɪᴢᴇ ᴄᴀʟᴄᴜʟᴀᴛɪᴏɴ
+# Get Total Size of Path
 # =============================================================================
 def getSize(path: str) -> int:
     """
-    ɢᴇᴛ ᴛᴏᴛᴀʟ sɪᴢᴇ ᴏғ ғɪʟᴇ ᴏʀ ᴅɪʀᴇᴄᴛᴏʀʏ.
+    Get total size of file or directory.
     
-    ᴀʀɢs:
-        ᴘᴀᴛʜ: ғɪʟᴇ ᴏʀ ᴅɪʀᴇᴄᴛᴏʀʏ ᴘᴀᴛʜ
+    Args:
+        path: file or directory path
     
-    ʀᴇᴛᴜʀɴs:
-        ɪɴᴛ: ᴛᴏᴛᴀʟ sɪᴢᴇ ɪɴ ʙʏᴛᴇs
+    Returns:
+        int: total size in bytes
     """
     if ospath.isfile(path):
         return ospath.getsize(path)
@@ -242,17 +241,17 @@ def getSize(path: str) -> int:
 
 
 # =============================================================================
-#  ᴠɪᴅᴇᴏ ᴇxᴛᴇɴsɪᴏɴ ғɪx
+# Video Extension Fix
 # =============================================================================
 def videoExtFix(file_path: str) -> str:
     """
-    ғɪx ᴠɪᴅᴇᴏ ғɪʟᴇ ᴇxᴛᴇɴsɪᴏɴ ғᴏʀ ᴛᴇʟᴇɢʀᴀᴍ ᴄᴏᴍᴘᴀᴛɪʙɪʟɪᴛʏ.
+    Fix video file extension for Telegram compatibility.
     
-    ᴀʀɢs:
-        ғɪʟᴇ_ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ᴠɪᴅᴇᴏ ғɪʟᴇ
+    Args:
+        file_path: path to video file
     
-    ʀᴇᴛᴜʀɴs:
-        sᴛʀ: ғɪxᴇᴅ ғɪʟᴇ ᴘᴀᴛʜ
+    Returns:
+        str: fixed file path
     """
     _, f_name = ospath.split(file_path)
     if f_name.endswith(".mp4") or f_name.endswith(".mkv"):
@@ -264,17 +263,17 @@ def videoExtFix(file_path: str) -> str:
 
 
 # =============================================================================
-#  ᴛʜᴜᴍʙɴᴀɪʟ ɢᴇɴᴇʀᴀᴛɪᴏɴ
+# Thumbnail Generation
 # =============================================================================
 def thumbMaintainer(file_path: str):
     """
-    ɢᴇɴᴇʀᴀᴛᴇ ᴏʀ ʀᴇᴛʀɪᴇᴠᴇ ᴛʜᴜᴍʙɴᴀɪʟ ғᴏʀ ᴠɪᴅᴇᴏ.
+    Generate or retrieve thumbnail for video.
     
-    ᴀʀɢs:
-        ғɪʟᴇ_ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ᴠɪᴅᴇᴏ ғɪʟᴇ
+    Args:
+        file_path: path to video file
     
-    ʀᴇᴛᴜʀɴs:
-        ᴛᴜᴘʟᴇ: (ᴛʜᴜᴍʙɴᴀɪʟ_ᴘᴀᴛʜ, ᴅᴜʀᴀᴛɪᴏɴ)
+    Returns:
+        tuple: (thumbnail_path, duration)
     """
     if ospath.exists(Paths.VIDEO_FRAME):
         os.remove(Paths.VIDEO_FRAME)
@@ -284,36 +283,36 @@ def thumbMaintainer(file_path: str):
         ytdl_thmb = f"{Paths.WORK_PATH}/ytdl_thumbnails/{fname}.webp"
         
         with VideoFileClip(file_path) as video:
-            # ᴜsᴇ ᴄᴜsᴛᴏᴍ ᴛʜᴜᴍʙɴᴀɪʟ ɪғ sᴇᴛ
+            # Use custom thumbnail if set
             if ospath.exists(Paths.THMB_PATH):
                 return Paths.THMB_PATH, video.duration
-            # ᴜsᴇ ʏᴛ-ᴅʟᴘ ᴛʜᴜᴍʙɴᴀɪʟ ɪғ ᴀᴠᴀɪʟᴀʙʟᴇ
+            # Use YT-DLP thumbnail if available
             elif ospath.exists(ytdl_thmb):
                 return convertIMG(ytdl_thmb), video.duration
-            # ɢᴇɴᴇʀᴀᴛᴇ ғʀᴏᴍ ᴠɪᴅᴇᴏ
+            # Generate frame from video
             else:
                 video.save_frame(Paths.VIDEO_FRAME, t=math.floor(video.duration / 2))
                 return Paths.VIDEO_FRAME, video.duration
     
     except Exception as e:
-        logger.error(f"ᴛʜᴜᴍʙɴᴀɪʟ ɢᴇɴᴇʀᴀᴛɪᴏɴ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Thumbnail generation error: {e}")
         if ospath.exists(Paths.THMB_PATH):
             return Paths.THMB_PATH, 0
         return Paths.HERO_IMAGE, 0
 
 
 # =============================================================================
-#  ᴛʜᴜᴍʙɴᴀɪʟ sᴇᴛᴛɪɴɢ
+# Set Thumbnail
 # =============================================================================
 async def setThumbnail(message):
     """
-    sᴀᴠᴇ ᴜsᴇʀ sᴇɴᴛ ɪᴍᴀɢᴇ ᴀs ᴛʜᴜᴍʙɴᴀɪʟ.
+    Save user sent image as thumbnail.
     
-    ᴀʀɢs:
-        ᴍᴇssᴀɢᴇ: ᴛᴇʟᴇɢʀᴀᴍ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ ᴘʜᴏᴛᴏ
+    Args:
+        message: Telegram message with photo
     
-    ʀᴇᴛᴜʀɴs:
-        ʙᴏᴏʟ: sᴜᴄᴄᴇss sᴛᴀᴛᴜs
+    Returns:
+        bool: success status
     """
     try:
         if ospath.exists(Paths.THMB_PATH):
@@ -336,19 +335,19 @@ async def setThumbnail(message):
     
     except Exception as e:
         BOT.Setting.thumbnail = False
-        logger.error(f"ᴛʜᴜᴍʙɴᴀɪʟ ᴅᴏᴡɴʟᴏᴀᴅ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Thumbnail download error: {e}")
         return False
 
 
 # =============================================================================
-#  ʏᴛ-ᴅʟᴘ ᴄᴏᴍᴘʟᴇᴛɪᴏɴ ᴄʜᴇᴄᴋ
+# YT-DLP Completion Check
 # =============================================================================
 def isYtdlComplete() -> bool:
     """
-    ᴄʜᴇᴄᴋ ɪғ ʏᴛ-ᴅʟᴘ ʜᴀs ғɪɴɪsʜᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ.
+    Check if YT-DLP has finished downloading.
     
-    ʀᴇᴛᴜʀɴs:
-        ʙᴏᴏʟ: ᴛʀᴜᴇ ɪғ ɴᴏ .ᴘᴀʀᴛ ᴏʀ .ʏᴛᴅʟ ғɪʟᴇs ғᴏᴜɴᴅ
+    Returns:
+        bool: True if no .part or .ytdl files found
     """
     for _, _, filenames in os.walk(Paths.down_path):
         for f in filenames:
@@ -359,17 +358,17 @@ def isYtdlComplete() -> bool:
 
 
 # =============================================================================
-#  ɪᴍᴀɢᴇ ᴄᴏɴᴠᴇʀsɪᴏɴ
+# Image Conversion
 # =============================================================================
 def convertIMG(image_path: str) -> str:
     """
-    ᴄᴏɴᴠᴇʀᴛ ɪᴍᴀɢᴇ ᴛᴏ ᴊᴘᴇɢ ғᴏʀᴍᴀᴛ.
+    Convert image to JPEG format.
     
-    ᴀʀɢs:
-        ɪᴍᴀɢᴇ_ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ɪᴍᴀɢᴇ ғɪʟᴇ
+    Args:
+        image_path: path to image file
     
-    ʀᴇᴛᴜʀɴs:
-        sᴛʀ: ᴘᴀᴛʜ ᴛᴏ ᴄᴏɴᴠᴇʀᴛᴇᴅ ɪᴍᴀɢᴇ
+    Returns:
+        str: path to converted image
     """
     image = Image.open(image_path)
     if image.mode != "RGB":
@@ -382,14 +381,14 @@ def convertIMG(image_path: str) -> str:
 
 
 # =============================================================================
-#  sʏsᴛᴇᴍ ɪɴғᴏʀᴍᴀᴛɪᴏɴ
+# System Information
 # =============================================================================
 def sysINFO() -> str:
     """
-    ɢᴇᴛ sʏsᴛᴇᴍ ʀᴇsᴏᴜʀᴄᴇ ᴜsᴀɢᴇ ɪɴғᴏʀᴍᴀᴛɪᴏɴ.
+    Get system resource usage information.
     
-    ʀᴇᴛᴜʀɴs:
-        sᴛʀ: ғᴏʀᴍᴀᴛᴛᴇᴅ sʏsᴛᴇᴍ ɪɴғᴏ sᴛʀɪɴɢ
+    Returns:
+        str: formatted system info string
     """
     ram_usage = psutil.Process(os.getpid()).memory_info().rss
     disk_usage = psutil.disk_usage("/")
@@ -397,29 +396,29 @@ def sysINFO() -> str:
     
     info = f"""
 
-⌬───── **sʏsᴛᴇᴍ ɪɴғᴏ** ─────⌬
+⌬───── **{style_text('System Info')}** ─────⌬
 
-╭🖥️ **ᴄᴘᴜ:** `{cpu_usage}%`
-├💽 **ʀᴀᴍ:** `{sizeUnit(ram_usage)}`
-╰💾 **ᴅɪsᴋ:** `{sizeUnit(disk_usage.free)}`"""
+┏🖥️ **{style_text('CPU')}:** `{cpu_usage}%`
+┠💽 **{style_text('RAM')}:** `{sizeUnit(ram_usage)}`
+┖💾 **{style_text('Disk')}:** `{sizeUnit(disk_usage.free)}`"""
     
     return info
 
 
 # =============================================================================
-#  ᴍᴜʟᴛɪᴘᴀʀᴛ ᴀʀᴄʜɪᴠᴇ ʜᴀɴᴅʟɪɴɢ
+# Multipart Archive Handling
 # =============================================================================
 def multipartArchive(path: str, archive_type: str, remove: bool):
     """
-    ʜᴀɴᴅʟᴇ ᴍᴜʟᴛɪᴘᴀʀᴛ ᴀʀᴄʜɪᴠᴇ ғɪʟᴇs.
+    Handle multipart archive files.
     
-    ᴀʀɢs:
-        ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ᴀʀᴄʜɪᴠᴇ
-        ᴀʀᴄʜɪᴠᴇ_ᴛʏᴘᴇ: ᴛʏᴘᴇ ᴏғ ᴀʀᴄʜɪᴠᴇ (ʀᴀʀ, 7ᴢ, ᴢɪᴘ)
-        ʀᴇᴍᴏᴠᴇ: ᴡʜᴇᴛʜᴇʀ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴀʀᴄʜɪᴠᴇs
+    Args:
+        path: path to archive
+        archive_type: type of archive (rar, 7z, zip)
+        remove: whether to remove parts after processing
     
-    ʀᴇᴛᴜʀɴs:
-        ᴛᴜᴘʟᴇ: (ʀᴇᴀʟ_ɴᴀᴍᴇ, ᴛᴏᴛᴀʟ_sɪᴢᴇ)
+    Returns:
+        tuple: (real_name, total_size)
     """
     dirname, filename = ospath.split(path)
     name, _ = ospath.splitext(filename)
@@ -477,14 +476,14 @@ def multipartArchive(path: str, archive_type: str, remove: bool):
 
 
 # =============================================================================
-#  ᴛɪᴍᴇ ᴄʜᴇᴄᴋ
+# Time Check for UI Updates
 # =============================================================================
 def isTimeOver() -> bool:
     """
-    ᴄʜᴇᴄᴋ ɪғ 3 sᴇᴄᴏɴᴅs ʜᴀᴠᴇ ᴘᴀssᴇᴅ sɪɴᴄᴇ ʟᴀsᴛ ᴜᴘᴅᴀᴛᴇ.
+    Check if 3 seconds have passed since last update.
     
-    ʀᴇᴛᴜʀɴs:
-        ʙᴏᴏʟ: ᴛʀᴜᴇ ɪғ ᴛɪᴍᴇ ʜᴀs ᴘᴀssᴇᴅ
+    Returns:
+        bool: True if time exceeded
     """
     elapsed = time() - BotTimes.current_time
     if elapsed >= 3:
@@ -494,11 +493,11 @@ def isTimeOver() -> bool:
 
 
 # =============================================================================
-#  ᴄᴜsᴛᴏᴍ ɴᴀᴍᴇ ᴀᴘᴘʟɪᴄᴀᴛɪᴏɴ
+# Custom Name Application
 # =============================================================================
 def applyCustomName():
     """
-    ᴀᴘᴘʟʏ ᴄᴜsᴛᴏᴍ ɴᴀᴍᴇ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ ғɪʟᴇs.
+    Apply custom name to downloaded files.
     """
     if BOT.Options.custom_name and BOT.Mode.type not in ["zip", "undzip"]:
         files = os.listdir(Paths.down_path)
@@ -509,19 +508,19 @@ def applyCustomName():
 
 
 # =============================================================================
-#  sᴘᴇᴇᴅ ᴀɴᴅ ᴇᴛᴀ ᴄᴀʟᴄᴜʟᴀᴛɪᴏɴ
+# Speed and ETA Calculation
 # =============================================================================
 def speedETA(start_time: datetime, done: int, total: int):
     """
-    ᴄᴀʟᴄᴜʟᴀᴛᴇ ᴅᴏᴡɴʟᴏᴀᴅ sᴘᴇᴇᴅ ᴀɴᴅ ᴇsᴛɪᴍᴀᴛᴇᴅ ᴛɪᴍᴇ.
+    Calculate download speed and ETA.
     
-    ᴀʀɢs:
-        sᴛᴀʀᴛ_ᴛɪᴍᴇ: ᴅᴏᴡɴʟᴏᴀᴅ sᴛᴀʀᴛ ᴛɪᴍᴇ
-        ᴅᴏɴᴇ: ʙʏᴛᴇs ᴄᴏᴍᴘʟᴇᴛᴇᴅ
-        ᴛᴏᴛᴀʟ: ᴛᴏᴛᴀʟ ʙʏᴛᴇs
+    Args:
+        start_time: download start time
+        done: bytes completed
+        total: total bytes
     
-    ʀᴇᴛᴜʀɴs:
-        ᴛᴜᴘʟᴇ: (sᴘᴇᴇᴅ, ᴇᴛᴀ, ᴘᴇʀᴄᴇɴᴛᴀɢᴇ)
+    Returns:
+        tuple: (speed, eta, percentage)
     """
     percentage = (done / total) * 100 if total > 0 else 0
     percentage = min(percentage, 100)
@@ -533,79 +532,104 @@ def speedETA(start_time: datetime, done: int, total: int):
         speed = f"{sizeUnit(raw_speed)}/s"
         eta = (total - done) / raw_speed if raw_speed > 0 else 0
     else:
-        speed, eta = "ɴ/ᴀ", 0
+        speed, eta = "N/A", 0
     
     return speed, eta, percentage
 
 
 # =============================================================================
-#  ᴍᴇssᴀɢᴇ ᴅᴇʟᴇᴛɪᴏɴ
+# Message Deleter
 # =============================================================================
 async def message_deleter(msg1, msg2):
     """
-    sᴀғᴇʟʏ ᴅᴇʟᴇᴛᴇ ᴛᴡᴏ ᴍᴇssᴀɢᴇs.
+    Safely delete two messages.
     
-    ᴀʀɢs:
-        ᴍsɢ1: ғɪʀsᴛ ᴍᴇssᴀɢᴇ
-        ᴍsɢ2: sᴇᴄᴏɴᴅ ᴍᴇssᴀɢᴇ
+    Args:
+        msg1: first message
+        msg2: second message
     """
     try:
         await msg1.delete()
     except Exception as e:
-        logger.error(f"ғᴀɪʟᴇᴅ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴍsɢ1: {e}")
+        logger.error(f"Failed to delete msg1: {e}")
     
     try:
         await msg2.delete()
     except Exception as e:
-        logger.error(f"ғᴀɪʟᴇᴅ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴍsɢ2: {e}")
+        logger.error(f"Failed to delete msg2: {e}")
 
 
 # =============================================================================
-#  sᴇᴛᴛɪɴɢs ᴍᴇɴᴜ
+# Settings Menu
 # =============================================================================
 async def send_settings(client, message, msg_id: int, is_command: bool):
     """
-    sᴇɴᴅ ᴏʀ ᴇᴅɪᴛ sᴇᴛᴛɪɴɢs ᴍᴇɴᴜ.
+    Send or edit settings menu.
     
-    ᴀʀɢs:
-        ᴄʟɪᴇɴᴛ: ᴘʏʀᴏɢʀᴀᴍ ᴄʟɪᴇɴᴛ
-        ᴍᴇssᴀɢᴇ: ᴛᴇʟᴇɢʀᴀᴍ ᴍᴇssᴀɢᴇ
-        ᴍsɢ_ɪᴅ: ᴍᴇssᴀɢᴇ ɪᴅ ᴛᴏ ᴇᴅɪᴛ
-        ɪs_ᴄᴏᴍᴍᴀɴᴅ: ᴡʜᴇᴛʜᴇʀ ᴛʜɪs ɪs ᴀ ɴᴇᴡ ᴄᴏᴍᴍᴀɴᴅ
+    Args:
+        client: pyrogram client
+        message: Telegram message
+        msg_id: message id to edit
+        is_command: whether this is a new command
     """
-    up_mode = "ᴅᴏᴄᴜᴍᴇɴᴛ" if not BOT.Options.stream_upload else "ᴍᴇᴅɪᴀ"
+    up_mode = "Document" if not BOT.Options.stream_upload else "Media"
     
+    # Build keyboard with colored buttons
     keyboard = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton(f"📤 {up_mode}", callback_data="media" if up_mode == "ᴅᴏᴄᴜᴍᴇɴᴛ" else "document"),
-                InlineKeyboardButton("🎬 ᴠɪᴅᴇᴏ", callback_data="video"),
+                InlineKeyboardButton(
+                    f"📤 {style_button(up_mode)}",
+                    callback_data="media" if up_mode == "Document" else "document",
+                    style="primary"
+                ),
+                InlineKeyboardButton(
+                    f"🎬 {style_button('Video')}",
+                    callback_data="video",
+                    style="primary"
+                ),
             ],
             [
-                InlineKeyboardButton("📝 ᴄᴀᴘᴛɪᴏɴ", callback_data="caption"),
-                InlineKeyboardButton("🖼️ ᴛʜᴜᴍʙ", callback_data="thumb"),
+                InlineKeyboardButton(
+                    f"📝 {style_button('Caption')}",
+                    callback_data="caption",
+                    style="primary"
+                ),
+                InlineKeyboardButton(
+                    f"🖼️ {style_button('Thumb')}",
+                    callback_data="thumb",
+                    style="primary"
+                ),
             ],
             [
-                InlineKeyboardButton("➕ sᴜғғɪx", callback_data="set-suffix"),
-                InlineKeyboardButton("➕ ᴘʀᴇғɪx", callback_data="set-prefix"),
+                InlineKeyboardButton(
+                    "➕ Suffix", callback_data="set-suffix", style="success"
+                ),
+                InlineKeyboardButton(
+                    "➕ Prefix", callback_data="set-prefix", style="success"
+                ),
             ],
-            [InlineKeyboardButton("✘ ᴄʟᴏsᴇ", callback_data="close")],
+            [
+                InlineKeyboardButton(
+                    "Close", callback_data="close", style="danger"
+                )
+            ],
         ]
     )
     
-    pr = "✅" if BOT.Setting.prefix else "❌"
-    su = "✅" if BOT.Setting.suffix else "❌"
-    thmb = "✅" if BOT.Setting.thumbnail else "❌"
+    pr = "✅" if BOT.Setting.prefix else "❎"
+    su = "✅" if BOT.Setting.suffix else "❎"
+    thmb = "✅" if BOT.Setting.thumbnail else "❎"
     
-    text = f"""**⚙️ ʙᴏᴛ sᴇᴛᴛɪɴɢs**
+    text = style_text(f"""**⚙️ Bot Settings**
 
-╭📤 **ᴜᴘʟᴏᴀᴅ:** `{BOT.Setting.stream_upload}`
-├✂️ **sᴘʟɪᴛ:** `{BOT.Setting.split_video}`
-├🔄 **ᴄᴏɴᴠᴇʀᴛ:** `{BOT.Setting.convert_video}`
-├📝 **ᴄᴀᴘᴛɪᴏɴ:** `{BOT.Setting.caption}`
-├➕ **ᴘʀᴇғɪx:** {pr}
-├➕ **sᴜғғɪx:** {su}
-╰🖼️ **ᴛʜᴜᴍʙ:** {thmb}"""
+┏📤 **Upload:** `{BOT.Setting.stream_upload}`
+┠✂️ **Split:** `{BOT.Setting.split_video}`
+┠🔄 **Convert:** `{BOT.Setting.convert_video}`
+┠📝 **Caption:** `{BOT.Setting.caption}`
+┠➕ **Prefix:** {pr}
+┠➕ **Suffix:** {su}
+┗🖼️ **Thumb:** {thmb}""")
     
     try:
         if is_command:
@@ -618,39 +642,39 @@ async def send_settings(client, message, msg_id: int, is_command: bool):
                 reply_markup=keyboard
             )
     except BadRequest as e:
-        logger.error(f"sᴇᴛᴛɪɴɢs ᴍᴇɴᴜ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Settings menu error: {e}")
     except Exception as e:
-        logger.error(f"sᴇᴛᴛɪɴɢs ᴍᴇɴᴜ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Settings menu error: {e}")
 
 
 # =============================================================================
-#  sᴛᴀᴛᴜs ʙᴀʀ ᴜᴘᴅᴀᴛᴇ
+# Status Bar Update
 # =============================================================================
 async def status_bar(down_msg: str, speed: str, percentage: float, eta: str, done: str, left: str, engine: str):
     """
-    ᴜᴘᴅᴀᴛᴇ ᴅᴏᴡɴʟᴏᴀᴅ/ᴜᴘʟᴏᴀᴅ sᴛᴀᴛᴜs ʙᴀʀ.
+    Update download/upload status bar.
     
-    ᴀʀɢs:
-        ᴅᴏᴡɴ_ᴍsɢ: sᴛᴀᴛᴜs ʜᴇᴀᴅᴇʀ ᴍᴇssᴀɢᴇ
-        sᴘᴇᴇᴅ: ᴄᴜʀʀᴇɴᴛ sᴘᴇᴇᴅ
-        ᴘᴇʀᴄᴇɴᴛᴀɢᴇ: ᴄᴏᴍᴘʟᴇᴛɪᴏɴ ᴘᴇʀᴄᴇɴᴛᴀɢᴇ
-        ᴇᴛᴀ: ᴇsᴛɪᴍᴀᴛᴇᴅ ᴛɪᴍᴇ
-        ᴅᴏɴᴇ: ʙʏᴛᴇs ᴘʀᴏᴄᴇssᴇᴅ
-        ʟᴇғᴛ: ʙʏᴛᴇs ʀᴇᴍᴀɪɴɪɴɢ
-        ᴇɴɢɪɴᴇ: ᴅᴏᴡɴʟᴏᴀᴅ ᴇɴɢɪɴᴇ ɴᴀᴍᴇ
+    Args:
+        down_msg: status header message
+        speed: current speed
+        percentage: completion percentage
+        eta: estimated time
+        done: bytes processed
+        left: bytes remaining
+        engine: download engine name
     """
     bar_length = 12
     filled = int(percentage / 100 * bar_length)
     bar = "█" * filled + "░" * (bar_length - filled)
     
-    text = f"""
-╭「{bar}」 **»** `{percentage:.1f}%`
-├⚡ **sᴘᴇᴇᴅ:** `{speed}`
-├🔧 **ᴇɴɢɪɴᴇ:** `{engine}`
-├⏳ **ᴇᴛᴀ:** `{eta}`
-├⏱️ **ᴇʟᴀᴘsᴇᴅ:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`
-├✅ **ᴅᴏɴᴇ:** `{done}`
-╰📦 **ᴛᴏᴛᴀʟ:** `{left}`"""
+    text = style_text(f"""
+┏「{bar}」 **»** `{percentage:.1f}%`
+┠⚡ **Speed:** `{speed}`
+┠🔧 **Engine:** `{engine}`
+┠⏳ **ETA:** `{eta}`
+┠⏱️ **Elapsed:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`
+┠✅ **Done:** `{done}`
+┗📦 **Total:** `{left}`""")
     
     try:
         if isTimeOver():
@@ -660,21 +684,21 @@ async def status_bar(down_msg: str, speed: str, percentage: float, eta: str, don
                 reply_markup=keyboard()
             )
     except BadRequest as e:
-        logger.error(f"sᴛᴀᴛᴜs ʙᴀʀ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Status bar error: {e}")
     except Exception as e:
-        logger.error(f"sᴛᴀᴛᴜs ʙᴀʀ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Status bar error: {e}")
 
 
 # =============================================================================
-#  ᴄᴀɴᴄᴇʟ ᴋᴇʏʙᴏᴀʀᴅ
+# Cancel Keyboard
 # =============================================================================
 def keyboard():
     """
-    ɢᴇɴᴇʀᴀᴛᴇ ᴄᴀɴᴄᴇʟ ʙᴜᴛᴛᴏɴ ᴋᴇʏʙᴏᴀʀᴅ.
+    Generate inline keyboard with cancel button.
     
-    ʀᴇᴛᴜʀɴs:
-        ɪɴʟɪɴᴇᴋᴇʏʙᴏᴀʀᴅᴍᴀʀᴋᴜᴘ: ᴄᴀɴᴄᴇʟ ʙᴜᴛᴛᴏɴ
+    Returns:
+        InlineKeyboardMarkup: cancel button
     """
     return InlineKeyboardMarkup(
-        [[InlineKeyboardButton("❌ ᴄᴀɴᴄᴇʟ", callback_data="cancel")]]
+        [[InlineKeyboardButton(style_button("Cancel"), callback_data="cancel", style="danger")]]
     )
