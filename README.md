@@ -32,6 +32,7 @@
 - [🆚 Changelog – Old vs New](#-changelog--old-vs-new)
 - [🙏 Acknowledgements](#-acknowledgements)
 - [📄 License & Disclaimer](#-license--disclaimer)
+- [🫂 Updates & Support](#-updates--support)
 - [👤 Developer & Credits](#-developer--credits)
 
 ---
@@ -214,6 +215,20 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 > The developer assumes no liability for misuse.
 
 ---
+
+## **Updates & Support**
+
+<div align="center">
+  
+##### **Updates Channel**
+
+<a href="https://t.me/MaximXBots"><img src="https://telegramcard.vercel.app/?username=MaximXBots&theme=light" alt="Channel"></a>
+
+##### **Support Group**
+
+<a href="https://t.me/MaximXGroup"><img src="https://telegramcard.vercel.app/?username=MaximXGroup&theme=light" alt="Group"></a>
+
+</div>
 
 ## 💕 Loved My Work?
 
