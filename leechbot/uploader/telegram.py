@@ -1,15 +1,16 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Telegram Uploader
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ᴛᴇʟᴇɢʀᴀᴍ ᴜᴘʟᴏᴀᴅᴇʀ ᴍᴏᴅᴜʟᴇ
+Telegram uploader module.
 
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ʜᴀɴᴅʟᴇs ᴜᴘʟᴏᴀᴅɪɴɢ ғɪʟᴇs ᴛᴏ ᴛᴇʟᴇɢʀᴀᴍ ᴡɪᴛʜ ᴘʀᴏɢʀᴇss ᴛʀᴀᴄᴋɪɴɢ.
+Handles uploading files to Telegram with progress tracking.
 """
 
 import logging
@@ -20,27 +21,28 @@ from datetime import datetime
 from pyrogram.errors import FloodWait
 from leechbot.utility.variables import BOT, Transfer, BotTimes, Messages, MSG, Paths
 from leechbot.utility.helper import sizeUnit, fileType, getTime, status_bar, thumbMaintainer, videoExtFix
+from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-#  ᴜᴘʟᴏᴀᴅ ᴘʀᴏɢʀᴇss ᴄᴀʟʟʙᴀᴄᴋ
+# Upload Progress Callback
 # =============================================================================
 async def progress_bar(current: int, total: int):
     """
-    ᴜᴘᴅᴀᴛᴇ ᴜᴘʟᴏᴀᴅ ᴘʀᴏɢʀᴇss.
+    Update upload progress.
     
-    ᴀʀɢs:
-        ᴄᴜʀʀᴇɴᴛ: ʙʏᴛᴇs ᴜᴘʟᴏᴀᴅᴇᴅ
-        ᴛᴏᴛᴀʟ: ᴛᴏᴛᴀʟ ʙʏᴛᴇs
+    Args:
+        current: bytes uploaded
+        total: total bytes
     """
     elapsed = (datetime.now() - BotTimes.task_start).seconds
     
     if current > 0 and elapsed > 0:
         upload_speed = current / elapsed
     else:
-        upload_speed = 4 * 1024 * 1024  # ᴅᴇғᴀᴜʟᴛ 4ᴍʙ/s
+        upload_speed = 4 * 1024 * 1024  # Default 4MB/s
     
     remaining = Transfer.total_down_size - current - sum(Transfer.up_bytes)
     eta = remaining / upload_speed if upload_speed > 0 else 0
@@ -53,35 +55,35 @@ async def progress_bar(current: int, total: int):
         eta=getTime(eta),
         done=sizeUnit(current + sum(Transfer.up_bytes)),
         left=sizeUnit(Transfer.total_down_size),
-        engine="ᴛᴇʟᴇɢʀᴀᴍ 📤"
+        engine="Telegram 📤"
     )
 
 
 # =============================================================================
-#  ᴍᴀɪɴ ᴜᴘʟᴏᴀᴅ ғᴜɴᴄᴛɪᴏɴ
+# Main Upload Function
 # =============================================================================
 async def upload_file(file_path: str, real_name: str):
     """
-    ᴜᴘʟᴏᴀᴅ ғɪʟᴇ ᴛᴏ ᴛᴇʟᴇɢʀᴀᴍ.
+    Upload file to Telegram.
     
-    ᴀʀɢs:
-        ғɪʟᴇ_ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ғɪʟᴇ
-        ʀᴇᴀʟ_ɴᴀᴍᴇ: ᴏʀɪɢɪɴᴀʟ ғɪʟᴇɴᴀᴍᴇ
+    Args:
+        file_path: path to file
+        real_name: original filename
     """
     global Transfer, MSG
     
     BotTimes.task_start = datetime.now()
     
-    # ʙᴜɪʟᴅ ᴄᴀᴘᴛɪᴏɴ
+    # Build styled caption
     caption = f"<{BOT.Options.caption}>{BOT.Setting.prefix} {real_name} {BOT.Setting.suffix}</{BOT.Options.caption}>"
     
-    # ᴅᴇᴛᴇʀᴍɪɴᴇ ғɪʟᴇ ᴛʏᴘᴇ
+    # Determine file type
     type_ = fileType(file_path)
     f_type = type_ if BOT.Options.stream_upload else "document"
     
     try:
         if f_type == "video":
-            # ᴠɪᴅᴇᴏ ᴜᴘʟᴏᴀᴅ
+            # Video upload
             if not BOT.Options.stream_upload:
                 file_path = videoExtFix(file_path)
             
@@ -103,7 +105,7 @@ async def upload_file(file_path: str, real_name: str):
             )
         
         elif f_type == "audio":
-            # ᴀᴜᴅɪᴏ ᴜᴘʟᴏᴀᴅ
+            # Audio upload
             thmb_path = Paths.THMB_PATH if ospath.exists(Paths.THMB_PATH) else None
             
             MSG.sent_msg = await MSG.sent_msg.reply_audio(
@@ -115,7 +117,7 @@ async def upload_file(file_path: str, real_name: str):
             )
         
         elif f_type == "photo":
-            # ᴘʜᴏᴛᴏ ᴜᴘʟᴏᴀᴅ
+            # Photo upload
             MSG.sent_msg = await MSG.sent_msg.reply_photo(
                 photo=file_path,
                 caption=caption,
@@ -124,7 +126,7 @@ async def upload_file(file_path: str, real_name: str):
             )
         
         else:
-            # ᴅᴏᴄᴜᴍᴇɴᴛ ᴜᴘʟᴏᴀᴅ
+            # Document upload
             if ospath.exists(Paths.THMB_PATH):
                 thmb_path = Paths.THMB_PATH
             elif type_ == "video":
@@ -140,14 +142,14 @@ async def upload_file(file_path: str, real_name: str):
                 reply_to_message_id=MSG.sent_msg.id
             )
         
-        # ᴛʀᴀᴄᴋ sᴇɴᴛ ғɪʟᴇs
+        # Track sent files
         Transfer.sent_file.append(MSG.sent_msg)
         Transfer.sent_file_names.append(real_name)
     
     except FloodWait as e:
-        logger.warning(f"ғʟᴏᴏᴅᴡᴀɪᴛ: ᴡᴀɪᴛɪɴɢ {e.value} sᴇᴄᴏɴᴅs")
+        logger.warning(f"Flood wait: waiting {e.value} seconds")
         await sleep(e.value)
         await upload_file(file_path, real_name)
     
     except Exception as e:
-        logger.error(f"ᴜᴘʟᴏᴀᴅ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Upload error: {e}")
