@@ -1,15 +1,16 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Mega.nz Downloader
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ᴍᴇɢᴀ.ɴᴢ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ᴍᴏᴅᴜʟᴇ
+Mega.nz downloader module.
 
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ʜᴀɴᴅʟᴇs ᴅᴏᴡɴʟᴏᴀᴅs ғʀᴏᴍ ᴍᴇɢᴀ.ɴᴢ ᴜsɪɴɢ ᴍᴇɢᴀᴛᴏᴏʟs.
+Handles downloads from Mega.nz using megatools.
 """
 
 import subprocess
@@ -17,27 +18,28 @@ import logging
 from datetime import datetime
 from leechbot.utility.helper import status_bar
 from leechbot.utility.variables import BotTimes, Messages, Paths
+from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-#  ᴍᴀɪɴ ᴅᴏᴡɴʟᴏᴀᴅ ғᴜɴᴄᴛɪᴏɴ
+# Main Download Function
 # =============================================================================
 async def megadl(link: str, num: int):
     """
-    ᴅᴏᴡɴʟᴏᴀᴅ ғɪʟᴇ ғʀᴏᴍ ᴍᴇɢᴀ.ɴᴢ.
+    Download file from Mega.nz.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ᴍᴇɢᴀ.ɴᴢ sʜᴀʀᴇ ʟɪɴᴋ
-        ɴᴜᴍ: ʟɪɴᴋ ɴᴜᴍʙᴇʀ ғᴏʀ ᴅɪsᴘʟᴀʏ
+    Args:
+        link: Mega.nz share link
+        num: link number for display
     """
     global BotTimes, Messages
     
     BotTimes.task_start = datetime.now()
     
     try:
-        # ʙᴜɪʟᴅ ᴍᴇɢᴀᴅʟ ᴄᴏᴍᴍᴀɴᴅ
+        # Build megadl command
         command = [
             "megadl",
             "--no-ask-password",
@@ -45,7 +47,7 @@ async def megadl(link: str, num: int):
             link
         ]
         
-        # ᴇxᴇᴄᴜᴛᴇ ᴅᴏᴡɴʟᴏᴀᴅ
+        # Execute download
         process = subprocess.Popen(
             command,
             stdout=subprocess.PIPE,
@@ -53,7 +55,7 @@ async def megadl(link: str, num: int):
             bufsize=0
         )
         
-        # ʀᴇᴀᴅ ᴏᴜᴛᴘᴜᴛ
+        # Read output
         while True:
             output = process.stdout.readline()
             if output == b"" and process.poll() is not None:
@@ -63,51 +65,51 @@ async def megadl(link: str, num: int):
                 await extract_info(output.strip().decode("utf-8"), num)
     
     except Exception as e:
-        logger.error(f"ᴍᴇɢᴀ ᴅᴏᴡɴʟᴏᴀᴅ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Mega download error: {e}")
 
 
 # =============================================================================
-#  ᴘʀᴏɢʀᴇss ᴇxᴛʀᴀᴄᴛɪᴏɴ
+# Progress Extraction
 # =============================================================================
 async def extract_info(line: str, num: int):
     """
-    ᴇxᴛʀᴀᴄᴛ ᴅᴏᴡɴʟᴏᴀᴅ ᴘʀᴏɢʀᴇss ғʀᴏᴍ ᴍᴇɢᴀᴅʟ ᴏᴜᴛᴘᴜᴛ.
+    Extract download progress from megadl output.
     
-    ᴀʀɢs:
-        ʟɪɴᴇ: ᴏᴜᴛᴘᴜᴛ ʟɪɴᴇ
-        ɴᴜᴍ: ʟɪɴᴋ ɴᴜᴍʙᴇʀ
+    Args:
+        line: output line
+        num: link number
     """
     try:
         parts = line.split(": ")
         subparts = parts[1].split() if len(parts) > 1 else []
         
-        file_name = "ɴ/ᴀ"
-        progress = "ɴ/ᴀ"
-        downloaded_size = "ɴ/ᴀ"
-        total_size = "ɴ/ᴀ"
-        speed = "ɴ/ᴀ"
+        file_name = "N/A"
+        progress = "N/A"
+        downloaded_size = "N/A"
+        total_size = "N/A"
+        speed = "N/A"
         
         if len(subparts) > 10:
             file_name = parts[0]
             Messages.download_name = file_name
             progress = subparts[0][:-1]
-            if progress != "ɴ/ᴀ":
+            if progress != "N/A":
                 progress = round(float(progress))
             downloaded_size = f"{subparts[2]} {subparts[3]}"
             total_size = f"{subparts[7]} {subparts[8]}"
             speed = f"{subparts[9][1:]} {subparts[10][:-1]}"
         
-        Messages.status_head = f"**📥 ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ** `ʟɪɴᴋ {str(num).zfill(2)}`\n\n**🏷️ ɴᴀᴍᴇ:** `{file_name}`\n"
+        Messages.status_head = style_text(f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n**🏷️ Name:** ") + f"`{file_name}`\n"
         
         await status_bar(
             Messages.status_head,
             speed,
             progress,
-            "ᴄᴀʟᴄᴜʟᴀᴛɪɴɢ...",
+            "Calculating...",
             downloaded_size,
             total_size,
-            "ᴍᴇɢᴀ 💾"
+            "Mega 💾"
         )
     
     except Exception as e:
-        logger.error(f"ᴍᴇɢᴀ ᴘʀᴏɢʀᴇss ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Mega progress error: {e}")
