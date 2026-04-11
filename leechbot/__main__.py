@@ -18,9 +18,6 @@ This module contains all Telegram bot command handlers, callback queries,
 and the main bot execution loop. It handles user interactions
 and orchestrates the download and upload processes.
 """
-# =============================================================================
-# Telegram Leech Bot - Command Handlers and Entry Point
-# =============================================================================
 
 import logging
 import os
@@ -42,7 +39,7 @@ logger = logging.getLogger(__name__)
 src_request_msg = None
 
 WELCOME_TEXT = """
-**🤖 Leech Bot** — Advanced Telegram File Transloader
+**🤖 Leech Bot** — *Advanced Telegram File Transloader*
 
 ◈ **💪 Powerful • 🚀 Fast • 🔰 Secure**
 
@@ -74,6 +71,7 @@ WELCOME_TEXT = """
 `/queue` — View Pending Tasks
 `/resume` — Resume Interrupted Downloads
 `/settings` — Configure Bot Preferences
+`/about` — Bot Information
 
 ───────────────────────────
 
@@ -103,20 +101,12 @@ async def check_resume_session():
 async def start_command(client, message):
     await message.delete()
     keyboard = InlineKeyboardMarkup([
-        [
-            [
-                InlineKeyboardButton("📂 GitHub Repository ✨", url="https://github.com/Shineii86/LeechBot")
-            ],
-            [
-                InlineKeyboardButton("🔔 Updates", url="https://t.me/MaximXBots"),
-                InlineKeyboardButton("Support 💬", url="https://t.me/MaximXGroup"),
-            ],
-            [
-                InlineKeyboardButton("🤖 Bot Settings ⚙️", callback_data="settings_menu"),
-            ]
-        ]
-        )
-    await message.reply_text(WELCOME_TEXT, reply_markup=keyboard, disable_web_page_preview=true)
+        [InlineKeyboardButton("📂 GitHub Repository ✨", url="https://github.com/Shineii86/LeechBot")],
+        [InlineKeyboardButton("🔔 Updates", url="https://t.me/MaximXBots"),
+         InlineKeyboardButton("Support 💬", url="https://t.me/MaximXGroup")],
+        [InlineKeyboardButton("🤖 Bot Settings ⚙️", callback_data="settings_menu")]
+    ])
+    await message.reply_text(WELCOME_TEXT, reply_markup=keyboard, disable_web_page_preview=True)
 
 @leechbot.on_message(filters.command("tupload") & filters.private)
 async def telegram_upload_command(client, message):
@@ -222,7 +212,6 @@ async def resume_command(client, message):
     if not lines:
         await message.reply_text("**ℹ️ No interrupted downloads found.**")
         return
-    # Create a dummy task to resume aria2 downloads
     BOT.Mode.mode = "leech"
     BOT.Mode.type = "normal"
     BOT.Mode.ytdl = False
@@ -249,6 +238,45 @@ async def clear_resume_command(client, message):
     else:
         await message.reply_text("**ℹ️ No resume session found.**")
 
+@leechbot.on_message(filters.command("about") & filters.private)
+async def about_command(client, message):
+    about_text = """
+**🤖 About LeechBot**
+
+**Version:** `0.3`
+**Build Date:** `2026-04-11`
+**License:** `MIT`
+
+───────────────────────────
+
+**🧑‍💻 Developer**
+[Shinei Nouzen](https://t.me/Shineii86)
+GitHub: [Shineii86](https://github.com/Shineii86)
+
+───────────────────────────
+
+**📣 Updates & Support**
+• **Updates Channel:** [@MaximXBots](https://t.me/MaximXBots)
+• **Support Group:** [@MaximXGroup](https://t.me/MaximXGroup)
+• **Source Code:** [GitHub Repository](https://github.com/Shineii86/LeechBot)
+
+───────────────────────────
+
+**💡 Acknowledgements**
+Based on the original work by [XronTrix10](https://github.com/XronTrix10/Telegram-Leecher) and enhanced with features like Task Queue, Resume Downloads, Duplicate Detection, and Speed Limiter.
+
+**⚠️ Disclaimer**
+This bot is intended for educational purposes. Do not use it to download copyrighted content without permission. The developer assumes no liability for misuse.
+"""
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("📂 GitHub Repository", url="https://github.com/Shineii86/LeechBot")],
+        [InlineKeyboardButton("🔔 Updates Channel", url="https://t.me/MaximXBots"),
+         InlineKeyboardButton("Support Group 💬", url="https://t.me/MaximXGroup")],
+        [InlineKeyboardButton("🧑‍💻 Developer", url="https://t.me/Shineii86")]
+    ])
+    msg = await message.reply_text(about_text, reply_markup=keyboard, disable_web_page_preview=True)
+    await message_deleter(message, msg)
+
 @leechbot.on_message(filters.command("help") & filters.private)
 async def help_command(client, message):
     help_text = """**📖 Leechbot Help Menu**
@@ -267,24 +295,17 @@ async def help_command(client, message):
 /queue - View Task Queue
 /resume - Resume Interrupted Downloads
 /clear_resume - Clear Resume Session
+/about - About This Bot
 /help - Show This Help Message
 
 **🖼️ Thumbnail:**
 Send Any Image To Set It As Thumbnail"""
     keyboard = InlineKeyboardMarkup([
-        [
-            [
-                InlineKeyboardButton("📂 GitHub Repository ✨", url="https://github.com/Shineii86/LeechBot")
-            ],
-            [
-                InlineKeyboardButton("🔔 Updates", url="https://t.me/MaximXBots"),
-                InlineKeyboardButton("Support 💬", url="https://t.me/MaximXGroup"),
-            ],
-            [
-                InlineKeyboardButton("🧑‍💻 Developer ✨", url="https://t.me/Shineii86")
-            ]
-        ]
-        )
+        [InlineKeyboardButton("📂 GitHub Repository ✨", url="https://github.com/Shineii86/LeechBot")],
+        [InlineKeyboardButton("🔔 Updates", url="https://t.me/MaximXBots"),
+         InlineKeyboardButton("Support 💬", url="https://t.me/MaximXGroup")],
+        [InlineKeyboardButton("🧑‍💻 Developer ✨", url="https://t.me/Shineii86")]
+    ])
     msg = await message.reply_text(help_text, reply_markup=keyboard)
     await message_deleter(message, msg)
 
@@ -369,10 +390,9 @@ async def handle_reply(client, message):
     elif BOT.State.setting_download_limit:
         try:
             val = message.text.strip().upper()
-            if val == "0" or val == "UNLIMITED":
+            if val in ("0", "UNLIMITED"):
                 BOT.Setting.download_speed_limit = 0
             else:
-                # Parse e.g., "10M" or "500K"
                 num = float(''.join(filter(str.isdigit, val)) or 0)
                 if 'G' in val:
                     num *= 1024**3
@@ -383,7 +403,7 @@ async def handle_reply(client, message):
                 BOT.Setting.download_speed_limit = int(num)
             BOT.State.setting_download_limit = False
             BOT.Setting.save()
-            await message.reply_text(f"**✅ Download speed limit set.**")
+            await message.reply_text("**✅ Download speed limit set.**")
             fake_cb = type('obj', (object,), {'message': message, 'data': 'speed_limit'})
             await handle_callback(client, fake_cb)
         except Exception:
@@ -392,7 +412,7 @@ async def handle_reply(client, message):
     elif BOT.State.setting_upload_limit:
         try:
             val = message.text.strip().upper()
-            if val == "0" or val == "UNLIMITED":
+            if val in ("0", "UNLIMITED"):
                 BOT.Setting.upload_speed_limit = 0
             else:
                 num = float(''.join(filter(str.isdigit, val)) or 0)
@@ -405,7 +425,7 @@ async def handle_reply(client, message):
                 BOT.Setting.upload_speed_limit = int(num)
             BOT.State.setting_upload_limit = False
             BOT.Setting.save()
-            await message.reply_text(f"**✅ Upload speed limit set.**")
+            await message.reply_text("**✅ Upload speed limit set.**")
             fake_cb = type('obj', (object,), {'message': message, 'data': 'speed_limit'})
             await handle_callback(client, fake_cb)
         except Exception:
@@ -441,19 +461,11 @@ async def handle_url(client, message):
                 break
         BOT.SOURCE = temp_source
         keyboard = InlineKeyboardMarkup([
-            [
-                [
-                    InlineKeyboardButton("📄 Regular ✨", callback_data="normal")
-                ],
-                [
-                    InlineKeyboardButton("🗜️ Compress", callback_data="zip"),
-                    InlineKeyboardButton("Extract 📂", callback_data="unzip"),
-                ],
-                [
-                    InlineKeyboardButton("🔄 Unzip+Zip ✨", callback_data="undzip")
-                ],
-            ]
-        )
+            [InlineKeyboardButton("📄 Regular ✨", callback_data="normal")],
+            [InlineKeyboardButton("🗜️ Compress", callback_data="zip"),
+             InlineKeyboardButton("Extract 📂", callback_data="unzip")],
+            [InlineKeyboardButton("🔄 Unzip+Zip ✨", callback_data="undzip")]
+        ])
         mode_text = BOT.Mode.mode.capitalize()
         options_text = f"""**🎯 Select Upload Type For {mode_text}**
 
@@ -463,9 +475,10 @@ async def handle_url(client, message):
 🔄 **Unzip+Zip** - Extract Then Compress"""
         await message.reply_text(text=options_text, reply_markup=keyboard, quote=True)
     elif BOT.State.started:
-        # Add to queue
-        BOT.TASK_QUEUE.append((message.chat.id, message, BOT.SOURCE.copy() if BOT.SOURCE else temp_source,
-                               BOT.Mode.mode, BOT.Mode.ytdl, BOT.Mode.type))
+        BOT.TASK_QUEUE.append((
+            message.chat.id, message, BOT.SOURCE.copy() if BOT.SOURCE else temp_source,
+            BOT.Mode.mode, BOT.Mode.ytdl, BOT.Mode.type
+        ))
         await message.reply_text(f"**📋 Added to queue. Position: {len(BOT.TASK_QUEUE)}**")
         if not BOT.State.task_going:
             await process_next_in_queue(client)
@@ -480,8 +493,10 @@ async def handle_callback(client, callback_query):
     if data in ["normal", "zip", "unzip", "undzip"]:
         BOT.Mode.type = data
         await callback_query.message.delete()
-        await leechbot.delete_messages(chat_id=callback_query.message.chat.id,
-                                       message_ids=callback_query.message.reply_to_message_id)
+        await leechbot.delete_messages(
+            chat_id=callback_query.message.chat.id,
+            message_ids=callback_query.message.reply_to_message_id
+        )
         MSG.status_msg = await leechbot.send_message(
             chat_id=OWNER,
             text="**🚀 Initializing Task...**\n\nPlease Wait While I Prepare Your Download",
@@ -496,74 +511,44 @@ async def handle_callback(client, callback_query):
             await BOT.TASK
         finally:
             BOT.State.task_going = False
-            # Start next in queue
             if BOT.TASK_QUEUE:
                 await process_next_in_queue(client)
     elif data == "settings_menu":
         await send_settings(client, callback_query.message, callback_query.message.id, False)
     elif data == "video":
         keyboard = InlineKeyboardMarkup([
-            [
-                [
-                    InlineKeyboardButton("✂️ Split", callback_data="split-true"),
-                    InlineKeyboardButton("Zip 🗜️", callback_data="split-false"),
-                ],
-                [
-                    InlineKeyboardButton("🔄 Convert", callback_data="convert-true"),
-                    InlineKeyboardButton("Skip ⏭️", callback_data="convert-false"),
-                ],
-                [
-                    InlineKeyboardButton("🎬 Mp4", callback_data="mp4"),
-                    InlineKeyboardButton("Mkv 📼", callback_data="mkv"),
-                ],
-                [
-                    InlineKeyboardButton("👍 High Quality", callback_data="q-High"),
-                    InlineKeyboardButton("Low Quality 👎", callback_data="q-Low"),
-                ],
-                [
-                    InlineKeyboardButton("❰ Back", callback_data="back")
-                ],
-            ]
-        )
+            [InlineKeyboardButton("✂️ Split", callback_data="split-true"),
+             InlineKeyboardButton("Zip 🗜️", callback_data="split-false")],
+            [InlineKeyboardButton("🔄 Convert", callback_data="convert-true"),
+             InlineKeyboardButton("Skip ⏭️", callback_data="convert-false")],
+            [InlineKeyboardButton("🎬 Mp4", callback_data="mp4"),
+             InlineKeyboardButton("Mkv 📼", callback_data="mkv")],
+            [InlineKeyboardButton("👍 High Quality", callback_data="q-High"),
+             InlineKeyboardButton("Low Quality 👎", callback_data="q-Low")],
+            [InlineKeyboardButton("❰ Back", callback_data="back")]
+        ])
         await callback_query.message.edit_text(
             f"**⚙️ Video Settings**\n\n┏🔄 **Convert:** `{BOT.Setting.convert_video}`\n┣✂️ **Split:** `{BOT.Setting.split_video}`\n┣🎬 **Format:** `{BOT.Options.video_out}`\n┗🔴 **Quality:** `{BOT.Setting.convert_quality}`",
             reply_markup=keyboard
         )
     elif data == "caption":
         keyboard = InlineKeyboardMarkup([
-            [
-                [
-                    InlineKeyboardButton("<code>Monospace</code>", callback_data="code-Monospace"),
-                    InlineKeyboardButton("**Bold**", callback_data="b-Bold"),
-                ],
-                [
-                    InlineKeyboardButton("__Italic__", callback_data="i-Italic"),
-                    InlineKeyboardButton("__Underline__", callback_data="u-Underlined"),
-                ],
-                [
-                    InlineKeyboardButton("Regular", callback_data="p-Regular")
-                ],
-                [
-                    InlineKeyboardButton("❰ Back", callback_data="back")
-                ],
-            ]
-            )
+            [InlineKeyboardButton("<code>Monospace</code>", callback_data="code-Monospace"),
+             InlineKeyboardButton("**Bold**", callback_data="b-Bold")],
+            [InlineKeyboardButton("__Italic__", callback_data="i-Italic"),
+             InlineKeyboardButton("__Underline__", callback_data="u-Underlined")],
+            [InlineKeyboardButton("Regular", callback_data="p-Regular")],
+            [InlineKeyboardButton("❰ Back", callback_data="back")]
+        ])
         await callback_query.message.edit_text(
             "**📝 Caption Font Style**\n\n<code>Monospace</code>\nRegular\n**Bold**\n__Italic__\n__Underline__",
             reply_markup=keyboard
         )
     elif data == "thumb":
         keyboard = InlineKeyboardMarkup([
-            [
-                [
-                    InlineKeyboardButton("🗑️ Delete Thumbnail", callback_data="del-thumb")
-                ],
-                [
-                    InlineKeyboardButton("❰ Back", callback_data="back")
-                ],
-            ]
-        )
-        
+            [InlineKeyboardButton("🗑️ Delete Thumbnail", callback_data="del-thumb")],
+            [InlineKeyboardButton("❰ Back", callback_data="back")]
+        ])
         thmb_status = "✅ Set" if BOT.Setting.thumbnail else "🚫 None"
         await callback_query.message.edit_text(
             f"**🖼️ Thumbnail Settings**\n\n**Status:** {thmb_status}\n\n💡 Send An Image To Set As Thumbnail",
@@ -612,15 +597,9 @@ async def handle_callback(client, callback_query):
         await send_settings(client, callback_query.message, callback_query.message.id, False)
     elif data == "autodelete":
         keyboard = InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton(f"✅ Auto-Delete: {'ON' if BOT.Setting.auto_delete else 'OFF'}", callback_data="toggle_autodelete")
-            ],
-            [
-                InlineKeyboardButton("⏱️ Set Delay", callback_data="set_autodelete_delay")
-            ],
-            [
-                InlineKeyboardButton("❰ Back", callback_data="back")
-            ]
+            [InlineKeyboardButton(f"✅ Auto-Delete: {'ON' if BOT.Setting.auto_delete else 'OFF'}", callback_data="toggle_autodelete")],
+            [InlineKeyboardButton("⏱️ Set Delay", callback_data="set_autodelete_delay")],
+            [InlineKeyboardButton("❰ Back", callback_data="back")]
         ])
         await callback_query.message.edit_text(
             f"**⏳ Auto-Delete Messages**\n\n**Status:** {'Enabled' if BOT.Setting.auto_delete else 'Disabled'}\n**Delay:** {BOT.Setting.auto_delete_delay} seconds",
@@ -640,17 +619,10 @@ async def handle_callback(client, callback_query):
         down_limit = f"{sizeUnit(BOT.Setting.download_speed_limit)}/s" if BOT.Setting.download_speed_limit else "Unlimited"
         up_limit = f"{sizeUnit(BOT.Setting.upload_speed_limit)}/s" if BOT.Setting.upload_speed_limit else "Unlimited"
         keyboard = InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton(f"⬇️ DL Limit: {down_limit}", callback_data="set_download_limit")
-            ],
-            [
-                InlineKeyboardButton(f"⬆️ UL Limit: {up_limit}", callback_data="set_upload_limit")
-            ],
-            [
-                InlineKeyboardButton("❰ Back", callback_data="back")
-            ]
-        ]
-     )
+            [InlineKeyboardButton(f"⬇️ DL Limit: {down_limit}", callback_data="set_download_limit")],
+            [InlineKeyboardButton(f"⬆️ UL Limit: {up_limit}", callback_data="set_upload_limit")],
+            [InlineKeyboardButton("❰ Back", callback_data="back")]
+        ])
         await callback_query.message.edit_text(
             "**⚡ Speed Limit Settings**\n\nSet limits in format like `10M` or `500K`. Use `0` or `unlimited` to disable.",
             reply_markup=keyboard
@@ -674,8 +646,10 @@ async def handle_callback(client, callback_query):
     elif data in ["ytdl-true", "ytdl-false"]:
         BOT.Mode.ytdl = data == "ytdl-true"
         await callback_query.message.delete()
-        await leechbot.delete_messages(chat_id=callback_query.message.chat.id,
-                                       message_ids=callback_query.message.reply_to_message_id)
+        await leechbot.delete_messages(
+            chat_id=callback_query.message.chat.id,
+            message_ids=callback_query.message.reply_to_message_id
+        )
         MSG.status_msg = await leechbot.send_message(
             chat_id=OWNER,
             text="**🚀 Initializing Task...**\n\nPlease Wait While I Prepare Your Download",
@@ -744,7 +718,6 @@ async def process_next_in_queue(client):
     BOT.CURRENT_TASK_OWNER = chat_id
     BOT.State.started = True
     await leechbot.send_message(chat_id, "**▶️ Starting queued task...**")
-    # Simulate a fake callback to trigger task start
     fake_cb = type('obj', (object,), {
         'message': msg,
         'data': up_type,
