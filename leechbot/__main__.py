@@ -64,14 +64,14 @@ async def start_command(client, message):
     keyboard = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton(style_button("📂 GitHub Repository ✨"), url="https://github.com/Shineii86/LeechBot", style="primary")
+                InlineKeyboardButton(style_button("📂 GitHub Repository ✨"), url="https://github.com/Shineii86/LeechBot")
             ],
             [
-                InlineKeyboardButton(style_button("🔔 Updates"), url="https://t.me/MaximXBots", style="success"),
-                InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup", style="success"),
+                InlineKeyboardButton(style_button("🔔 Updates"), url="https://t.me/MaximXBots"),
+                InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup"),
             ],
             [
-                InlineKeyboardButton(style_button("🤖 Bot Settings ⚙️"), callback_data="settings_menu", style="primary"),
+                InlineKeyboardButton(style_button("🤖 Bot Settings ⚙️"), callback_data="settings_menu"),
             ]
         ]
     )
