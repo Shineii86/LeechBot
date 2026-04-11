@@ -29,7 +29,10 @@ from leechbot.utility.handler import cancelTask
 from leechbot.utility.variables import BOT, MSG, BotTimes, Paths
 from leechbot.utility.task_manager import taskScheduler, task_starter
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from leechbot.utility.helper import isLink, setThumbnail, message_deleter, send_settings
+from leechbot.utility.helper import (
+    isLink, setThumbnail, message_deleter, send_settings,
+    sysINFO, sysINFO_full, status_keyboard  # <-- Import new functions
+)
 from leechbot.utility.style import style_text, style_button
 
 logger = logging.getLogger(__name__)
@@ -40,15 +43,44 @@ logger = logging.getLogger(__name__)
 src_request_msg = None
 
 # =============================================================================
-# Welcome Message (Styled)
+# Welcome Message (Styled & Professional)
 # =============================================================================
-WELCOME_TEXT = style_text("""**Welcome To Telegram Leechbot** 🚀
+WELCOME_TEXT = style_text("""
+**🤖 Leech Bot** — *Advanced Telegram File Transloader*
 
-◈ **Powerful File Transloader Bot**
-◈ **Download From Multiple Sources**
-◈ **Upload To Telegram Or Google Drive**
+◈ **💪 Powerful • 🚀 Fast • 🔰 Secure**
 
-**Developer:** [Shinei Nouzen](https://t.me/Shineii86)""")
+───────────────────────────
+
+**📥 Download From Anywhere**
+`•` Direct Links, Google Drive, Telegram
+`•` YouTube, Facebook, Instagram & 2000+ sites
+`•` Terabox, Mega (soon)
+
+**📤 Uploaded To Premium Destination**
+`•` Telegram (Unlimited Storage)
+`•` Google Drive (Mirror Mode)
+`•` Local Directory Leech
+
+**🛠️ Advance Tools**
+`•` Video Converter (GPU Accelerated)
+`•` Archive Extractor (Zip, Rar, 7z)
+`•` Smart Splitting For Large Files
+`•` Custom Thumbnails & Captions
+
+───────────────────────────
+
+**📋 Quick Commands**
+`/tupload` — Upload To Telegram
+`/gdupload` — Mirror To Google Drive
+`/ytupload` — Download With Yt‑Dlp
+`/settings` — Configure Bot Preferences
+
+───────────────────────────
+
+**🧑‍💻 Developer:** [Shinei Nouzen](https://t.me/Shineii86)
+
+""")
 
 # =============================================================================
 # Bot Commands
@@ -322,8 +354,6 @@ async def stats_command(client, message):
     Handle the /stats command.
     Displays bot statistics and system information.
     """
-    from leechbot.utility.helper import sysINFO
-    
     stats_text = style_text(f"**📊 Bot Statistics**{sysINFO()}")
     
     msg = await message.reply_text(stats_text, quote=True)
@@ -469,7 +499,7 @@ async def handle_callback(client, callback_query):
             chat_id=OWNER,
             text=style_text("**🚀 Initializing Task...**\n\nPlease Wait While I Prepare Your Download"),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(style_button("Cancel"), callback_data="cancel")]]
+                [[InlineKeyboardButton(style_button("🚫 Cancel"), callback_data="cancel")]]
             )
         )
         
@@ -518,8 +548,8 @@ async def handle_callback(client, callback_query):
         await callback_query.message.edit_text(
             style_text(f"**⚙️ Video Settings**\n\n"
                       f"┏🔄 **Convert:** `{BOT.Setting.convert_video}`\n"
-                      f"┠✂️ **Split:** `{BOT.Setting.split_video}`\n"
-                      f"┠🎬 **Format:** `{BOT.Options.video_out}`\n"
+                      f"┣✂️ **Split:** `{BOT.Setting.split_video}`\n"
+                      f"┣🎬 **Format:** `{BOT.Options.video_out}`\n"
                       f"┗🔴 **Quality:** `{BOT.Setting.convert_quality}`"),
             reply_markup=keyboard
         )
@@ -568,7 +598,7 @@ async def handle_callback(client, callback_query):
             ]
         )
         
-        thmb_status = style_text("✅ Set") if BOT.Setting.thumbnail else style_text("❎ None")
+        thmb_status = style_text("✅ Set") if BOT.Setting.thumbnail else style_text("🚫 None")
         
         await callback_query.message.edit_text(
             style_text(f"**🖼️ Thumbnail Settings**\n\n"
@@ -677,6 +707,48 @@ async def handle_callback(client, callback_query):
     # Cancel task
     elif data == "cancel":
         await cancelTask("User cancelled the task")
+    
+    # =========================================================================
+    # System Info Callbacks (NEW)
+    # =========================================================================
+    # System Info Refresh
+    elif data == "sys_refresh":
+        original_text = callback_query.message.text
+        parts = original_text.split("⌬─────")
+        if len(parts) >= 2:
+            new_text = parts[0] + sysINFO()
+            await callback_query.message.edit_text(
+                text=new_text,
+                disable_web_page_preview=True,
+                reply_markup=status_keyboard()
+            )
+        else:
+            await callback_query.message.edit_text(
+                text=original_text + "\n" + sysINFO(),
+                disable_web_page_preview=True,
+                reply_markup=status_keyboard()
+            )
+        await callback_query.answer("System info refreshed")
+    
+    # Detailed System Stats
+    elif data == "sys_stats":
+        original_text = callback_query.message.text
+        parts = original_text.split("⌬─────")
+        if len(parts) >= 2:
+            new_text = parts[0] + sysINFO_full()
+        else:
+            new_text = original_text + "\n" + sysINFO_full()
+        await callback_query.message.edit_text(
+            text=new_text,
+            disable_web_page_preview=True,
+            reply_markup=status_keyboard()
+        )
+        await callback_query.answer("Showing detailed stats")
+    
+    # Close system panel (optional)
+    elif data == "sys_close":
+        await callback_query.message.delete()
+        await callback_query.answer("Closed")
 
 
 # =============================================================================
