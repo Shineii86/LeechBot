@@ -36,11 +36,13 @@ class BOT:
         stream_upload = "media"      # Upload mode: media or document
         convert_video = "yes"        # Video conversion enabled
         convert_quality = "low"      # Video quality: high or low
-        caption = "regular"        # Caption font style
+        caption = "regular"          # Caption font style
         split_video = "split"        # Video handling: split or zip
         prefix = ""                  # Filename prefix
         suffix = ""                  # Filename suffix
         thumbnail = False            # Thumbnail set status
+        auto_delete = False          # Auto-delete bot messages
+        auto_delete_delay = 30       # Delay in seconds
     
     class Options:
         """Runtime options for current task"""
@@ -66,6 +68,7 @@ class BOT:
         task_going = False           # Task in progress flag
         prefix = False               # Waiting for prefix input
         suffix = False               # Waiting for suffix input
+        setting_autodelete_delay = False  # Waiting for delay input
 
 
 # =============================================================================
@@ -158,14 +161,14 @@ class Paths:
 
 
 # =============================================================================
-# Message Templates (will be styled dynamically using style_text)
+# Message Templates
 # =============================================================================
 class Messages:
     """
     Message templates and texts.
     Stores dynamic message content.
     """
-    caution_msg = ""              # Will be set with styled text
+    caution_msg = ""              # Caution message for torrents
     download_name = ""            # Current download name
     task_msg = ""                 # Task information message
     status_head = ""              # Status header (set dynamically)
@@ -233,5 +236,5 @@ MAX_FILE_SIZE = 2097152000
 MAX_VIDEO_SPLIT_SIZE = 1992294400
 
 # Version information
-VERSION = "0.2"
+VERSION = "2"
 BUILD_DATE = "2026-04-10"
