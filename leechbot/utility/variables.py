@@ -11,15 +11,14 @@
 Global variables and configuration classes for the bot.
 """
 
-import json
-import os
 from time import time
 from datetime import datetime
 from pyrogram.types import Message
 
-SETTINGS_FILE = "settings.json"
-UPLOADED_CACHE_FILE = "uploaded_cache.json"
 
+# =============================================================================
+# Bot Configuration Class
+# =============================================================================
 class BOT:
     """
     Main bot configuration class.
@@ -32,118 +31,123 @@ class BOT:
     # Active task reference
     TASK = None
     
-    # Task queue: list of (chat_id, message, sources, mode, ytdl_flag, upload_type)
-    TASK_QUEUE = []
-    CURRENT_TASK_OWNER = None
-    
-    # Duplicate detection cache: set of (file_hash, size)
-    UPLOADED_FILES = set()
-    
     class Setting:
-        """User preference settings (persisted)"""
-        stream_upload = "media"
-        convert_video = "yes"
-        convert_quality = "low"
-        caption = "regular"
-        split_video = "split"
-        prefix = ""
-        suffix = ""
-        thumbnail = False
-        auto_delete = False
-        auto_delete_delay = 30
-        download_speed_limit = 0      # bytes/sec, 0 = unlimited
-        upload_speed_limit = 0        # bytes/sec, 0 = unlimited
-        
-        @classmethod
-        def save(cls):
-            """Save settings to JSON file."""
-            data = {k: v for k, v in cls.__dict__.items() if not k.startswith("_") and not callable(v)}
-            try:
-                with open(SETTINGS_FILE, "w") as f:
-                    json.dump(data, f, indent=2)
-            except Exception:
-                pass
-        
-        @classmethod
-        def load(cls):
-            """Load settings from JSON file."""
-            if os.path.exists(SETTINGS_FILE):
-                try:
-                    with open(SETTINGS_FILE, "r") as f:
-                        data = json.load(f)
-                        for k, v in data.items():
-                            if hasattr(cls, k):
-                                setattr(cls, k, v)
-                except Exception:
-                    pass
+        """User preference settings"""
+        stream_upload = "media"      # Upload mode: media or document
+        convert_video = "yes"        # Video conversion enabled
+        convert_quality = "low"      # Video quality: high or low
+        caption = "regular"          # Caption font style
+        split_video = "split"        # Video handling: split or zip
+        prefix = ""                  # Filename prefix
+        suffix = ""                  # Filename suffix
+        thumbnail = False            # Thumbnail set status
+        auto_delete = False          # Auto-delete bot messages
+        auto_delete_delay = 30       # Delay in seconds
     
     class Options:
         """Runtime options for current task"""
-        stream_upload = True
-        convert_video = True
-        convert_quality = False
-        is_split = True
-        caption = "code"
-        video_out = "mp4"
-        custom_name = ""
-        zip_pswd = ""
-        unzip_pswd = ""
+        stream_upload = True         # Streaming upload enabled
+        convert_video = True         # Video conversion enabled
+        convert_quality = False      # High quality conversion
+        is_split = True              # Split large videos
+        caption = "code"             # Caption tag type
+        video_out = "mp4"            # Output video format
+        custom_name = ""             # Custom filename
+        zip_pswd = ""                # Zip password
+        unzip_pswd = ""              # Unzip password
     
     class Mode:
         """Current task mode"""
-        mode = "leech"
-        type = "normal"
-        ytdl = False
+        mode = "leech"               # Task type: leech, mirror, dir-leech
+        type = "normal"              # Upload type: normal, zip, unzip, undzip
+        ytdl = False                 # YT-DLP mode enabled
     
     class State:
         """Bot state tracking"""
-        started = False
-        task_going = False
-        prefix = False
-        suffix = False
-        setting_autodelete_delay = False
+        started = False              # Task started flag
+        task_going = False           # Task in progress flag
+        prefix = False               # Waiting for prefix input
+        suffix = False               # Waiting for suffix input
+        setting_autodelete_delay = False  # Waiting for delay input
 
 
+# =============================================================================
+# YT-DLP Download Status
+# =============================================================================
 class YTDL:
-    """YT-DLP download status tracker."""
-    header = ""
-    speed = ""
-    percentage = 0.0
-    eta = ""
-    done = ""
-    left = ""
+    """
+    YT-DLP download status tracker.
+    Stores real-time download information.
+    """
+    header = ""           # Progress header message
+    speed = ""            # Current download speed
+    percentage = 0.0      # Download percentage
+    eta = ""              # Estimated time of arrival
+    done = ""             # Bytes downloaded
+    left = ""             # Bytes remaining
 
 
+# =============================================================================
+# Transfer Statistics
+# =============================================================================
 class Transfer:
-    """File transfer statistics tracker."""
-    down_bytes = [0, 0]
-    up_bytes = [0, 0]
-    total_down_size = 0
-    sent_file = []
-    sent_file_names = []
+    """
+    File transfer statistics tracker.
+    Keeps track of downloaded and uploaded bytes.
+    """
+    down_bytes = [0, 0]           # List of downloaded file sizes
+    up_bytes = [0, 0]             # List of uploaded file sizes
+    total_down_size = 0           # Total download size
+    sent_file = []                # List of sent message objects
+    sent_file_names = []          # List of sent file names
 
 
+# =============================================================================
+# Task Error Handling
+# =============================================================================
 class TaskError:
-    """Task error tracker."""
-    state = False
-    text = ""
+    """
+    Task error tracker.
+    Stores error state and message.
+    """
+    state = False                 # Error occurred flag
+    text = ""                     # Error message
 
 
+# =============================================================================
+# Time Tracking
+# =============================================================================
 class BotTimes:
-    """Bot timing tracker."""
-    current_time = time()
-    start_time = datetime.now()
-    task_start = datetime.now()
+    """
+    Bot timing tracker.
+    Keeps track of various timestamps for progress calculations.
+    """
+    current_time = time()                     # Last update time
+    start_time = datetime.now()               # Task start time
+    task_start = datetime.now()               # Current subtask start time
 
 
+# =============================================================================
+# File Paths
+# =============================================================================
 class Paths:
-    """File system paths."""
+    """
+    File system paths.
+    Defines all working directories and file locations.
+    """
+    # Base working directory
     WORK_PATH = "/content/tgdl/BOT_WORK"
+    
+    # Thumbnail paths
     THMB_PATH = "/content/tgdl/leechbot/Thumbnail.jpg"
     VIDEO_FRAME = f"{WORK_PATH}/video_frame.jpg"
     HERO_IMAGE = f"{WORK_PATH}/Hero.jpg"
     DEFAULT_HERO = "/content/tgdl/custom_thmb.jpg"
+    
+    # Google Drive mount point
     MOUNTED_DRIVE = "/content/drive"
+    
+    # Working subdirectories
     down_path = f"{WORK_PATH}/Downloads"
     temp_dirleech_path = f"{WORK_PATH}/dir_leech_temp"
     mirror_dir = "/content/drive/MyDrive/Downloads/tgdl"
@@ -151,65 +155,86 @@ class Paths:
     temp_unzip_path = f"{WORK_PATH}/Unzipped_Files"
     temp_files_dir = f"{WORK_PATH}/leech_temp"
     thumbnail_ytdl = f"{WORK_PATH}/ytdl_thumbnails"
-    access_token = "/content/token.pickle"
-    ARIA2_SESSION = f"{WORK_PATH}/aria2_session.txt"
-
-
-class Messages:
-    """Message templates and texts."""
-    caution_msg = ""
-    download_name = ""
-    task_msg = ""
-    status_head = ""
-    dump_task = ""
-    src_link = ""
-    link_p = ""
-
-
-class MSG:
-    """Telegram message objects."""
-    sent_msg = Message(id=1)
-    status_msg = Message(id=2)
-
-
-class Aria2c:
-    """Aria2c downloader configuration."""
-    link_info = False
-    pic_dwn_url = "https://picsum.photos/900/600"
-
-
-class Gdrive:
-    """Google Drive service."""
-    service = None
-
-
-MAX_FILE_SIZE = 2097152000
-MAX_VIDEO_SPLIT_SIZE = 1992294400
-VERSION = "0.3"
-BUILD_DATE = "2026-04-11"
-
-
-# Load persisted data on import
-def load_persisted_data():
-    """Load uploaded cache and settings."""
-    # Load uploaded files cache
-    if os.path.exists(UPLOADED_CACHE_FILE):
-        try:
-            with open(UPLOADED_CACHE_FILE, "r") as f:
-                data = json.load(f)
-                BOT.UPLOADED_FILES = set(tuple(x) for x in data)
-        except Exception:
-            pass
     
-    # Load settings
-    BOT.Setting.load()
+    # Token file
+    access_token = "/content/token.pickle"
 
-def save_uploaded_cache():
-    """Save uploaded files cache."""
-    try:
-        with open(UPLOADED_CACHE_FILE, "w") as f:
-            json.dump(list(BOT.UPLOADED_FILES), f)
-    except Exception:
-        pass
 
-load_persisted_data()
+# =============================================================================
+# Message Templates
+# =============================================================================
+class Messages:
+    """
+    Message templates and texts.
+    Stores dynamic message content.
+    """
+    caution_msg = ""              # Caution message for torrents
+    download_name = ""            # Current download name
+    task_msg = ""                 # Task information message
+    status_head = ""              # Status header (set dynamically)
+    dump_task = ""                # Task log message
+    src_link = ""                 # Source link
+    link_p = ""                   # Channel link part
+
+
+# =============================================================================
+# Message Objects
+# =============================================================================
+class MSG:
+    """
+    Telegram message objects.
+    Stores references to sent messages for editing.
+    """
+    sent_msg = Message(id=1)       # Last sent message
+    status_msg = Message(id=2)     # Status message
+
+
+# =============================================================================
+# Aria2c Configuration
+# =============================================================================
+class Aria2c:
+    """
+    Aria2c downloader configuration.
+    Stores aria2c-specific settings and state.
+    """
+    link_info = False              # Link information received
+    pic_dwn_url = "https://picsum.photos/900/600"  # Random image URL
+
+
+# =============================================================================
+# Google Drive Service
+# =============================================================================
+class Gdrive:
+    """
+    Google Drive service.
+    Stores the Google Drive API service instance.
+    """
+    service = None                 # Google Drive API service
+
+
+# =============================================================================
+# Bot Statistics
+# =============================================================================
+class BotStats:
+    """
+    Bot usage statistics.
+    Tracks total downloads, uploads, and other metrics.
+    """
+    total_tasks = 0                # Total completed tasks
+    total_downloaded = 0           # Total bytes downloaded
+    total_uploaded = 0             # Total bytes uploaded
+    failed_tasks = 0               # Failed task count
+
+
+# =============================================================================
+# Constants
+# =============================================================================
+# Maximum file size for Telegram (2GB)
+MAX_FILE_SIZE = 2097152000
+
+# Maximum video split size (1.9GB)
+MAX_VIDEO_SPLIT_SIZE = 1992294400
+
+# Version information
+VERSION = "0.2"
+BUILD_DATE = "2026-04-10"
