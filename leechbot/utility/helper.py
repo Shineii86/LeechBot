@@ -580,38 +580,34 @@ async def send_settings(client, message, msg_id: int, is_command: bool):
             [
                 InlineKeyboardButton(
                     f"📤 {style_button(up_mode)}",
-                    callback_data="media" if up_mode == "Document" else "document",
-                    style="primary"
+                    callback_data="media" if up_mode == "Document" else "document"
                 ),
                 InlineKeyboardButton(
                     f"🎬 {style_button('Video')}",
-                    callback_data="video",
-                    style="primary"
+                    callback_data="video"
                 ),
             ],
             [
                 InlineKeyboardButton(
                     f"📝 {style_button('Caption')}",
-                    callback_data="caption",
-                    style="primary"
+                    callback_data="caption"
                 ),
                 InlineKeyboardButton(
                     f"🖼️ {style_button('Thumb')}",
-                    callback_data="thumb",
-                    style="primary"
+                    callback_data="thumb"
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    "➕ Suffix", callback_data="set-suffix", style="success"
+                    "➕ Suffix", callback_data="set-suffix"
                 ),
                 InlineKeyboardButton(
-                    "➕ Prefix", callback_data="set-prefix", style="success"
+                    "➕ Prefix", callback_data="set-prefix"
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    "Close", callback_data="close", style="danger"
+                    "Close", callback_data="close"
                 )
             ],
         ]
@@ -700,5 +696,9 @@ def keyboard():
         InlineKeyboardMarkup: cancel button
     """
     return InlineKeyboardMarkup(
-        [[InlineKeyboardButton(style_button("Cancel"), callback_data="cancel", style="danger")]]
+        [
+            [
+                InlineKeyboardButton(style_button("Cancel"), callback_data="cancel")
+            ]
+        ]
     )
