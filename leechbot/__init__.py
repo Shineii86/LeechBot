@@ -44,7 +44,7 @@ def load_credentials():
     Returns:
         dict: containing api_id, api_hash, bot_token, owner, and dump_id
     """
-    credentials_path = "/content/leechbot/credentials.json"
+    credentials_path = "/content/tgdl/credentials.json"
     
     # Check if running in local mode
     if not os.path.exists(credentials_path):
