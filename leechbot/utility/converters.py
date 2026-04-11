@@ -1,16 +1,14 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - File Converters
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ғɪʟᴇ ᴄᴏɴᴠᴇʀsɪᴏɴ ᴍᴏᴅᴜʟᴇ
-
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ʜᴀɴᴅʟᴇs ᴠɪᴅᴇᴏ ᴄᴏɴᴠᴇʀsɪᴏɴ, ᴀʀᴄʜɪᴠᴇ ᴄʀᴇᴀᴛɪᴏɴ,
-ᴀʀᴄʜɪᴠᴇ ᴇxᴛʀᴀᴄᴛɪᴏɴ, ᴀɴᴅ ғɪʟᴇ sᴘʟɪᴛᴛɪɴɢ.
+File conversion module for video, archive creation, and extraction.
 """
 
 import os
@@ -26,27 +24,28 @@ from os import makedirs, path as ospath
 from moviepy.editor import VideoFileClip as VideoClip
 from leechbot.utility.variables import BOT, MSG, BotTimes, Paths, Messages
 from leechbot.utility.helper import getSize, fileType, keyboard, multipartArchive, sizeUnit, speedETA, status_bar, getTime
+from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-#  ᴠɪᴅᴇᴏ ᴄᴏɴᴠᴇʀsɪᴏɴ
+# Video Conversion
 # =============================================================================
 async def videoConverter(file: str) -> str:
     """
-    ᴄᴏɴᴠᴇʀᴛ ᴠɪᴅᴇᴏ ᴛᴏ ᴛᴀʀɢᴇᴛ ғᴏʀᴍᴀᴛ.
+    Convert video to target format.
     
-    ᴀʀɢs:
-        ғɪʟᴇ: ᴘᴀᴛʜ ᴛᴏ ᴠɪᴅᴇᴏ ғɪʟᴇ
+    Args:
+        file: path to video file
     
-    ʀᴇᴛᴜʀɴs:
-        sᴛʀ: ᴘᴀᴛʜ ᴛᴏ ᴄᴏɴᴠᴇʀᴛᴇᴅ ғɪʟᴇ
+    Returns:
+        str: path to converted file
     """
     global BOT, MSG, BotTimes
     
     def convert_to_mp4(input_file: str, out_file: str):
-        """ғᴀʟʟʙᴀᴄᴋ ᴄᴏɴᴠᴇʀsɪᴏɴ ᴜsɪɴɢ ᴍᴏᴠɪᴇᴘʏ"""
+        """Fallback conversion using moviepy"""
         clip = VideoClip(input_file)
         clip.write_videofile(
             out_file,
@@ -56,14 +55,14 @@ async def videoConverter(file: str) -> str:
         )
     
     async def msg_updater(count: int, attempt: str, engine: str, core: str):
-        """ᴜᴘᴅᴀᴛᴇ ᴄᴏɴᴠᴇʀsɪᴏɴ ᴘʀᴏɢʀᴇss"""
+        """Update conversion progress"""
         bar = "░" * count + "█" + "░" * (11 - count)
-        messg = f"\n╭「{bar}」"
-        messg += f"\n├⏳ **sᴛᴀᴛᴜs:** `ʀᴜɴɴɪɴɢ`"
-        messg += f"\n├🔄 **ᴀᴛᴛᴇᴍᴘᴛ:** `{attempt}`"
-        messg += f"\n├🔧 **ᴇɴɢɪɴᴇ:** `{engine}`"
-        messg += f"\n├💪 **ʜᴀɴᴅʟᴇʀ:** `{core}`"
-        messg += f"\n╰⏱️ **ᴇʟᴀᴘsᴇᴅ:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`"
+        messg = f"\n┏「{bar}」"
+        messg += f"\n┠⏳ **{style_text('Status')}:** `{style_text('Running')}`"
+        messg += f"\n┠🔄 **{style_text('Attempt')}:** `{attempt}`"
+        messg += f"\n┠🔧 **{style_text('Engine')}:** `{engine}`"
+        messg += f"\n┠💪 **{style_text('Handler')}:** `{core}`"
+        messg += f"\n┖⏱️ **{style_text('Elapsed')}:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`"
         
         try:
             await MSG.status_msg.edit_text(
@@ -75,36 +74,36 @@ async def videoConverter(file: str) -> str:
     
     name, ext = ospath.splitext(file)
     
-    # sᴋɪᴘ ɪғ ᴀʟʀᴇᴀᴅʏ ɪɴ ᴛᴀʀɢᴇᴛ ғᴏʀᴍᴀᴛ
+    # Skip if already in target format
     if ext.lower() in [".mkv", ".mp4"]:
         return file
     
     out_file = f"{name}.{BOT.Options.video_out}"
     gpu_available = len(GPUtil.getAvailable()) > 0
     
-    # ǫᴜᴀʟɪᴛʏ sᴇᴛᴛɪɴɢs
+    # Quality settings
     quality = "-preset slow -qp 0" if BOT.Options.convert_quality else "-preset fast"
     
-    # ʙᴜɪʟᴅ ғғᴍᴘᴇɢ ᴄᴏᴍᴍᴀɴᴅ
+    # Build ffmpeg command
     if gpu_available:
         cmd = f"ffmpeg -y -i '{file}' {quality} -c:v h264_nvenc -c:a copy '{out_file}'"
-        core = "ɢᴘᴜ"
+        core = "GPU"
     else:
         cmd = f"ffmpeg -y -i '{file}' {quality} -c:v libx264 -c:a copy '{out_file}'"
-        core = "ᴄᴘᴜ"
+        core = "CPU"
     
-    mtext = f"**🎬 ᴄᴏɴᴠᴇʀᴛɪɴɢ ᴠɪᴅᴇᴏ**\n\n`{ospath.basename(file)}`\n"
+    mtext = style_text(f"**🎬 Converting Video**\n\n`{ospath.basename(file)}`\n")
     
-    # ʀᴜɴ ғғᴍᴘᴇɢ
+    # Run ffmpeg
     proc = subprocess.Popen(cmd, shell=True)
     counter = 0
     
     while proc.poll() is None:
-        await msg_updater(counter, "1sᴛ", "ғғᴍᴘᴇɢ", core)
+        await msg_updater(counter, "1st", "FFmpeg", core)
         counter = (counter + 1) % 12
         await sleep(3)
     
-    # ᴄʜᴇᴄᴋ ʀᴇsᴜʟᴛ
+    # Check result
     error = False
     if ospath.exists(out_file) and getSize(out_file) == 0:
         os.remove(out_file)
@@ -112,41 +111,41 @@ async def videoConverter(file: str) -> str:
     elif not ospath.exists(out_file):
         error = True
     
-    # ғᴀʟʟʙᴀᴄᴋ ᴛᴏ ᴍᴏᴠɪᴇᴘʏ
+    # Fallback to moviepy
     if error:
-        logger.warning("ғғᴍᴘᴇɢ ғᴀɪʟᴇᴅ, ᴛʀʏɪɴɢ ᴍᴏᴠɪᴇᴘʏ...")
+        logger.warning("FFmpeg failed, trying moviepy...")
         thread = Thread(target=convert_to_mp4, args=(file, out_file))
         thread.start()
         
         while thread.is_alive():
-            await msg_updater(counter, "2ɴᴅ", "ᴍᴏᴠɪᴇᴘʏ", "ᴄᴘᴜ")
+            await msg_updater(counter, "2nd", "MoviePy", "CPU")
             counter = (counter + 1) % 12
             await sleep(3)
     
-    # ғɪɴᴀʟ ᴄʜᴇᴄᴋ
+    # Final check
     if ospath.exists(out_file) and getSize(out_file) > 0:
         os.remove(file)
         return out_file
     else:
-        logger.error("ᴠɪᴅᴇᴏ ᴄᴏɴᴠᴇʀsɪᴏɴ ғᴀɪʟᴇᴅ")
+        logger.error("Video conversion failed")
         return file
 
 
 # =============================================================================
-#  ғɪʟᴇ sɪᴢᴇ ᴄʜᴇᴄᴋᴇʀ
+# File Size Checker
 # =============================================================================
 async def sizeChecker(file_path: str, remove: bool) -> bool:
     """
-    ᴄʜᴇᴄᴋ ɪғ ғɪʟᴇ ɴᴇᴇᴅs sᴘʟɪᴛᴛɪɴɢ ᴏʀ ᴀʀᴄʜɪᴠɪɴɢ.
+    Check if file needs splitting or archiving.
     
-    ᴀʀɢs:
-        ғɪʟᴇ_ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ғɪʟᴇ
-        ʀᴇᴍᴏᴠᴇ: ᴡʜᴇᴛʜᴇʀ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴏʀɪɢɪɴᴀʟ
+    Args:
+        file_path: path to file
+        remove: whether to remove original after processing
     
-    ʀᴇᴛᴜʀɴs:
-        ʙᴏᴏʟ: ᴛʀᴜᴇ ɪғ ғɪʟᴇ ᴡᴀs ᴘʀᴏᴄᴇssᴇᴅ
+    Returns:
+        bool: True if file was processed (split/archived)
     """
-    max_size = 2097152000  # 2ɢʙ
+    max_size = 2097152000  # 2GB
     file_size = os.stat(file_path).st_size
     
     if file_size > max_size:
@@ -155,7 +154,7 @@ async def sizeChecker(file_path: str, remove: bool) -> bool:
         
         filename = ospath.basename(file_path).lower()
         
-        # ᴄʜᴇᴄᴋ ɪғ ᴀʟʀᴇᴀᴅʏ ᴀɴ ᴀʀᴄʜɪᴠᴇ
+        # Check if already an archive
         if any(filename.endswith(ext) for ext in [".zip", ".rar", ".7z", ".tar", ".gz"]):
             await splitArchive(file_path, max_size)
         else:
@@ -172,16 +171,16 @@ async def sizeChecker(file_path: str, remove: bool) -> bool:
 
 
 # =============================================================================
-#  ᴀʀᴄʜɪᴠᴇ ᴄʀᴇᴀᴛɪᴏɴ
+# Archive Creation
 # =============================================================================
 async def archive(path: str, is_split: bool, remove: bool):
     """
-    ᴄʀᴇᴀᴛᴇ ᴢɪᴘ ᴀʀᴄʜɪᴠᴇ.
+    Create zip archive.
     
-    ᴀʀɢs:
-        ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ғɪʟᴇ/ғᴏʟᴅᴇʀ
-        ɪs_sᴘʟɪᴛ: ᴡʜᴇᴛʜᴇʀ ᴛᴏ sᴘʟɪᴛ ʟᴀʀɢᴇ ᴀʀᴄʜɪᴠᴇs
-        ʀᴇᴍᴏᴠᴇ: ᴡʜᴇᴛʜᴇʀ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴏʀɪɢɪɴᴀʟ
+    Args:
+        path: path to file/folder
+        is_split: whether to split large archives
+        remove: whether to remove original
     """
     global BOT, Messages
     
@@ -200,11 +199,11 @@ async def archive(path: str, is_split: bool, remove: bool):
     else:
         name = Messages.download_name
     
-    Messages.status_head = f"**🗜️ ᴢɪᴘᴘɪɴɢ**\n\n`{name}`\n"
+    Messages.status_head = style_text(f"**🗜️ Zipping**\n\n`{name}`\n")
     Messages.download_name = f"{name}.zip"
     BotTimes.task_start = datetime.now()
     
-    # ʙᴜɪʟᴅ ᴄᴏᴍᴍᴀɴᴅ
+    # Build command
     if not BOT.Options.zip_pswd:
         cmd = f'cd "{dir_p}" && zip {recursive} {split} -0 "{Paths.temp_zpath}/{name}.zip" "{p_name}"'
     else:
@@ -224,7 +223,7 @@ async def archive(path: str, is_split: bool, remove: bool):
             getTime(eta),
             sizeUnit(getSize(Paths.temp_zpath)),
             sizeUnit(total_size),
-            "ᴢɪᴘ 🗜️"
+            "Zip 🗜️"
         )
         await sleep(1)
     
@@ -236,20 +235,20 @@ async def archive(path: str, is_split: bool, remove: bool):
 
 
 # =============================================================================
-#  ᴀʀᴄʜɪᴠᴇ ᴇxᴛʀᴀᴄᴛɪᴏɴ
+# Archive Extraction
 # =============================================================================
 async def extract(zip_filepath: str, remove: bool):
     """
-    ᴇxᴛʀᴀᴄᴛ ᴀʀᴄʜɪᴠᴇ ғɪʟᴇ.
+    Extract archive file.
     
-    ᴀʀɢs:
-        ᴢɪᴘ_ғɪʟᴇᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ᴀʀᴄʜɪᴠᴇ
-        ʀᴇᴍᴏᴠᴇ: ᴡʜᴇᴛʜᴇʀ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴀʀᴄʜɪᴠᴇ
+    Args:
+        zip_filepath: path to archive
+        remove: whether to remove archive after extraction
     """
     global BOT, Paths, Messages
     
     _, filename = ospath.split(zip_filepath)
-    Messages.status_head = f"**📂 ᴇxᴛʀᴀᴄᴛɪɴɢ**\n\n`{filename}`\n"
+    Messages.status_head = style_text(f"**📂 Extracting**\n\n`{filename}`\n")
     
     password = f"-p{BOT.Options.unzip_pswd}" if BOT.Options.unzip_pswd else ""
     name, ext = ospath.splitext(filename)
@@ -257,7 +256,7 @@ async def extract(zip_filepath: str, remove: bool):
     file_pattern = ""
     real_name = name
     
-    # ᴅᴇᴛᴇʀᴍɪɴᴇ ᴇxᴛʀᴀᴄᴛɪᴏɴ ᴍᴇᴛʜᴏᴅ
+    # Determine extraction method
     if ext == ".rar":
         if "part" in name:
             cmd = f"unrar x -kb -idq {password} '{zip_filepath}' {Paths.temp_unzip_path}"
@@ -275,7 +274,7 @@ async def extract(zip_filepath: str, remove: bool):
         elif ext == ".z01":
             file_pattern = "zip"
     
-    # ɢᴇᴛ ᴛᴏᴛᴀʟ sɪᴢᴇ
+    # Get total size
     if file_pattern == "":
         total = getSize(zip_filepath)
     else:
@@ -295,7 +294,7 @@ async def extract(zip_filepath: str, remove: bool):
             getTime(eta),
             sizeUnit(getSize(Paths.temp_unzip_path)),
             sizeUnit(total),
-            "ᴜɴᴢɪᴘ 📂"
+            "Unzip 📂"
         )
         await sleep(1)
     
@@ -308,21 +307,21 @@ async def extract(zip_filepath: str, remove: bool):
 
 
 # =============================================================================
-#  ᴀʀᴄʜɪᴠᴇ sᴘʟɪᴛᴛɪɴɢ
+# Archive Splitting
 # =============================================================================
 async def splitArchive(file_path: str, max_size: int):
     """
-    sᴘʟɪᴛ ʟᴀʀɢᴇ ᴀʀᴄʜɪᴠᴇ ɪɴᴛᴏ ᴄʜᴜɴᴋs.
+    Split large archive into chunks.
     
-    ᴀʀɢs:
-        ғɪʟᴇ_ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ᴀʀᴄʜɪᴠᴇ
-        ᴍᴀx_sɪᴢᴇ: ᴍᴀxɪᴍᴜᴍ ᴄʜᴜɴᴋ sɪᴢᴇ
+    Args:
+        file_path: path to archive
+        max_size: maximum chunk size
     """
     global Paths, BOT, MSG, Messages
     
     _, filename = ospath.split(file_path)
     new_path = f"{Paths.temp_zpath}/{filename}"
-    Messages.status_head = f"**✂️ sᴘʟɪᴛᴛɪɴɢ**\n\n`{filename}`\n"
+    Messages.status_head = style_text(f"**✂️ Splitting**\n\n`{filename}`\n")
     
     total_size = ospath.getsize(file_path)
     BotTimes.task_start = datetime.now()
@@ -351,7 +350,7 @@ async def splitArchive(file_path: str, max_size: int):
                 getTime(eta),
                 sizeUnit(bytes_written),
                 sizeUnit(total_size),
-                "sᴘʟɪᴛ ✂️"
+                "Split ✂️"
             )
             
             chunk = f.read(max_size)
@@ -359,23 +358,23 @@ async def splitArchive(file_path: str, max_size: int):
 
 
 # =============================================================================
-#  ᴠɪᴅᴇᴏ sᴘʟɪᴛᴛɪɴɢ
+# Video Splitting
 # =============================================================================
 async def splitVideo(file_path: str, max_size: int, remove: bool):
     """
-    sᴘʟɪᴛ ʟᴀʀɢᴇ ᴠɪᴅᴇᴏ ɪɴᴛᴏ sᴇɢᴍᴇɴᴛs.
+    Split large video into segments.
     
-    ᴀʀɢs:
-        ғɪʟᴇ_ᴘᴀᴛʜ: ᴘᴀᴛʜ ᴛᴏ ᴠɪᴅᴇᴏ
-        ᴍᴀx_sɪᴢᴇ: ᴍᴀxɪᴍᴜᴍ sᴇɢᴍᴇɴᴛ sɪᴢᴇ ɪɴ ᴍʙ
-        ʀᴇᴍᴏᴠᴇ: ᴡʜᴇᴛʜᴇʀ ᴛᴏ ʀᴇᴍᴏᴠᴇ ᴏʀɪɢɪɴᴀʟ
+    Args:
+        file_path: path to video
+        max_size: maximum segment size in MB
+        remove: whether to remove original
     """
     global Paths, BOT, MSG, Messages
     
     _, filename = ospath.split(file_path)
     just_name, extension = ospath.splitext(filename)
     
-    # ɢᴇᴛ ᴠɪᴅᴇᴏ ʙɪᴛʀᴀᴛᴇ
+    # Get video bitrate
     cmd = ["ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", file_path]
     
     try:
@@ -385,13 +384,13 @@ async def splitVideo(file_path: str, max_size: int, remove: bool):
     except Exception:
         bitrate = 1000000
     
-    # ᴄᴀʟᴄᴜʟᴀᴛᴇ sᴇɢᴍᴇɴᴛ ᴅᴜʀᴀᴛɪᴏɴ
+    # Calculate segment duration
     target_bits = max_size * 8 * 1024 * 1024
     duration = int(target_bits / bitrate)
     
     cmd = f'ffmpeg -i "{file_path}" -c copy -f segment -segment_time {duration} -reset_timestamps 1 "{Paths.temp_zpath}/{just_name}.part%03d{extension}"'
     
-    Messages.status_head = f"**✂️ sᴘʟɪᴛᴛɪɴɢ**\n\n`{filename}`\n"
+    Messages.status_head = style_text(f"**✂️ Splitting Video**\n\n`{filename}`\n")
     BotTimes.task_start = datetime.now()
     
     proc = subprocess.Popen(cmd, shell=True)
@@ -408,7 +407,7 @@ async def splitVideo(file_path: str, max_size: int, remove: bool):
             getTime(eta),
             sizeUnit(getSize(Paths.temp_zpath)),
             sizeUnit(total_size),
-            "sᴘʟɪᴛ ✂️"
+            "Split ✂️"
         )
         await sleep(1)
     
@@ -417,9 +416,9 @@ async def splitVideo(file_path: str, max_size: int, remove: bool):
 
 
 # =============================================================================
-#  sʏsᴛᴇᴍ ɪɴғᴏ ʜᴇʟᴘᴇʀ
+# System Info Helper (import from helper)
 # =============================================================================
 def sysINFO():
-    """ɪᴍᴘᴏʀᴛ ғʀᴏᴍ ʜᴇʟᴘᴇʀ ᴛᴏ ᴀᴠᴏɪᴅ ᴄɪʀᴄᴜʟᴀʀ ɪᴍᴘᴏʀᴛ"""
+    """Import system info from helper to avoid circular imports"""
     from leechbot.utility.helper import sysINFO as real_sysINFO
     return real_sysINFO()
