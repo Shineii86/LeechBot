@@ -18,11 +18,9 @@ import re
 import logging
 import subprocess
 import os
-import sys
 from datetime import datetime
 from leechbot.utility.helper import sizeUnit, status_bar
 from leechbot.utility.variables import BOT, Aria2c, Paths, Messages, BotTimes
-from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +129,7 @@ async def aria2_Download(link: str, num: int):
     
     name_d = get_Aria2c_Name(url if out is None else out)
     BotTimes.task_start = datetime.now()
-    Messages.status_head = style_text(f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n**🏷️ Name:** ") + f"`{name_d}`\n"
+    Messages.status_head = f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n**🏷️ Name:** `{name_d}`\n"
     
     # Build aria2c command
     if is_torrent_or_magnet(url):
