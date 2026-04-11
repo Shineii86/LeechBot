@@ -48,6 +48,17 @@ def style_title(text: str) -> str:
         styled_words.append(styled)
     return ' '.join(styled_words)
 
-def style_button(text: str) -> str:
-    """Style button text using Title Case with small caps (optional)."""
-    return style_title(text)
+def style_button(text: str, button_type: str = "default") -> str:
+    """
+    Style button text with Unicode small caps and emoji prefix.
+    button_type: 'primary', 'success', 'danger', 'default'
+    """
+    emoji_map = {
+        "primary": "🔵",   # Blue circle
+        "success": "🟢",   # Green circle
+        "danger": "🔴",    # Red circle
+        "default": "⚪"    # White circle
+    }
+    emoji = emoji_map.get(button_type, "")
+    styled = style_title(text)
+    return f"{emoji} {styled}" if emoji else styled
