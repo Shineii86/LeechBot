@@ -23,7 +23,6 @@ from leechbot.downloader.manager import calDownSize, get_d_name, downloadManager
 from leechbot.utility.helper import getSize, applyCustomName, keyboard, sysINFO, is_google_drive, is_telegram, is_ytdl_link, is_mega, is_terabox, is_torrent
 from leechbot.utility.handler import Leech, Unzip_Handler, Zip_Handler, SendLogs, cancelTask
 from leechbot.utility.variables import BOT, MSG, BotTimes, Messages, Paths, Aria2c, Transfer, TaskError
-from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +50,7 @@ async def task_starter(message, text: str):
         src_request_msg = await message.reply_text(text)
         return src_request_msg
     else:
-        msg = await message.reply_text(style_text("**⏳ I'm Already Working! Please Wait...**"))
+        msg = await message.reply_text("**⏳ I'm Already Working! Please Wait...**")
         await sleep(15)
         await msg.delete()
         return None
@@ -74,7 +73,7 @@ async def taskScheduler():
     
     # Reset messages
     Messages.download_name = ""
-    Messages.task_msg = style_text("**🎯 Task Mode:** ")
+    Messages.task_msg = "**🎯 Task Mode:** "
     Messages.dump_task = Messages.task_msg + f"`{BOT.Mode.type.capitalize()} {BOT.Mode.mode.capitalize()} as {BOT.Setting.stream_upload}`\n\n**🔗 Sources:**"
     
     Transfer.sent_file = []
@@ -83,7 +82,7 @@ async def taskScheduler():
     Transfer.up_bytes = [0, 0]
     Messages.download_name = ""
     Messages.task_msg = ""
-    Messages.status_head = style_text("**📥 Downloading**\n")
+    Messages.status_head = "**📥 Downloading**\n"
     
     # Handle directory leech
     if is_dir:
@@ -108,7 +107,7 @@ async def taskScheduler():
                 icon = "♻️"
             elif is_torrent(link):
                 icon = "🧲"
-                Messages.caution_msg = style_text("\n\n⚠️ **Torrents Are Restricted In Some Environments**")
+                Messages.caution_msg = "\n\n⚠️ **Torrents Are Restricted In Some Environments**"
             elif is_ytdl_link(link):
                 icon = "🏮"
             elif is_terabox(link):
@@ -150,7 +149,7 @@ async def taskScheduler():
     # Send task log
     MSG.sent_msg = await leechbot.send_message(chat_id=DUMP_ID, text=Messages.dump_task)
     Messages.src_link = f"https://t.me/c/{Messages.link_p}/{MSG.sent_msg.id}"
-    Messages.task_msg += style_text(f"[{BOT.Mode.type.capitalize()} {BOT.Mode.mode.capitalize()} as {BOT.Setting.stream_upload}]({Messages.src_link})\n\n")
+    Messages.task_msg += f"[{BOT.Mode.type.capitalize()} {BOT.Mode.mode.capitalize()} as {BOT.Setting.stream_upload}]({Messages.src_link})\n\n"
     
     # Update status message
     await MSG.status_msg.delete()
@@ -158,7 +157,7 @@ async def taskScheduler():
     MSG.status_msg = await leechbot.send_photo(
         chat_id=OWNER,
         photo=img,
-        caption=Messages.task_msg + Messages.status_head + "\n📝 " + style_text("Initializing...") + sysINFO(),
+        caption=Messages.task_msg + Messages.status_head + "\n📝 Initializing..." + sysINFO(),
         reply_markup=keyboard()
     )
     
