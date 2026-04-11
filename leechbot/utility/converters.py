@@ -23,8 +23,7 @@ from datetime import datetime
 from os import makedirs, path as ospath
 from moviepy.editor import VideoFileClip as VideoClip
 from leechbot.utility.variables import BOT, MSG, BotTimes, Paths, Messages
-from leechbot.utility.helper import getSize, fileType, keyboard, multipartArchive, sizeUnit, speedETA, status_bar, getTime
-from leechbot.utility.style import style_text
+from leechbot.utility.helper import getSize, fileType, keyboard, multipartArchive, sizeUnit, speedETA, status_bar, getTime, sysINFO
 
 logger = logging.getLogger(__name__)
 
@@ -58,11 +57,11 @@ async def videoConverter(file: str) -> str:
         """Update conversion progress"""
         bar = "░" * count + "█" + "░" * (11 - count)
         messg = f"\n┏「{bar}」"
-        messg += f"\n┠⏳ **{style_text('Status')}:** `{style_text('Running')}`"
-        messg += f"\n┠🔄 **{style_text('Attempt')}:** `{attempt}`"
-        messg += f"\n┠🔧 **{style_text('Engine')}:** `{engine}`"
-        messg += f"\n┠💪 **{style_text('Handler')}:** `{core}`"
-        messg += f"\n┖⏱️ **{style_text('Elapsed')}:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`"
+        messg += f"\n┠⏳ **Status:** `Running`"
+        messg += f"\n┠🔄 **Attempt:** `{attempt}`"
+        messg += f"\n┠🔧 **Engine:** `{engine}`"
+        messg += f"\n┠💪 **Handler:** `{core}`"
+        messg += f"\n┖⏱️ **Elapsed:** `{getTime((datetime.now() - BotTimes.start_time).seconds)}`"
         
         try:
             await MSG.status_msg.edit_text(
@@ -92,7 +91,7 @@ async def videoConverter(file: str) -> str:
         cmd = f"ffmpeg -y -i '{file}' {quality} -c:v libx264 -c:a copy '{out_file}'"
         core = "CPU"
     
-    mtext = style_text(f"**🎬 Converting Video**\n\n`{ospath.basename(file)}`\n")
+    mtext = f"**🎬 Converting Video**\n\n`{ospath.basename(file)}`\n"
     
     # Run ffmpeg
     proc = subprocess.Popen(cmd, shell=True)
@@ -199,7 +198,7 @@ async def archive(path: str, is_split: bool, remove: bool):
     else:
         name = Messages.download_name
     
-    Messages.status_head = style_text(f"**🗜️ Zipping**\n\n`{name}`\n")
+    Messages.status_head = f"**🗜️ Zipping**\n\n`{name}`\n"
     Messages.download_name = f"{name}.zip"
     BotTimes.task_start = datetime.now()
     
@@ -248,7 +247,7 @@ async def extract(zip_filepath: str, remove: bool):
     global BOT, Paths, Messages
     
     _, filename = ospath.split(zip_filepath)
-    Messages.status_head = style_text(f"**📂 Extracting**\n\n`{filename}`\n")
+    Messages.status_head = f"**📂 Extracting**\n\n`{filename}`\n"
     
     password = f"-p{BOT.Options.unzip_pswd}" if BOT.Options.unzip_pswd else ""
     name, ext = ospath.splitext(filename)
@@ -321,7 +320,7 @@ async def splitArchive(file_path: str, max_size: int):
     
     _, filename = ospath.split(file_path)
     new_path = f"{Paths.temp_zpath}/{filename}"
-    Messages.status_head = style_text(f"**✂️ Splitting**\n\n`{filename}`\n")
+    Messages.status_head = f"**✂️ Splitting**\n\n`{filename}`\n"
     
     total_size = ospath.getsize(file_path)
     BotTimes.task_start = datetime.now()
@@ -390,7 +389,7 @@ async def splitVideo(file_path: str, max_size: int, remove: bool):
     
     cmd = f'ffmpeg -i "{file_path}" -c copy -f segment -segment_time {duration} -reset_timestamps 1 "{Paths.temp_zpath}/{just_name}.part%03d{extension}"'
     
-    Messages.status_head = style_text(f"**✂️ Splitting Video**\n\n`{filename}`\n")
+    Messages.status_head = f"**✂️ Splitting Video**\n\n`{filename}`\n"
     BotTimes.task_start = datetime.now()
     
     proc = subprocess.Popen(cmd, shell=True)
@@ -413,12 +412,3 @@ async def splitVideo(file_path: str, max_size: int, remove: bool):
     
     if remove:
         os.remove(file_path)
-
-
-# =============================================================================
-# System Info Helper (import from helper)
-# =============================================================================
-def sysINFO():
-    """Import system info from helper to avoid circular imports"""
-    from leechbot.utility.helper import sysINFO as real_sysINFO
-    return real_sysINFO()
