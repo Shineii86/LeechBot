@@ -9,7 +9,7 @@
 
 """
 Text styling for Telegram messages using Unicode small caps.
-All user‑facing messages are converted to Title Case with small‑caps letters.
+Only lowercase letters are converted to small caps; uppercase and other characters remain unchanged.
 """
 
 # Mapping from normal lowercase letters to small caps Unicode
@@ -23,29 +23,31 @@ SMALL_CAPS_MAP = {
 }
 
 def to_small_caps(text: str) -> str:
-    """Convert lowercase letters in text to small caps Unicode."""
+    """Convert lowercase letters to small caps Unicode; leave other characters unchanged."""
     return ''.join(SMALL_CAPS_MAP.get(c, c) for c in text)
 
 def style_text(text: str) -> str:
     """
-    Convert text to Title Case and replace lowercase letters with small caps.
-    First letter of each word remains normal uppercase, the rest become small caps.
+    Convert lowercase letters to small caps while preserving original case.
+    Uppercase letters remain normal ASCII uppercase.
     """
-    # Split into words while preserving multiple spaces (if any)
+    return to_small_caps(text)
+
+def style_title(text: str) -> str:
+    """
+    Convert text to Title Case with small caps for lowercase letters.
+    First letter of each word is normal uppercase, rest small caps.
+    """
     words = text.split(' ')
     styled_words = []
     for w in words:
         if not w:
             styled_words.append(w)
             continue
-        # Capitalize first character (normal uppercase), rest small caps
         styled = w[0].upper() + to_small_caps(w[1:].lower())
         styled_words.append(styled)
     return ' '.join(styled_words)
 
 def style_button(text: str) -> str:
-    """
-    Style button text. Usually we want Title Case with small caps,
-    but sometimes we keep emojis and symbols.
-    """
-    return style_text(text)
+    """Style button text using Title Case with small caps (optional)."""
+    return style_title(text)
