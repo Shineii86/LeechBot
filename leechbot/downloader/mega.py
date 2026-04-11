@@ -18,7 +18,6 @@ import logging
 from datetime import datetime
 from leechbot.utility.helper import status_bar
 from leechbot.utility.variables import BotTimes, Messages, Paths
-from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +98,7 @@ async def extract_info(line: str, num: int):
             total_size = f"{subparts[7]} {subparts[8]}"
             speed = f"{subparts[9][1:]} {subparts[10][:-1]}"
         
-        Messages.status_head = style_text(f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n**🏷️ Name:** ") + f"`{file_name}`\n"
+        Messages.status_head = f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n**🏷️ Name:** `{file_name}`\n"
         
         await status_bar(
             Messages.status_head,
