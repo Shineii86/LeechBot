@@ -21,7 +21,6 @@ from datetime import datetime
 from pyrogram.errors import FloodWait
 from leechbot.utility.variables import BOT, Transfer, BotTimes, Messages, MSG, Paths
 from leechbot.utility.helper import sizeUnit, fileType, getTime, status_bar, thumbMaintainer, videoExtFix
-from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
