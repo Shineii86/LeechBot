@@ -4,7 +4,7 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=8B5CF6,06B6D4&height=200&section=header&text=LeechBot&fontSize=70&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Advanced%20Telegram%20File%20Transloader&descSize=20" />
 
 <p align="center">
-  <strong>A Pyrogram‑based Telegram Bot to Transfer Files / Folders to Telegram and Google Drive with the help of Google Colab, Now with a Premium UI & Enhanced Features</strong>
+  <i>A Pyrogram‑based Telegram Bot to transfer files / folders to Telegram and Google Drive, powered by Google Colab</i>
 </p>
 
 <p align="center">
@@ -12,7 +12,9 @@
   <img src="https://img.shields.io/badge/License-MIT-06B6D4?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License" />
 
 ![Last Commit](https://img.shields.io/github/last-commit/Shineii86/LeechBot?style=for-the-badge)
-![Repo Size](https://img.shields.io/github/repo-size/Shineii86/LeechBot?style=for-the-badge) [![GitHub Stars](https://img.shields.io/github/stars/Shineii86/LeechBot?style=for-the-badge)](https://github.com/Shineii86/LeechBot/stargazers) [![GitHub Forks](https://img.shields.io/github/forks/Shineii86/LeechBot?style=for-the-badge)](https://github.com/Shineii86/LeechBot/fork)
+![Repo Size](https://img.shields.io/github/repo-size/Shineii86/LeechBot?style=for-the-badge)
+[![GitHub Stars](https://img.shields.io/github/stars/Shineii86/LeechBot?style=for-the-badge)](https://github.com/Shineii86/LeechBot/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/Shineii86/LeechBot?style=for-the-badge)](https://github.com/Shineii86/LeechBot/fork)
 
 </div>
 
@@ -36,10 +38,10 @@
 
 ## ✨ **What's New?**
 
-This version of **LeechBot** is a complete rewrite and visual overhaul of the classic Telegram Leecher, bringing a modern, professional look and feel.
+This version of **LeechBot** is a complete rewrite with a focus on **clean code, professional UI, and enhanced reliability**.
 
-- 🎨 **Unicode Small Caps UI** – All Telegram messages now use a beautiful Title Case + Unicode small‑caps style for a premium appearance.
-- 🔘 **Colored Inline Buttons** – Redesigned interactive menus with red, green, and blue buttons (`danger`, `success`, `primary`) using Bot API 9.4+.
+- 🧹 **Removed Custom Styling** – No more Unicode small‑caps; messages now use standard Telegram Markdown for maximum compatibility and readability.
+- ⏳ **Auto‑Delete Messages** – Optional automatic deletion of bot messages after a configurable delay, keeping your chat clean.
 - ⚡ **Refactored Codebase** – Clean, modular, and well‑documented Python code for easy customisation.
 - 📦 **Expanded Link Support** – YT‑DLP, Terabox, Mega (coming soon) and improved Google Drive handling.
 - 🧠 **Smarter Progress Bars** – Real‑time speed, ETA, and percentage tracking for both downloads and uploads.
@@ -62,6 +64,7 @@ This version of **LeechBot** is a complete rewrite and visual overhaul of the cl
 | 📊 **Real‑time Stats**           | Live progress bars with speed, ETA, percentage, and system resource usage.                       |
 | 🔒 **Password Protection**       | Set ZIP and unzip passwords directly from the bot.                                               |
 | 🏷️ **Custom Filename**           | Override output filenames with the `/setname` command or inline `[name]` syntax.                 |
+| ⏳ **Auto‑Delete Messages**      | Automatically delete bot messages after a set delay (configurable in settings).                  |
 
 ---
 
@@ -100,7 +103,6 @@ This version of **LeechBot** is a complete rewrite and visual overhaul of the cl
 | Cloud Environment   | Google Colab (Python 3.10+, Ubuntu 22.04)                               |
 | Google Drive API    | google‑api‑python‑client                                                |
 | Thumbnail Generator | PIL / Pillow                                                            |
-| Text Styling        | Unicode small‑caps mapping (custom)                                     |
 
 ---
 
@@ -173,18 +175,18 @@ When sending links, you can append:
 
 ## 🆚 **Changelog – Old vs New**
 
-| **Aspect**                 | **Telegram Leecher**| **LeechBot**                           |
-| ---------------------- | -------------------------------------- | -------------------------------------------------- |
-| **UI / UX**            | Plain text messages                    | Unicode small‑caps styled messages, colored inline buttons |
-| **Code Structure**     | Monolithic, less documented            | Modular, fully typed, clean docstrings             |
-| **Video Converter**    | Basic FFmpeg                           | GPU‑accelerated FFmpeg + MoviePy fallback          |
-| **Archive Support**    | Limited to ZIP                         | Full 7z, RAR, TAR, GZ, multipart extraction        |
-| **Settings Menu**      | None                                   | Interactive inline menu with toggle switches       |
-| **Thumbnail**          | Manual only                            | Auto‑generate from video, YT‑DLP thumb support     |
-| **Link Support**       | HTTP, GDrive, YT, Telegram             | Added Terabox, improved GDrive folder handling     |
-| **Progress Updates**   | Basic text                             | Real‑time speed, ETA, percentage, system stats     |
-| **Colored Buttons**    | ❌                                     | ✅ Red (danger), Green (success), Blue (primary)   |
-| **License**            | GPL‑3.0                                | MIT (more permissive)                              |
+| **Aspect**             | **Telegram Leecher**                 | **LeechBot**                                         |
+| ---------------------- | ------------------------------------ | ---------------------------------------------------- |
+| **UI / UX**            | Plain text messages                  | Clean, professional Markdown with inline menus       |
+| **Auto‑Delete**        | None                                 | Configurable auto‑delete for bot messages            |
+| **Code Structure**     | Monolithic, less documented          | Modular, fully typed, clean docstrings               |
+| **Video Converter**    | Basic FFmpeg                         | GPU‑accelerated FFmpeg + MoviePy fallback            |
+| **Archive Support**    | Limited to ZIP                       | Full 7z, RAR, TAR, GZ, multipart extraction          |
+| **Settings Menu**      | None                                 | Interactive inline menu with toggle switches         |
+| **Thumbnail**          | Manual only                          | Auto‑generate from video, YT‑DLP thumb support       |
+| **Link Support**       | HTTP, GDrive, YT, Telegram           | Added Terabox, improved GDrive folder handling       |
+| **Progress Updates**   | Basic text                           | Real‑time speed, ETA, percentage, system stats       |
+| **License**            | GPL‑3.0                              | MIT (more permissive)                                |
 
 ---
 
@@ -238,4 +240,4 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 
 <sub>Pull Requests And Contributions Are Warmly Welcomed</sub>
 
-</div> 
+</div>
