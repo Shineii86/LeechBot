@@ -225,7 +225,7 @@ async def cancelTask(reason: str):
     Args:
         reason: cancellation reason
     """
-    text = style_text(f"""**❌ Task Cancelled**
+    text = style_text(f"""**🚫 Task Cancelled**
 
 ┏🔗 **Source:** [Here]({Messages.src_link})
 ┠🎯 **Mode:** `{BOT.Mode.mode.capitalize()}`
@@ -249,8 +249,8 @@ async def cancelTask(reason: str):
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
-                            InlineKeyboardButton(style_button("📣 Channel"), url="https://t.me/MaximXBots", style="primary"),
-                            InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup", style="success"),
+                            InlineKeyboardButton(style_button("📣 Channel"), url="https://t.me/MaximXBots"),
+                            InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup"),
                         ]
                     ]
                 )
@@ -298,11 +298,11 @@ async def SendLogs(is_leech: bool):
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton(style_button("📣 Channel"), url="https://t.me/MaximXBots", style="primary"),
-                        InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup", style="success"),
+                        InlineKeyboardButton(style_button("📣 Channel"), url="https://t.me/MaximXBots"),
+                        InlineKeyboardButton(style_button("Support 💬"), url="https://t.me/MaximXGroup"),
                     ],
                     [
-                        InlineKeyboardButton(style_button("📂 GitHub ✨"), url="https://github.com/Shineii86/LeechBot", style="primary"),
+                        InlineKeyboardButton(style_button("📂 GitHub ✨"), url="https://github.com/Shineii86/LeechBot"),
                     ]
                 ]
             )
