@@ -1,16 +1,17 @@
 # =============================================================================
-#  ʟᴇᴇᴄʜʙᴏᴛ - ᴀᴅᴠᴀɴᴄᴇᴅ ᴛᴇʟᴇɢʀᴀᴍ ғɪʟᴇ ᴛʀᴀɴsʟᴏᴀᴅᴇʀ
+# Telegram Leech Bot - Google Drive Downloader
 # =============================================================================
-#  ᴄᴏᴘʏʀɪɢʜᴛ © 2024-2025 sʜɪɴᴇɪ ɴᴏᴜᴢᴇɴ
-#  ɢɪᴛʜᴜʙ: https://ɢɪᴛʜᴜʙ.ᴄᴏᴍ/sʜɪɴᴇɪɪ86
-#  ᴛᴇʟᴇɢʀᴀᴍ: https://ᴛ.ᴍᴇ/sʜɪɴᴇɪɪ86
+# Project   : LeechBot
+# Developer : Shinei Nouzen
+# GitHub    : https://github.com/Shineii86
+# Telegram  : https://telegram.me/Shineii86
 # =============================================================================
 
 """
-ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ᴍᴏᴅᴜʟᴇ
+Google Drive downloader module.
 
-ᴛʜɪs ᴍᴏᴅᴜʟᴇ ʜᴀɴᴅʟᴇs ᴅᴏᴡɴʟᴏᴀᴅs ғʀᴏᴍ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ, ɪɴᴄʟᴜᴅɪɴɢ
-ғɪʟᴇs, ғᴏʟᴅᴇʀs, ᴀɴᴅ sʜᴀʀᴇᴅ ᴅʀɪᴠᴇs. ɪᴛ ᴜsᴇs ᴛʜᴇ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ ᴀᴘɪ.
+Handles downloads from Google Drive, including files, folders, and shared drives.
+Uses the Google Drive API.
 """
 
 import io
@@ -26,16 +27,17 @@ from googleapiclient.http import MediaIoBaseDownload
 from leechbot.utility.handler import cancelTask
 from leechbot.utility.helper import sizeUnit, getTime, speedETA, status_bar
 from leechbot.utility.variables import Gdrive, Messages, Paths, BotTimes, Transfer
+from leechbot.utility.style import style_text
 
 logger = logging.getLogger(__name__)
 
 
 # =============================================================================
-#  sᴇʀᴠɪᴄᴇ ʙᴜɪʟᴅᴇʀ
+# Service Builder
 # =============================================================================
 async def build_service():
     """
-    ʙᴜɪʟᴅ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ ᴀᴘɪ sᴇʀᴠɪᴄᴇ ғʀᴏᴍ ᴛᴏᴋᴇɴ.
+    Build Google Drive API service from token.
     """
     global Gdrive
     
@@ -44,23 +46,23 @@ async def build_service():
             creds = pickle.load(token)
             Gdrive.service = build("drive", "v3", credentials=creds)
     else:
-        await cancelTask("ᴛᴏᴋᴇɴ.ᴘɪᴄᴋʟᴇ ɴᴏᴛ ғᴏᴜɴᴅ! ᴘʟᴇᴀsᴇ ʀᴜɴ ᴛʜᴇ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ sᴇᴛᴜᴘ ғɪʀsᴛ.")
+        await cancelTask(style_text("Token.pickle Not Found! Please Run The Google Drive Setup First."))
 
 
 # =============================================================================
-#  ᴍᴀɪɴ ᴅᴏᴡɴʟᴏᴀᴅ ғᴜɴᴄᴛɪᴏɴ
+# Main Download Function
 # =============================================================================
 async def g_DownLoad(link: str, num: int):
     """
-    ᴅᴏᴡɴʟᴏᴀᴅ ғɪʟᴇ ᴏʀ ғᴏʟᴅᴇʀ ғʀᴏᴍ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ.
+    Download file or folder from Google Drive.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ sʜᴀʀᴇ ʟɪɴᴋ
-        ɴᴜᴍ: ʟɪɴᴋ ɴᴜᴍʙᴇʀ ғᴏʀ ᴅɪsᴘʟᴀʏ
+    Args:
+        link: Google Drive share link
+        num: link number for display
     """
     global down_msg
     
-    down_msg = f"**📥 ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ** `ʟɪɴᴋ {str(num).zfill(2)}`\n\n**🏷️ ɴᴀᴍᴇ:** `{Messages.download_name}`\n"
+    down_msg = style_text(f"**📥 Downloading** `Link {str(num).zfill(2)}`\n\n**🏷️ Name:** ") + f"`{Messages.download_name}`\n"
     file_id = await getIDFromURL(link)
     meta = getFileMetadata(file_id)
     
@@ -71,24 +73,24 @@ async def g_DownLoad(link: str, num: int):
 
 
 # =============================================================================
-#  ᴇxᴛʀᴀᴄᴛ ғɪʟᴇ ɪᴅ
+# Extract File ID
 # =============================================================================
 async def getIDFromURL(link: str) -> str:
     """
-    ᴇxᴛʀᴀᴄᴛ ғɪʟᴇ ɪᴅ ғʀᴏᴍ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ ʟɪɴᴋ.
+    Extract file ID from Google Drive link.
     
-    ᴀʀɢs:
-        ʟɪɴᴋ: ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ sʜᴀʀᴇ ʟɪɴᴋ
+    Args:
+        link: Google Drive share link
     
-    ʀᴇᴛᴜʀɴs:
-        sᴛʀ: ғɪʟᴇ/ғᴏʟᴅᴇʀ ɪᴅ
+    Returns:
+        str: file/folder ID
     """
     if "folders" in link or "file" in link:
         regex = r"https:\/\/drive\.google\.com\/(?:drive(.*?)\/folders\/|file(.*?)?\/d\/)([-\w]+)"
         res = re_search(regex, link)
         if res is None:
-            await cancelTask("ɪɴᴠᴀʟɪᴅ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ ʟɪɴᴋ")
-            logger.error("ɢ-ᴅʀɪᴠᴇ ɪᴅ ɴᴏᴛ ғᴏᴜɴᴅ")
+            await cancelTask(style_text("Invalid Google Drive Link"))
+            logger.error("G-Drive ID not found")
             return ""
         return res.group(3)
     
@@ -97,17 +99,17 @@ async def getIDFromURL(link: str) -> str:
 
 
 # =============================================================================
-#  ɢᴇᴛ ғɪʟᴇs ɪɴ ғᴏʟᴅᴇʀ
+# Get Files in Folder
 # =============================================================================
 def getFilesByFolderID(folder_id: str):
     """
-    ɢᴇᴛ ᴀʟʟ ғɪʟᴇs ɪɴ ᴀ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ ғᴏʟᴅᴇʀ.
+    Get all files in a Google Drive folder.
     
-    ᴀʀɢs:
-        ғᴏʟᴅᴇʀ_ɪᴅ: ғᴏʟᴅᴇʀ ɪᴅ
+    Args:
+        folder_id: folder ID
     
-    ʀᴇᴛᴜʀɴs:
-        ʟɪsᴛ: ʟɪsᴛ ᴏғ ғɪʟᴇ ᴏʙᴊᴇᴄᴛs
+    Returns:
+        list: list of file objects
     """
     page_token = None
     files = []
@@ -136,17 +138,17 @@ def getFilesByFolderID(folder_id: str):
 
 
 # =============================================================================
-#  ɢᴇᴛ ғɪʟᴇ ᴍᴇᴛᴀᴅᴀᴛᴀ
+# Get File Metadata
 # =============================================================================
 def getFileMetadata(file_id: str):
     """
-    ɢᴇᴛ ᴍᴇᴛᴀᴅᴀᴛᴀ ғᴏʀ ᴀ ғɪʟᴇ.
+    Get metadata for a file.
     
-    ᴀʀɢs:
-        ғɪʟᴇ_ɪᴅ: ғɪʟᴇ ɪᴅ
+    Args:
+        file_id: file ID
     
-    ʀᴇᴛᴜʀɴs:
-        ᴅɪᴄᴛ: ғɪʟᴇ ᴍᴇᴛᴀᴅᴀᴛᴀ
+    Returns:
+        dict: file metadata
     """
     return (
         Gdrive.service.files()
@@ -156,17 +158,17 @@ def getFileMetadata(file_id: str):
 
 
 # =============================================================================
-#  ɢᴇᴛ ғᴏʟᴅᴇʀ sɪᴢᴇ
+# Get Folder Size
 # =============================================================================
 def get_Gfolder_size(folder_id: str) -> int:
     """
-    ᴄᴀʟᴄᴜʟᴀᴛᴇ ᴛᴏᴛᴀʟ sɪᴢᴇ ᴏғ ᴀ ғᴏʟᴅᴇʀ ʀᴇᴄᴜʀsɪᴠᴇʟʏ.
+    Calculate total size of a folder recursively.
     
-    ᴀʀɢs:
-        ғᴏʟᴅᴇʀ_ɪᴅ: ғᴏʟᴅᴇʀ ɪᴅ
+    Args:
+        folder_id: folder ID
     
-    ʀᴇᴛᴜʀɴs:
-        ɪɴᴛ: ᴛᴏᴛᴀʟ sɪᴢᴇ ɪɴ ʙʏᴛᴇs
+    Returns:
+        int: total size in bytes
     """
     try:
         query = f"trashed = false and '{folder_id}' in parents"
@@ -199,37 +201,37 @@ def get_Gfolder_size(folder_id: str) -> int:
         return total_size
     
     except HttpError as error:
-        logger.error(f"ғᴏʟᴅᴇʀ sɪᴢᴇ ᴇʀʀᴏʀ: {error}")
+        logger.error(f"Folder size error: {error}")
         return -1
 
 
 # =============================================================================
-#  ᴅᴏᴡɴʟᴏᴀᴅ sɪɴɢʟᴇ ғɪʟᴇ
+# Download Single File
 # =============================================================================
 async def gDownloadFile(file_id: str, path: str):
     """
-    ᴅᴏᴡɴʟᴏᴀᴅ ᴀ sɪɴɢʟᴇ ғɪʟᴇ ғʀᴏᴍ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ.
+    Download a single file from Google Drive.
     
-    ᴀʀɢs:
-        ғɪʟᴇ_ɪᴅ: ғɪʟᴇ ɪᴅ
-        ᴘᴀᴛʜ: ᴅᴏᴡɴʟᴏᴀᴅ ᴘᴀᴛʜ
+    Args:
+        file_id: file ID
+        path: download path
     """
     try:
         file = getFileMetadata(file_id)
     except HttpError as error:
-        err = "ғɪʟᴇ ɴᴏᴛ ғᴏᴜɴᴅ ᴏʀ ɴᴏᴛ ᴀᴄᴄᴇssɪʙʟᴇ"
+        err = "File not found or not accessible"
         logger.error(err)
-        await cancelTask(err)
+        await cancelTask(style_text(err))
         return
     
     if file["mimeType"].startswith("application/vnd.google-apps"):
-        err = "ɢᴏᴏɢʟᴇ ᴅᴏᴄs/sʜᴇᴇᴛs/sʟɪᴅᴇs ᴄᴀɴɴᴏᴛ ʙᴇ ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ ᴅɪʀᴇᴄᴛʟʏ"
+        err = "Google Docs/Sheets/Slides cannot be downloaded directly"
         logger.error(err)
-        await cancelTask(err)
+        await cancelTask(style_text(err))
         return
     
     try:
-        file_name = file.get("name", f"ᴜɴᴛɪᴛʟᴇᴅ_{file_id}")
+        file_name = file.get("name", f"Untitled_{file_id}")
         file_path = ospath.join(path, file_name)
         file_contents = io.BytesIO()
         
@@ -266,34 +268,34 @@ async def gDownloadFile(file_id: str, path: str):
                 eta=getTime(eta),
                 done=sizeUnit(down_done),
                 left=sizeUnit(Transfer.total_down_size),
-                engine="ɢᴅʀɪᴠᴇ ♻️"
+                engine="GDrive ♻️"
             )
         
         Transfer.down_bytes.append(int(file["size"]))
     
     except HttpError as error:
-        if error.resp.status == 403 and "ᴜsᴇʀ ʀᴀᴛᴇ ʟɪᴍɪᴛ" in str(error):
-            logger.error("ᴅᴏᴡɴʟᴏᴀᴅ ǫᴜᴏᴛᴀ ᴇxᴄᴇᴇᴅᴇᴅ")
-            await cancelTask("ᴅᴏᴡɴʟᴏᴀᴅ ǫᴜᴏᴛᴀ ᴇxᴄᴇᴇᴅᴇᴅ")
+        if error.resp.status == 403 and "User rate limit" in str(error):
+            logger.error("Download quota exceeded")
+            await cancelTask(style_text("Download Quota Exceeded"))
         else:
-            logger.error(f"ɢᴅʀɪᴠᴇ ᴇʀʀᴏʀ: {error}")
-            await cancelTask(f"ɢᴅʀɪᴠᴇ ᴇʀʀᴏʀ: {error}")
+            logger.error(f"GDrive error: {error}")
+            await cancelTask(style_text(f"GDrive Error: {error}"))
     
     except Exception as e:
-        logger.error(f"ᴅᴏᴡɴʟᴏᴀᴅ ᴇʀʀᴏʀ: {e}")
-        await cancelTask(f"ᴅᴏᴡɴʟᴏᴀᴅ ᴇʀʀᴏʀ: {e}")
+        logger.error(f"Download error: {e}")
+        await cancelTask(style_text(f"Download Error: {e}"))
 
 
 # =============================================================================
-#  ᴅᴏᴡɴʟᴏᴀᴅ ғᴏʟᴅᴇʀ
+# Download Folder
 # =============================================================================
 async def gDownloadFolder(folder_id: str, path: str):
     """
-    ᴅᴏᴡɴʟᴏᴀᴅ ᴀ ғᴏʟᴅᴇʀ ʀᴇᴄᴜʀsɪᴠᴇʟʏ ғʀᴏᴍ ɢᴏᴏɢʟᴇ ᴅʀɪᴠᴇ.
+    Download a folder recursively from Google Drive.
     
-    ᴀʀɢs:
-        ғᴏʟᴅᴇʀ_ɪᴅ: ғᴏʟᴅᴇʀ ɪᴅ
-        ᴘᴀᴛʜ: ᴅᴏᴡɴʟᴏᴀᴅ ᴘᴀᴛʜ
+    Args:
+        folder_id: folder ID
+        path: download path
     """
     folder_meta = getFileMetadata(folder_id)
     folder_name = folder_meta["name"]
