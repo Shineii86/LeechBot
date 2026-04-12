@@ -226,7 +226,7 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 
 ##### **Support Group**
 
-<a href="https://t.me/MaximXGroup"><img src="https://telegramcard.vercel.app/?username=MaximXGroup&theme=light" alt="Group"></a>
+<a href="https://t.me/MaximXGroup"><img src="&theme=light" alt="Group"></a>
 
 </div>
 
