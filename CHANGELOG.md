@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [3.3.1] - 2026-08-03
+
+### Fixed
+- **🔧 Pillow Dependency Conflict** — resolved `moviepy>=2.2.1` and `Pillow>=12.3.0` version incompatibility in `requirements.txt`
+  - `moviepy>=2.2.1` requires `Pillow>=9.2.0,<12.0`, while the previous requirement specified `Pillow>=12.3.0`
+  - Changed `Pillow>=12.3.0` to `Pillow>=9.2.0,<12.0` to align with `moviepy`'s constraints
+  - Fixes Google Colab installation error: `ResolutionImpossible` for conflicting Pillow versions
+
+### Changed
+- **📦 Upgraded all dependencies to latest versions** in `requirements.txt`
+  - `kurigram` >=2.2.23 → >=2.2.24
+  - `yt-dlp` >=2026.6.9 → >=2026.7.4
+  - `curl_cffi` >=0.15.0 → >=0.16.0
+  - `gallery-dl` >=1.32.6.dev0 → >=1.32.8 (moved to Codeberg: https://codeberg.org/mikf/gallery-dl)
+  - `aiohttp` >=3.14.1 → >=3.14.3
+
+---
+
 ## [3.3.0] - 2026-06-30
 
 ### Added
