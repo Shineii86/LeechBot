@@ -6,7 +6,7 @@
 
 ## Project Overview
 
-LeechBot is a **Kurigram-based (Pyrogram fork) Telegram bot** for downloading files from various sources (direct links, YouTube, Google Drive, Mega, galleries, anime, etc.) and uploading them to Telegram or Google Drive. ~8000 lines of Python.
+LeechBot is a **Kurigram-based (Pyrogram fork) Telegram bot** for downloading files from various sources (direct links, YouTube, Google Drive, Mega, galleries, etc.) and uploading them to Telegram or Google Drive. ~8000 lines of Python.
 
 **Language:** Python 3.10+  
 **Framework:** Kurigram (actively maintained Pyrogram fork)  
@@ -30,7 +30,6 @@ LeechBot is a **Kurigram-based (Pyrogram fork) Telegram bot** for downloading fi
 │  downloader/        │  uploader/                     │
 │  ├ manager.py       │  └ telegram.py                 │
 │  ├ aria2.py         │    (single + batch upload)     │
-│  ├ anime.py         │                                │
 │  ├ ytdl.py          ├───────────────────────────────┤
 │  ├ gallery.py       │  utility/                      │
 │  ├ gdrive.py        │  ├ handler.py (Leech, Zip...)  │

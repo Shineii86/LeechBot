@@ -43,15 +43,6 @@ from .settings import (
 )
 from .system import _handle_sys_refresh, _handle_sys_stats
 from .update import _handle_do_update
-from .anime import (
-    _handle_anime_select,
-    _handle_anime_episode,
-    _handle_anime_category,
-    _handle_anime_download,
-    _handle_anime_quality,
-    _handle_anime_quality_select,
-    _handle_anime_back,
-)
 from ..commands.start_help import (
     _handle_help_all,
     _handle_help_cat,
@@ -229,34 +220,6 @@ async def handle_callback(client, callback_query):
         elif data == "cancel":
             await safe_answer(callback_query, "Cancelling...")
             await cancelTask("User cancelled the task")
-
-        # --- Anime search selection ---
-        elif data.startswith("anime_select_"):
-            await _handle_anime_select(client, callback_query, data)
-
-        # --- Anime episode selection ---
-        elif data.startswith("anime_ep_"):
-            await _handle_anime_episode(client, callback_query, data)
-
-        # --- Anime category (sub/dub) ---
-        elif data.startswith("anime_cat_"):
-            await _handle_anime_category(client, callback_query, data)
-
-        # --- Anime download ---
-        elif data.startswith("anime_dl_"):
-            await _handle_anime_download(client, callback_query, data)
-
-        # --- Anime quality menu ---
-        elif data == "anime_quality_menu":
-            await _handle_anime_quality(client, callback_query, data)
-
-        # --- Anime quality selection ---
-        elif data.startswith("anime_q_"):
-            await _handle_anime_quality_select(client, callback_query, data)
-
-        # --- Anime back to episode selection ---
-        elif data == "anime_back":
-            await _handle_anime_back(client, callback_query, data)
 
         # --- Format selection ---
         elif data.startswith("fmt-"):

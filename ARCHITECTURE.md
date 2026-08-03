@@ -227,11 +227,6 @@ downloader/manager.py::downloadManager()
   ├─ is_torrent()        → torrent.py      (magnet/libtorrent)
   └─ default             → aria2.py        (HTTP/FTP direct)
 
-downloader/anime.py::MiruroAPI (independent, via /anime command)
-  ├─ search()            → search results with episode counts
-  ├─ get_episodes()      → episode lists from multiple providers
-  ├─ get_stream()        → stream URLs with quality/codec info
-  └─ fallback chain:     → kiwi → ally → miruro → animex
 ```
 
 Each downloader:

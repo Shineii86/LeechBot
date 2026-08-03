@@ -39,7 +39,7 @@ async def autorename_command(client, message):
             f"<b>⚠️ Usage:</b> <code>/autorename &lt;template&gt;</code>\n\n"
             f"<b>📝 Examples:</b>\n"
             f"• Manga: <code>/autorename [WF] [C{{chapter}}] One Piece @Webtoon_Flix</code>\n"
-            f"• Anime: <code>/autorename [S{{season}} E{{episode}}] One Piece [{{quality}}] [{{audio}}]</code>\n\n"
+            f"• Video: <code>/autorename [S{{season}} E{{episode}}] One Piece [{{quality}}] [{{audio}}]</code>\n\n"
             f"<b>💡 Note:</b> Don't put .mkv or .mp4 at the end.\n"
             f"The bot will use this template to rename your files automatically.\n\n"
             f"<b>🗑️ To clear:</b> <code>/autorename clear</code>",

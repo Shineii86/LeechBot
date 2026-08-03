@@ -426,17 +426,6 @@ curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:8080/api/status
 | `/screenshot [count]` | Manual screenshot generation (backup command) |
 | Auto-SS | Enable via Settings → 📸 Auto-SS (extracts after upload) |
 
-### Anime
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `/anime <name>` | Search and download anime episodes | `/anime naruto` |
-| `/anime <name> ep 1-5 sub` | Quick batch download with range | `/anime one piece ep 1-5 sub` |
-| `/anime <name> zip` | Download episodes as zip before upload | `/anime attack on titan ep 1-3 sub zip` |
-| `/anime resume` | Resume last interrupted download | `/anime resume` |
-| `/autorename <template>` | Set auto-rename template | `/autorename {title} S{season}E{episode} {quality}` |
-| `/autorename clear` | Clear auto-rename template | `/autorename clear` |
-
 ### Admin
 
 | Command | Description |
@@ -452,7 +441,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:8080/api/status
 | `/restart` | Gracefully restart the bot (wrapper will respawn) |
 | `/logs [N]` | Show last N log lines (default 30, max 100) |
 | `/update` | Check for bot updates |
-| `/help` | **Category-button help menu** (8 categories, 38 commands). Try `/help ytupload` for direct command help. |
+| `/help` | **Category-button help menu** (7 categories, 37 commands). Try `/help ytupload` for direct command help. |
 
 ---
 
@@ -1504,7 +1493,6 @@ LeechBot/
 │   ├── commands/           # /command handlers (38 commands)
 │   │   ├── __init__.py
 │   │   ├── admin.py        # Admin & control commands
-│   │   ├── anime.py        # Anime search, episodes, download, batch, resume
 │   │   ├── autorename.py   # Auto-rename template commands
 │   │   ├── downloads.py    # Download / upload commands
 │   │   ├── options.py      # Quick option commands + aliases
@@ -1515,7 +1503,6 @@ LeechBot/
 │   │   └── status.py       # Status / stats / queue commands
 │   ├── callbacks/          # Inline keyboard callback handlers
 │   │   ├── __init__.py
-│   │   ├── anime.py        # Anime selection, quality, back, info cards
 │   │   ├── common.py       # Shared callback utilities
 │   │   ├── dispatcher.py   # Main callback router
 │   │   ├── navigation.py   # Help / about / start navigation
@@ -1528,7 +1515,6 @@ LeechBot/
 │   ├── debug.py            # Error reporting to Telegram
 │   ├── downloader/
 │   │   ├── aria2.py        # HTTP/FTP downloads
-│   │   ├── anime.py        # MiruroAPI client (search, episodes, streams)
 │   │   ├── torrent.py      # Magnet/torrent (libtorrent)
 │   │   ├── gallery.py      # Photo galleries (gallery-dl)
 │   │   ├── gdrive.py       # Google Drive downloads

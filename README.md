@@ -62,7 +62,7 @@
 - Enable via Settings → 📸 Auto-SS: ON/OFF
 - Configurable count (1-20) and watermark text
 - Sent as media group (batch) to dump channel
-- Works for all upload sources (aria2, ytdl, gallery-dl, anime, etc.)
+- Works for all upload sources (aria2, ytdl, gallery-dl, etc.)
 
 ### 📖 Shinobu-style Help Menu
 - `/start` → random photo + welcome text + category grid
@@ -72,15 +72,11 @@
 ### 📊 Permanent System Info
 - CPU, RAM, Disk, Network, Uptime always visible in progress bar
 
-### 🎬 Anime Downloader
-- `/anime <title>` — search, browse, download anime episodes
-- 9 advanced features: multi-provider fallback, episode titles, batch progress, dub→sub fallback, quality selector, resume, subtitle embedding, multi-episode zip
-
 ### ✏️ Auto-Rename Templates
 - `/autorename <template>` — set custom filename templates with placeholders
 - Supports `{season}`, `{episode}`, `{quality}`, `{audio}`, `{title}`, `{chapter}`
 
-> 📋 **Full history:** [CHANGELOG.md](CHANGELOG.md) • **39 commands across 8 categories**
+> 📋 **Full history:** [CHANGELOG.md](CHANGELOG.md) • **37 commands across 7 categories**
 
 <p align="center">
   <img src="assets/divider.svg" width="600" alt="---divider---"/>
@@ -111,7 +107,6 @@
 | 🎬 **YouTube PO Tokens** | Auto-generated — no manual cookie setup |
 | 📸 **Photo Galleries** | Twitter, Pinterest, Pixiv via gallery-dl |
 | 🌐 **Web Dashboard** | Real-time browser monitoring and control |
-| 🎬 **Anime Downloader** | Search, browse, stream anime with multi-provider fallback, quality selector, subtitle embedding |
 | 📸 **Auto-Screenshot** | Extract screenshots from video after upload, send as batch to dump channel |
 
 <p align="center">
@@ -166,7 +161,7 @@ Real-time browser dashboard runs alongside the bot on port `8080`.
 | 📁 Files | Recent uploads list |
 | ⚙️ Settings | Current bot configuration |
 | 💻 System | CPU, RAM, disk usage |
-| 📖 Commands | Quick reference for all 38 commands |
+| 📖 Commands | Quick reference for all 37 commands |
 | 🟢 WebSocket | Real-time updates every 3s |
 
 ```bash
@@ -296,7 +291,6 @@ All bot commands are organized into categories in the **interactive `/help`** me
 |----------|----------|-------|
 | **📥 Downloads** | 10 | `tupload`, `gdupload`, `drupload`, `ytupload`, `glupload`, `setname`, `format`, `formats`, `preview`, `speed` |
 | **🗂 Files** | 5 | `zipaswd`, `unzipaswd`, `queue`, `cancel`, `cancel_all` |
-| **🎬 Anime** | 2 | `anime`, `autorename` |
 | **⚙️ Status & Settings** | 7 | `settings`, `status`, `stats`, `logs`, `ping`, `restart`, `update` |
 | **🍪 Cookies** | 3 | `cookies`, `setcookies`, `clearcookies` |
 | **📸 Screenshot** | 2 | `screenshot`, `setwm` |
@@ -349,7 +343,6 @@ LeechBot/
 │   ├── commands/            # /command handlers (38 commands)
 │   │   ├── __init__.py
 │   │   ├── admin.py         # Admin & control commands
-│   │   ├── anime.py         # Anime search, episodes, download, batch, resume
 │   │   ├── autorename.py    # Auto-rename template commands
 │   │   ├── downloads.py     # Download / upload commands
 │   │   ├── options.py       # Quick option commands + aliases
@@ -360,7 +353,6 @@ LeechBot/
 │   │   └── status.py        # Status / stats / queue commands
 │   ├── callbacks/           # Button callbacks
 │   │   ├── __init__.py
-│   │   ├── anime.py         # Anime selection, quality, back, info cards
 │   │   ├── common.py        # Shared callback utilities
 │   │   ├── dispatcher.py    # Main callback router
 │   │   ├── navigation.py    # Help / about / start navigation
@@ -373,7 +365,6 @@ LeechBot/
 │   ├── updater.py           # Auto-update
 │   ├── downloader/
 │   │   ├── aria2.py         # HTTP/FTP downloads
-│   │   ├── anime.py         # MiruroAPI client (search, episodes, streams)
 │   │   ├── torrent.py       # Magnet/torrent (libtorrent)
 │   │   ├── ytdl.py          # YouTube, 2000+ sites
 │   │   ├── gallery.py       # Photo galleries (100+ sites)

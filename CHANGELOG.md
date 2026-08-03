@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [3.4.0] - 2026-08-03
+
+### Removed
+- **🎬 Anime Downloader Feature** — complete removal of anime downloading subsystem
+  - Removed `leechbot/downloader/anime.py` (MiruroAPI client, search, episodes, streaming)
+  - Removed `leechbot/commands/anime.py` (/anime command handler, quick download, interactive search)
+  - Removed `leechbot/callbacks/anime.py` (inline keyboard callbacks for anime UI)
+  - Removed `ANIME_API_URL` from config.py and .env.example
+  - Removed /anime BotCommand registration from __main__.py
+  - Removed anime category and help entries from start_help.py
+  - Removed anime callback routing from dispatcher.py
+  - Removed anime imports from commands/__init__.py
+  - Cleaned anime references from autorename.py, handler.py
+  - Updated all documentation (AGENTS.md, ARCHITECTURE.md, README.md, GUIDE.md)
+  - Updated Colab notebook (notebooks/LeechBot.ipynb)
+
+---
+
 ## [3.3.1] - 2026-08-03
 
 ### Fixed

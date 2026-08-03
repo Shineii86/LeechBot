@@ -144,7 +144,6 @@ async def _register_commands():
         BotCommand("clearcookies", "🗑️ Delete cookies file"),
         BotCommand("screenshot", "📸 Generate screenshots from video/PDF"),
         BotCommand("setwm", "✏️ Set watermark text for screenshots"),
-        BotCommand("anime", "🎬 Search & download anime episodes"),
         BotCommand("autorename", "🏷️ Set auto-rename template"),
         BotCommand("update", "🔄 Check for updates"),
     ]

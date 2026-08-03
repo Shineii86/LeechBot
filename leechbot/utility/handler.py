@@ -53,7 +53,7 @@ def _apply_autorename_template(original_name: str, template: str, metadata: dict
         {episode} - Episode number (auto-detected or from metadata)
         {quality} - Video quality (auto-detected or from metadata)
         {audio} - Audio info (auto-detected or from metadata)
-        {title} - Anime title (from metadata only)
+        {title} - Title (from metadata only)
     """
     import re
 

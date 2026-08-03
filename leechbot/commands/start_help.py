@@ -82,14 +82,8 @@ MODULES = [
         {"cmd": "/cancel", "desc": "Cancel the current running task"},
         {"cmd": "/cancel_all", "desc": "Cancel task and clear the queue"},
     ]},
-    # ── Anime ──
-    {"id": "anime", "name": "Anime", "desc": "Search and download anime episodes with multi-provider fallback.", "cat": "Anime", "cmds": [
-        {"cmd": "/anime <name>", "desc": "Search and browse anime episodes"},
-        {"cmd": "/anime <name> ep 1-5 sub", "desc": "Quick batch download with range"},
-        {"cmd": "/anime <name> zip", "desc": "Download episodes as zip before upload"},
-        {"cmd": "/anime resume", "desc": "Resume last interrupted download"},
-    ]},
-    {"id": "autorename", "name": "Auto-Rename", "desc": "Set custom filename templates with placeholders.", "cat": "Anime", "cmds": [
+    # ── Files ──
+    {"id": "autorename", "name": "Auto-Rename", "desc": "Set custom filename templates with placeholders.", "cat": "Files", "cmds": [
         {"cmd": "/autorename <template>", "desc": "Set auto-rename template"},
         {"cmd": "/autorename clear", "desc": "Clear auto-rename template"},
     ]},
@@ -133,8 +127,7 @@ MODULES = [
 
 CATEGORIES = [
     {"id": "Downloads", "name": "Downloads", "desc": "Upload, mirror, yt-dlp, gallery, options.", "emoji": "📥"},
-    {"id": "Files", "name": "Files", "desc": "Archive handling, queue, and task control.", "emoji": "🗂"},
-    {"id": "Anime", "name": "Anime", "desc": "Search, browse, and download anime episodes.", "emoji": "🎬"},
+    {"id": "Files", "name": "Files", "desc": "Archive handling, queue, task control, and auto-rename.", "emoji": "🗂"},
     {"id": "Settings", "name": "Settings", "desc": "Bot configuration, status, and system management.", "emoji": "⚙️"},
     {"id": "Auth", "name": "Auth", "desc": "YouTube authentication via cookies or PO tokens.", "emoji": "🍪"},
     {"id": "Tools", "name": "Tools", "desc": "Screenshot generation and watermarking.", "emoji": "🛠"},

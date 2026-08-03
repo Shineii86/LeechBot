@@ -117,12 +117,6 @@ TOKEN_PICKLE_PATH = os.getenv("TOKEN_PICKLE_PATH", str(BASE_DIR / "token.pickle"
 YTDL_COOKIES_FILE = os.getenv("YTDL_COOKIES_FILE", "")
 
 # =============================================================================
-# Anime API (MiruroAPI)
-# =============================================================================
-# Required for /anime command. Get your API URL from t.me/Shineii86
-ANIME_API_URL = os.getenv("ANIME_API_URL", "")
-
-# =============================================================================
 # Multi-User Support
 # =============================================================================
 ALLOWED_USERS = [
