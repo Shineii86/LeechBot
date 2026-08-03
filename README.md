@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-3.3.0-8B5CF6?style=for-the-badge&logo=semver&logoColor=white" alt="Version" />
+  <img src="https://img.shields.io/badge/Version-3.4.0-8B5CF6?style=for-the-badge&logo=semver&logoColor=white" alt="Version" />
   <img src="https://img.shields.io/badge/License-MIT-06B6D4?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License" />
 
 ![Last Commit](https://img.shields.io/github/last-commit/Shineii86/LeechBot?style=for-the-badge)
@@ -38,7 +38,7 @@
 
 - [📖 Complete User Guide](GUIDE.md) ← **Start here if you're new**
 - [🗺️ Roadmap](ROADMAP.md)
-- [✨ What's New?](#-whats-new-in-v330)
+- [✨ What's New?](#-whats-new-in-v340)
 - [🚀 Features](#-features)
 - [🔗 Supported Sources](#-supported-sources)
 - [🌐 Web Dashboard](#-web-dashboard)
@@ -55,9 +55,18 @@
   <img src="assets/divider.svg" width="600" alt="---divider---"/>
 </p>
 
-## ✨ What's New in v3.3.0
+## ✨ What's New in v3.4.0
 
-### 📸 Auto-Screenshot After Upload (NEW)
+### 🎬 Anime Downloader Removed
+- Complete removal of anime downloading subsystem (MiruroAPI, /anime command, inline keyboard UI)
+- Removed ANIME_API_URL configuration
+- Cleaned all anime references from codebase and documentation
+
+### 🔧 Dependency Fixes
+- Resolved Pillow/moviepy version conflict (Pillow>=12.3.0 vs moviepy requires <12.0)
+- Upgraded all dependencies to latest versions (kurigram, yt-dlp, curl_cffi, gallery-dl, aiohttp)
+
+## 📸 Auto-Screenshot After Upload
 - Screenshots extracted from local file after video upload — no re-download
 - Enable via Settings → 📸 Auto-SS: ON/OFF
 - Configurable count (1-20) and watermark text
